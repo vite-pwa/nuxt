@@ -53,6 +53,10 @@ export default defineNuxtModule<VitePWANuxtOptions>({
       filePath: resolver.resolve('./runtime/VitePwaManifest'),
     })
 
+    nuxt.hook('prepare:types', ({ references }) => {
+      references.push({ types: 'vite-plugin-pwa/client' })
+    })
+
     // TODO: combine with configurePWAOptions?
     nuxt.hook('nitro:init', (nitro) => {
       options.outDir = nitro.options.output.publicDir
