@@ -15,15 +15,15 @@
   "bugs": "https://github.com/vite-pwa/nuxt/issues",
   "keywords": [
     "nuxt",
-    "workbox",
     "pwa",
+    "workbox",
     "vite-plugin-pwa",
     "nuxt-module"
   ],
   "exports": {
     ".": {
-      "import": "./dist/module.mjs",
-      "require": "./dist/module.cjs"
+      "require": "./dist/module.cjs",
+      "import": "./dist/module.mjs"
     }
   },
   "main": "./dist/module.cjs",
