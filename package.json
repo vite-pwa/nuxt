@@ -61,6 +61,13 @@
     "vite-plugin-pwa": "^0.14.1"
   },
   "build": {
-    "externals": ["vite-plugin-pwa"]
+    "externals": [
+      "node:child_process",
+      "node:fs",
+      "consola",
+      "pathe",
+      "ufo",
+      "vite-plugin-pwa"
+    ]
   }
 }
