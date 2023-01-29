@@ -32,12 +32,3 @@ export interface ModuleOptions extends Partial<VitePWAOptions> {
    */
   client?: ClientOptions
 }
-
-declare module '@nuxt/schema' {
-  interface NuxtConfig {
-    pwa?: { [K in keyof ModuleOptions]?: Partial<ModuleOptions[K]> }
-  }
-  interface NuxtOptions {
-    pwa: ModuleOptions
-  }
-}
