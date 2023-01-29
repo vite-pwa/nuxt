@@ -2,12 +2,12 @@ import { addComponent, addPluginTemplate, createResolver, defineNuxtModule } fro
 import type { VitePluginPWAAPI } from 'vite-plugin-pwa'
 import { VitePWA } from 'vite-plugin-pwa'
 import type { Plugin } from 'vite'
-import type { VitePWANuxtOptions } from './types'
+import type { ModuleOptions } from './types'
 import { configurePWAOptions } from './config'
 
 export * from './types'
 
-export default defineNuxtModule<VitePWANuxtOptions>({
+export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'pwa',
     configKey: 'pwa',
@@ -51,6 +51,10 @@ export default defineNuxtModule<VitePWANuxtOptions>({
     await addComponent({
       name: 'VitePwaManifest',
       filePath: resolver.resolve('./runtime/VitePwaManifest'),
+    })
+
+    nuxt.hook('prepare:types', ({ references }) => {
+      references.push({ types: 'vite-plugin-pwa/client' })
     })
 
     // TODO: combine with configurePWAOptions?

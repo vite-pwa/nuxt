@@ -21,7 +21,7 @@ export interface ClientOptions {
   installPrompt?: boolean | string
 }
 
-export interface VitePWANuxtOptions extends Partial<VitePWAOptions> {
+export interface ModuleOptions extends Partial<VitePWAOptions> {
   registerWebManifestInRouteRules?: boolean
   /**
    * Writes the plugin to disk: defaults to false (debug).
@@ -31,13 +31,4 @@ export interface VitePWANuxtOptions extends Partial<VitePWAOptions> {
    * Options for plugin.
    */
   client?: ClientOptions
-}
-
-declare module '@nuxt/schema' {
-  interface NuxtConfig {
-    pwa?: { [K in keyof VitePWANuxtOptions]?: Partial<VitePWANuxtOptions[K]> }
-  }
-  interface NuxtOptions {
-    pwa: VitePWANuxtOptions
-  }
 }

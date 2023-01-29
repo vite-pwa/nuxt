@@ -1,6 +1,6 @@
 import { ref, reactive, nextTick } from 'vue'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
-import { defineNuxtPlugin } from '#app'
+import { defineNuxtPlugin } from '#imports'
 
 // @ts-ignore
 const options: { periodicSyncForUpdates: number; installPrompt?: string } = <%= JSON.stringify(options) %>
