@@ -17,6 +17,10 @@ export default defineNuxtPlugin(() => {
   const standalone = window.matchMedia('(display-mode: standalone)').matches
   const isInstalled = !!(standalone || (ios && !ua.match(/Safari/)))
 
+  let swRegistration: ServiceWorkerRegistration | undefined
+
+  const getSWRegistration = () => swRegistration
+
   const registerPeriodicSync = (swUrl: string, r: ServiceWorkerRegistration, timeout: number) => {
     setInterval(async () => {
       if (('connection' in navigator) && !navigator.onLine)
@@ -43,6 +47,7 @@ export default defineNuxtPlugin(() => {
       registrationError.value = true
     },
     onRegisteredSW(swUrl, r) {
+      swRegistration = r
       const timeout = options.periodicSyncForUpdates
       if (timeout > 0) {
         // should add support in pwa plugin
@@ -124,6 +129,7 @@ export default defineNuxtPlugin(() => {
         needRefresh,
         updateServiceWorker,
         cancelPrompt,
+        getSWRegistration,
       }),
     },
   }
