@@ -1,5 +1,5 @@
 <p align='center'>
-<img src='./hero.png' alt="@vite-pwa/nuxt - Zero-config PWA for Nuxt 3"><br>
+<img src='https://github.com/vite-pwa/nuxt/blob/main/hero.png' alt="@vite-pwa/nuxt - Zero-config PWA for Nuxt 3"><br>
 Zero-config PWA Plugin for Nuxt 3
 </p>
 
