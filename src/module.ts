@@ -1,4 +1,4 @@
-import { addComponent, addPluginTemplate, createResolver, defineNuxtModule } from '@nuxt/kit'
+import { addComponent, addPluginTemplate, createResolver, defineNuxtModule, extendWebpackConfig } from '@nuxt/kit'
 import type { VitePluginPWAAPI } from 'vite-plugin-pwa'
 import { VitePWA } from 'vite-plugin-pwa'
 import type { Plugin } from 'vite'
@@ -82,6 +82,10 @@ export default defineNuxtModule<ModuleOptions>({
         vitePwaClientPlugin = plugins.find(p => p.name === 'vite-plugin-pwa') as Plugin
     })
 
+    extendWebpackConfig(() => {
+      throw new Error('Webpack is not supported: @vite-pwa/nuxt module can only be used with Vite!')
+    })
+
     if (nuxt.options.dev) {
       const webManifest = `${nuxt.options.app.baseURL}${options.devOptions?.webManifestUrl ?? options.manifestFilename ?? 'manifest.webmanifest'}`
       const devSw = `${nuxt.options.app.baseURL}dev-sw.js?dev-sw`
@@ -121,10 +125,16 @@ export default defineNuxtModule<ModuleOptions>({
           }
         })
       }
+      let usingNitro = false
       nuxt.hook('nitro:init', (nitro) => {
         nitro.hooks.hook('rollup:before', async () => {
+          usingNitro = true
           await resolveVitePluginPWAAPI()?.generateSW()
         })
+      })
+      nuxt.hook('close', async () => {
+        if (!usingNitro)
+          await resolveVitePluginPWAAPI()?.generateSW()
       })
     }
   },
