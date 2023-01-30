@@ -125,15 +125,15 @@ export default defineNuxtModule<ModuleOptions>({
           }
         })
       }
-      let usingNitro = false
+      let swGenerated = false
       nuxt.hook('nitro:init', (nitro) => {
         nitro.hooks.hook('rollup:before', async () => {
-          usingNitro = true
+          swGenerated = true
           await resolveVitePluginPWAAPI()?.generateSW()
         })
       })
       nuxt.hook('close', async () => {
-        if (!usingNitro)
+        if (!swGenerated)
           await resolveVitePluginPWAAPI()?.generateSW()
       })
     }
