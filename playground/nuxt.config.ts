@@ -1,5 +1,15 @@
 export default defineNuxtConfig({
   modules: ['../src/module'],
+  nitro: {
+    esbuild: {
+      options: {
+        target: 'esnext',
+      },
+    },
+    prerender: {
+      routes: ['/', '/about'],
+    },
+  },
   pwa: {
     manifest: {
       name: 'Nuxt Vite PWA',
