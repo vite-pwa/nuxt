@@ -125,17 +125,16 @@ export default defineNuxtModule<ModuleOptions>({
           }
         })
       }
-      let swGenerated = false
       nuxt.hook('nitro:init', (nitro) => {
         nitro.hooks.hook('rollup:before', async () => {
-          swGenerated = true
           await resolveVitePluginPWAAPI()?.generateSW()
         })
       })
-      nuxt.hook('close', async () => {
-        if (!swGenerated)
+      if (nuxt.options._generate) {
+        nuxt.hook('close', async () => {
           await resolveVitePluginPWAAPI()?.generateSW()
-      })
+        })
+      }
     }
   },
 })
