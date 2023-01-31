@@ -39,7 +39,8 @@
     "dev:generate": "nuxt generate playground",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground",
-    "release": "npm run lint && npm run prepack && npx bumpp --push --tag --commit && npm publish --access=public && git push --follow-tags",
+    "prepublishOnly": "npm run lint && npm run prepack",
+    "release": "npx bumpp --push --tag --commit && npm publish --access=public",
     "lint": "eslint .",
     "lint-fix": "nr lint --fix"
   },
