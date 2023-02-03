@@ -39,6 +39,8 @@
     "dev:generate": "nuxt generate playground",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground",
+    "dev:preview": "node playground/.output/server/index.mjs",
+    "dev:preview:generate": "npx serve playground/dist",
     "prepublishOnly": "npm run lint && npm run prepack",
     "release": "npx bumpp --push --tag --commit && npm publish --access=public",
     "lint": "eslint .",
