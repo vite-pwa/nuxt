@@ -41,8 +41,8 @@
     "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground",
     "dev:preview": "node playground/.output/server/index.mjs",
     "dev:preview:generate": "npx serve playground/dist",
-    "prepublishOnly": "npm run lint && npm run prepack",
-    "release": "npx bumpp --push --tag --commit && npm publish --access=public",
+    "prepublishOnly": "npm run prepack",
+    "release": "bumpp && npm publish",
     "lint": "eslint .",
     "lint-fix": "nr lint --fix"
   },
@@ -59,6 +59,7 @@
     "@nuxt/module-builder": "^0.2.1",
     "@nuxt/schema": "^3.1.1",
     "@nuxt/test-utils": "^3.1.1",
+    "bumpp": "^8.2.1",
     "changelogen": "^0.4.1",
     "eslint": "^8.32.0",
     "nuxt": "^3.1.1",
