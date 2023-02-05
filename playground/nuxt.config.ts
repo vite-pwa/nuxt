@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     },
   },
   pwa: {
+    registerType: 'autoUpdate',
     manifest: {
       name: 'Nuxt Vite PWA',
       short_name: 'NuxtVitePWA',
