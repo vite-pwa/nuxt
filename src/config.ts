@@ -1,8 +1,8 @@
 import type { Nuxt } from '@nuxt/schema'
-import type { VitePWAOptions } from 'vite-plugin-pwa'
 import { resolve } from 'pathe'
+import type { ModuleOptions } from './types'
 
-export function configurePWAOptions(options: Partial<VitePWAOptions>, nuxt: Nuxt) {
+export function configurePWAOptions(options: ModuleOptions, nuxt: Nuxt) {
   if (!options.outDir) {
     const publicDir = nuxt.options.nitro?.output?.publicDir
     options.outDir = publicDir ? resolve(publicDir) : resolve(nuxt.options.buildDir, '../.output/public')
@@ -20,16 +20,15 @@ export function configurePWAOptions(options: Partial<VitePWAOptions>, nuxt: Nuxt
   }
   else {
     options.workbox = options.workbox ?? {}
-    if (options.registerType === 'autoUpdate' && (options.injectRegister === 'script' || options.injectRegister === 'inline')) {
+    if (options.registerType === 'autoUpdate' && (options.client?.registerPlugin || options.injectRegister === 'script' || options.injectRegister === 'inline')) {
       options.workbox.clientsClaim = true
       options.workbox.skipWaiting = true
     }
     if (nuxt.options.dev) {
       // on dev force always to use the root
-
-      options.workbox.navigateFallback = nuxt.options.app.baseURL ?? '/'
+      options.workbox.navigateFallback = options.workbox.navigateFallback ?? nuxt.options.app.baseURL ?? '/'
       if (options.devOptions?.enabled && !options.devOptions.navigateFallbackAllowlist)
-        options.devOptions.navigateFallbackAllowlist = [new RegExp(nuxt.options.app.baseURL) ?? /\//]
+        options.devOptions.navigateFallbackAllowlist = [nuxt.options.app.baseURL ? new RegExp(nuxt.options.app.baseURL) : /\//]
     }
     config = options.workbox
   }
