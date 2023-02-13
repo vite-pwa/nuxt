@@ -8,6 +8,10 @@ export function configurePWAOptions(options: ModuleOptions, nuxt: Nuxt) {
     options.outDir = publicDir ? resolve(publicDir) : resolve(nuxt.options.buildDir, '../.output/public')
   }
 
+  // generate dev sw in .nuxt folder: we don't need to remove it
+  if (options.devOptions?.enabled)
+    options.devOptions.resolveTempFolder = () => resolve(nuxt.options.buildDir, 'dev-sw-dist')
+
   let config: Partial<
     import('workbox-build').BasePartial
     & import('workbox-build').GlobPartial
