@@ -1,5 +1,9 @@
 export default defineNuxtConfig({
+  ssr: false,
   modules: ['../src/module'],
+  experimental: {
+    payloadExtraction: false,
+  },
   nitro: {
     esbuild: {
       options: {
@@ -37,6 +41,7 @@ export default defineNuxtConfig({
     },
     workbox: {
       navigateFallback: '/',
+      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
     },
     client: {
       installPrompt: true,

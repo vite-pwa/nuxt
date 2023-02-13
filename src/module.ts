@@ -4,6 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 import type { Plugin } from 'vite'
 import type { ModuleOptions } from './types'
 import { configurePWAOptions } from './config'
+import { regeneratePWA } from './utils'
 
 export * from './types'
 
@@ -40,11 +41,11 @@ export default defineNuxtModule<ModuleOptions>({
         write: options.writePlugin,
         options: {
           periodicSyncForUpdates: typeof client.periodicSyncForUpdates === 'number' ? client.periodicSyncForUpdates : 0,
-          installPrompt: typeof client.installPrompt === 'undefined' || client.installPrompt === false
+          installPrompt: (typeof client.installPrompt === 'undefined' || client.installPrompt === false)
             ? undefined
-            : client.installPrompt === true || client.installPrompt.trim() === ''
-              ? 'vite-pwa:hide-install'
-              : client.installPrompt.trim(),
+            : (client.installPrompt === true || client.installPrompt.trim() === '')
+                ? 'vite-pwa:hide-install'
+                : client.installPrompt.trim(),
         },
       })
     }
@@ -115,24 +116,49 @@ export default defineNuxtModule<ModuleOptions>({
       }
     }
     else {
-      if (options.registerWebManifestInRouteRules) {
+      if (!options.disable && options.registerWebManifestInRouteRules) {
         nuxt.hook('nitro:config', async (nitroConfig) => {
           nitroConfig.routeRules = nitroConfig.routeRules || {}
-          nitroConfig.routeRules[`${nuxt.options.app.baseURL}${options.manifestFilename ?? 'manifest.webmanifest'}`] = {
+          let swName = options.filename || 'sw.js'
+          if (options.strategies === 'injectManifest' && swName.endsWith('.ts'))
+            swName = swName.replace(/\.ts$/, '.js')
+
+          nitroConfig.routeRules[`${nuxt.options.app.baseURL}${swName}`] = {
             headers: {
-              'Content-Type': 'application/manifest+json',
+              'Cache-Control': 'public, max-age=0, must-revalidate',
             },
+          }
+          // if provided by the user, we don't know web manifest name
+          if (options.manifest) {
+            nitroConfig.routeRules[`${nuxt.options.app.baseURL}${options.manifestFilename ?? 'manifest.webmanifest'}`] = {
+              headers: {
+                'Content-Type': 'application/manifest+json',
+                'Cache-Control': 'public, max-age=0, must-revalidate',
+              },
+            }
           }
         })
       }
       nuxt.hook('nitro:init', (nitro) => {
         nitro.hooks.hook('rollup:before', async () => {
-          await resolveVitePluginPWAAPI()?.generateSW()
+          await regeneratePWA(
+            options.outDir!,
+            (!options.disable && options.manifest)
+              ? (options.manifestFilename || 'manifest.webmanifest')
+              : undefined,
+            resolveVitePluginPWAAPI(),
+          )
         })
       })
       if (nuxt.options._generate) {
         nuxt.hook('close', async () => {
-          await resolveVitePluginPWAAPI()?.generateSW()
+          await regeneratePWA(
+            options.outDir!,
+            (!options.disable && options.manifest)
+              ? (options.manifestFilename || 'manifest.webmanifest')
+              : undefined,
+            resolveVitePluginPWAAPI(),
+          )
         })
       }
     }
