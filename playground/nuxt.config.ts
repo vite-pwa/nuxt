@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  ssr: false,
+  /* ssr: false, */
   modules: ['../src/module'],
   experimental: {
     payloadExtraction: false,
