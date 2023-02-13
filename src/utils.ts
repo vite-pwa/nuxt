@@ -21,10 +21,7 @@ async function isFile(path: string) {
   }
 }
 
-async function writeWebManifest(dir: string, path: string, api?: VitePluginPWAAPI) {
-  if (!api)
-    return
-
+async function writeWebManifest(dir: string, path: string, api: VitePluginPWAAPI) {
   const exists = await isFile(path)
   if (exists)
     return
