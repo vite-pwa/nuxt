@@ -38,7 +38,7 @@ export default defineNuxtModule<ModuleOptions>({
     if (client.registerPlugin) {
       addPluginTemplate({
         src: resolver.resolve('../templates/pwa.client.ts'),
-        write: options.writePlugin,
+        write: nuxt.options.dev || options.writePlugin,
         options: {
           periodicSyncForUpdates: typeof client.periodicSyncForUpdates === 'number' ? client.periodicSyncForUpdates : 0,
           installPrompt: (typeof client.installPrompt === 'undefined' || client.installPrompt === false)
