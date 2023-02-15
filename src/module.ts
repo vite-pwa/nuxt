@@ -57,6 +57,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     nuxt.hook('prepare:types', ({ references }) => {
       references.push({ types: 'vite-plugin-pwa/client' })
+      references.push({ types: 'vite-plugin-pwa/info' })
     })
 
     // TODO: combine with configurePWAOptions?

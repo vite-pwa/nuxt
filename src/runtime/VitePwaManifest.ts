@@ -1,4 +1,3 @@
-/// <reference types="vite-plugin-pwa/info" />
 import type { MetaObject } from '@nuxt/schema'
 import { defineComponent, ref } from 'vue'
 import { pwaInfo } from 'virtual:pwa-info'
