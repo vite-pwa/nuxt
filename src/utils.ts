@@ -3,7 +3,7 @@ import type { VitePluginPWAAPI } from 'vite-plugin-pwa'
 import { resolve } from 'pathe'
 
 export async function regeneratePWA(dir: string, path?: string, api?: VitePluginPWAAPI) {
-  if (!api)
+  if (!api || api.disabled)
     return
 
   await api.generateSW()
