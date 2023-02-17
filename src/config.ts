@@ -1,10 +1,11 @@
 import type { Nuxt } from '@nuxt/schema'
 import { resolve } from 'pathe'
+import type { NitroConfig } from 'nitropack'
 import type { ModuleOptions } from './types'
 
-export function configurePWAOptions(options: ModuleOptions, nuxt: Nuxt) {
+export function configurePWAOptions(options: ModuleOptions, nuxt: Nuxt, nitroConfig: NitroConfig) {
   if (!options.outDir) {
-    const publicDir = nuxt.options.nitro?.output?.publicDir
+    const publicDir = nitroConfig.output?.publicDir
     options.outDir = publicDir ? resolve(publicDir) : resolve(nuxt.options.buildDir, '../.output/public')
   }
 

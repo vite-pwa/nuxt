@@ -1,6 +1,12 @@
+<script setup>
+// you don't need this: only for testing purposes
+const date = useAppConfig().buildDate
+</script>
+
 <template>
-  <div>
+  <main>
     <slot />
+    <footer>Built Date: {{ date }}</footer>
     <ClientOnly>
       <div
         v-if="$pwa?.offlineReady || $pwa?.needRefresh"
@@ -43,7 +49,7 @@
         </button>
       </div>
     </ClientOnly>
-  </div>
+  </main>
 </template>
 
 <style>

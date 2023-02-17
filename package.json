@@ -39,7 +39,7 @@
     "dev:generate": "nuxt generate playground",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground",
-    "dev:preview": "npm run dev:build && node playground/.output/server/index.mjs",
+    "dev:preview:build": "npm run dev:build && node playground/.output/server/index.mjs",
     "dev:preview:generate": "npm run dev:generate && npx serve playground/dist",
     "prepublishOnly": "npm run prepack",
     "release": "bumpp && npm publish",

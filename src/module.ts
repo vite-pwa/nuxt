@@ -1,10 +1,12 @@
+import { join } from 'node:path'
+import { mkdir } from 'node:fs/promises'
 import { addComponent, addPluginTemplate, createResolver, defineNuxtModule, extendWebpackConfig } from '@nuxt/kit'
 import type { VitePluginPWAAPI } from 'vite-plugin-pwa'
 import { VitePWA } from 'vite-plugin-pwa'
 import type { Plugin } from 'vite'
 import type { ModuleOptions } from './types'
 import { configurePWAOptions } from './config'
-import { regeneratePWA } from './utils'
+import { regeneratePWA, writeWebManifest } from './utils'
 
 export * from './types'
 
@@ -60,11 +62,16 @@ export default defineNuxtModule<ModuleOptions>({
       references.push({ types: 'vite-plugin-pwa/info' })
     })
 
-    // TODO: combine with configurePWAOptions?
-    nuxt.hook('nitro:init', (nitro) => {
-      options.outDir = nitro.options.output.publicDir
-      options.injectManifest = options.injectManifest || {}
-      options.injectManifest.globDirectory = nitro.options.output.publicDir
+    const manifestDir = join(nuxt.options.buildDir, 'manifests')
+    nuxt.options.nitro.publicAssets = nuxt.options.nitro.publicAssets || []
+    nuxt.options.nitro.publicAssets.push({
+      dir: manifestDir,
+      baseURL: '/',
+      maxAge: 0,
+    })
+
+    nuxt.hook('nitro:config', (nitroConfig) => {
+      configurePWAOptions(options, nuxt, nitroConfig)
     })
     nuxt.hook('vite:extend', ({ config }) => {
       const plugin = config.plugins?.find(p => p && typeof p === 'object' && 'name' in p && p.name === 'vite-plugin-pwa')
@@ -77,8 +84,25 @@ export default defineNuxtModule<ModuleOptions>({
       if (plugin)
         throw new Error('Remove vite-plugin-pwa plugin from Vite Plugins entry in Nuxt config file!')
 
-      configurePWAOptions(options, nuxt)
-      const plugins = VitePWA(options)
+      if (options.manifest && isClient) {
+        viteInlineConfig.plugins.push({
+          name: 'vite-pwa-nuxt:webmanifest:build',
+          apply: 'build',
+          async writeBundle(_options, bundle) {
+            if (options.disable || !bundle)
+              return
+
+            const api = resolveVitePluginPWAAPI()
+            if (api) {
+              await mkdir(manifestDir, { recursive: true })
+              await writeWebManifest(manifestDir, options.manifestFilename || 'manifest.webmanifest', api)
+            }
+          },
+        })
+      }
+
+      // remove vite plugin pwa build plugin
+      const plugins = [...VitePWA(options).filter(p => p.name !== 'vite-plugin-pwa:build')]
       viteInlineConfig.plugins.push(plugins)
       if (isClient)
         vitePwaClientPlugin = plugins.find(p => p.name === 'vite-plugin-pwa') as Plugin
@@ -111,9 +135,6 @@ export default defineNuxtModule<ModuleOptions>({
 
           viteServer.middlewares.stack.push({ route: workbox, handle: emptyHandle })
         })
-        nuxt.hook('close', async () => {
-          // todo: cleanup dev-dist folder
-        })
       }
     }
     else {
@@ -144,9 +165,6 @@ export default defineNuxtModule<ModuleOptions>({
         nitro.hooks.hook('rollup:before', async () => {
           await regeneratePWA(
             options.outDir!,
-            (!options.disable && options.manifest)
-              ? (options.manifestFilename || 'manifest.webmanifest')
-              : undefined,
             resolveVitePluginPWAAPI(),
           )
         })
@@ -155,9 +173,6 @@ export default defineNuxtModule<ModuleOptions>({
         nuxt.hook('close', async () => {
           await regeneratePWA(
             options.outDir!,
-            (!options.disable && options.manifest)
-              ? (options.manifestFilename || 'manifest.webmanifest')
-              : undefined,
             resolveVitePluginPWAAPI(),
           )
         })
