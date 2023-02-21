@@ -40,6 +40,7 @@ Zero-config PWA Plugin for Nuxt 3
 - ⚙️ **Stale-while-revalidate**: automatic reload when new content is available
 - ✨ **Static assets handling**: configure static assets for offline support
 - 🐞 **Development Support**: debug your custom service worker logic as you develop your application
+- 🛠️ **Versatile**: integration with meta frameworks:  [îles](https://github.com/ElMassimo/iles), [SvelteKit](https://github.com/sveltejs/kit), [VitePress](https://github.com/vuejs/vitepress), [Astro](https://github.com/withastro/astro), and [Nuxt 3](https://github.com/nuxt/nuxt)
 
 ## 📦 Install
 
