@@ -39,7 +39,7 @@
     "dev:generate": "nuxt generate playground",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground",
-    "dev:preview": "npm run dev:build && node playground/.output/server/index.mjs",
+    "dev:preview:build": "npm run dev:build && node playground/.output/server/index.mjs",
     "dev:preview:generate": "npm run dev:generate && npx serve playground/dist",
     "prepublishOnly": "npm run prepack",
     "release": "bumpp && npm publish",
@@ -51,18 +51,18 @@
     "vite-plugin-pwa": "^0.14.0"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.1.1",
-    "vite-plugin-pwa": "^0.14.1"
+    "@nuxt/kit": "^3.2.0",
+    "vite-plugin-pwa": "^0.14.4"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.34.1",
-    "@antfu/ni": "^0.19.0",
+    "@antfu/eslint-config": "^0.35.2",
+    "@antfu/ni": "^0.20.0",
     "@nuxt/module-builder": "^0.2.1",
-    "@nuxt/schema": "^3.1.1",
-    "@nuxt/test-utils": "^3.1.1",
+    "@nuxt/schema": "^3.2.0",
+    "@nuxt/test-utils": "^3.2.0",
     "bumpp": "^8.2.1",
-    "eslint": "^8.32.0",
-    "nuxt": "^3.1.1",
+    "eslint": "^8.34.0",
+    "nuxt": "^3.2.0",
     "typescript": "^4.9.5"
   },
   "build": {

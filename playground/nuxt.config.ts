@@ -1,5 +1,9 @@
 export default defineNuxtConfig({
+  /* ssr: false, */
   modules: ['../src/module'],
+  experimental: {
+    payloadExtraction: false,
+  },
   nitro: {
     esbuild: {
       options: {
@@ -9,6 +13,13 @@ export default defineNuxtConfig({
     prerender: {
       routes: ['/', '/about'],
     },
+  },
+  imports: {
+    autoImport: true,
+  },
+  appConfig: {
+    // you don't need to include this: only for testing purposes
+    buildDate: new Date().toISOString(),
   },
   pwa: {
     registerType: 'autoUpdate',
@@ -37,9 +48,12 @@ export default defineNuxtConfig({
     },
     workbox: {
       navigateFallback: '/',
+      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
     },
     client: {
       installPrompt: true,
+      // you don't need to include this: only for testing purposes
+      // if enabling periodic sync for update use 1 hour or so (periodicSyncForUpdates: 3600)
       periodicSyncForUpdates: 20,
     },
     devOptions: {
