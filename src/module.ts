@@ -66,7 +66,7 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.nitro.publicAssets = nuxt.options.nitro.publicAssets || []
     nuxt.options.nitro.publicAssets.push({
       dir: manifestDir,
-      baseURL: '/',
+      baseURL: nuxt.options.app.baseURL,
       maxAge: 0,
     })
 
