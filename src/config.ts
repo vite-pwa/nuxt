@@ -5,7 +5,7 @@ import type { ModuleOptions } from './types'
 
 export function configurePWAOptions(options: ModuleOptions, nuxt: Nuxt, nitroConfig: NitroConfig) {
   if (!options.outDir) {
-    const publicDir = nitroConfig.output?.publicDir
+    const publicDir = nitroConfig.output?.publicDir ?? nuxt.options.nitro?.output?.publicDir
     options.outDir = publicDir ? resolve(publicDir) : resolve(nuxt.options.buildDir, '../.output/public')
   }
 
@@ -17,7 +17,7 @@ export function configurePWAOptions(options: ModuleOptions, nuxt: Nuxt, nitroCon
     import('workbox-build').BasePartial
     & import('workbox-build').GlobPartial
     & import('workbox-build').RequiredGlobDirectoryPartial
-    >
+  >
 
   if (options.strategies === 'injectManifest') {
     options.injectManifest = options.injectManifest ?? {}
