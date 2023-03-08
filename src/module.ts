@@ -70,14 +70,16 @@ export default defineNuxtModule<ModuleOptions>({
       maxAge: 0,
     })
 
-    nuxt.hook('nitro:config', (nitroConfig) => {
-      configurePWAOptions(options, nuxt, nitroConfig)
+    nuxt.hook('nitro:init', (nitro) => {
+      configurePWAOptions(options, nuxt, nitro.options)
     })
+
     nuxt.hook('vite:extend', ({ config }) => {
       const plugin = config.plugins?.find(p => p && typeof p === 'object' && 'name' in p && p.name === 'vite-plugin-pwa')
       if (plugin)
         throw new Error('Remove vite-plugin-pwa plugin from Vite Plugins entry in Nuxt config file!')
     })
+
     nuxt.hook('vite:extendConfig', async (viteInlineConfig, { isClient }) => {
       viteInlineConfig.plugins = viteInlineConfig.plugins || []
       const plugin = viteInlineConfig.plugins.find(p => p && typeof p === 'object' && 'name' in p && p.name === 'vite-plugin-pwa')
