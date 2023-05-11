@@ -1,6 +1,8 @@
-import { ref, reactive, nextTick } from 'vue'
+import { ref, reactive, nextTick, type UnwrapNestedRefs } from 'vue'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
 import { defineNuxtPlugin } from '#imports'
+
+import { type PwaInjection } from '../src/types'
 
 // @ts-ignore
 const options: { periodicSyncForUpdates: number; installPrompt?: string } = <%= JSON.stringify(options) %>
@@ -115,7 +117,6 @@ export default defineNuxtPlugin(() => {
     }
   }
 
-
   return {
     provide: {
       pwa: reactive({
@@ -130,7 +131,7 @@ export default defineNuxtPlugin(() => {
         updateServiceWorker,
         cancelPrompt,
         getSWRegistration,
-      }),
+      }) satisfies UnwrapNestedRefs<PwaInjection>,
     },
   }
 })
