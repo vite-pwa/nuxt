@@ -51,8 +51,8 @@
     "test:generate:serve": "PORT=4173 serve playground/dist",
     "test:build": "nr dev:build && TEST_BUILD=true vitest run && TEST_BUILD=true playwright test",
     "test:generate": "nr dev:generate && vitest run && playwright test",
-    "test": "nr dev:prepare && nr test:build && nr test:generate",
-    "test:with-build": "nr prepack && nr test"
+    "test": "nr test:build && nr test:generate",
+    "test:with-build": "nr dev:prepare && nr prepack && nr test"
   },
   "peerDependencies": {
     "@nuxt/kit": "^3.0.0 || ^3.1.0",
