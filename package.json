@@ -55,7 +55,7 @@
     "test:with-build": "nr dev:prepare && nr prepack && nr test"
   },
   "peerDependencies": {
-    "@nuxt/kit": "^3.0.0 || ^3.1.0",
+    "@nuxt/kit": "^3.0.0",
     "vite-plugin-pwa": "^0.14.0"
   },
   "dependencies": {
