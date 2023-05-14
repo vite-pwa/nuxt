@@ -2,7 +2,7 @@
   "name": "@vite-pwa/nuxt",
   "type": "module",
   "version": "0.0.7",
-  "packageManager": "pnpm@7.29.0",
+  "packageManager": "pnpm@8.5.0",
   "description": "Zero-config PWA for Nuxt 3",
   "author": "antfu <anthonyfu117@hotmail.com>",
   "license": "MIT",
@@ -41,31 +41,40 @@
     "dev:generate:vercel": "NITRO_PRESET=vercel nuxi generate playground",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground",
-    "dev:preview:build": "npm run dev:build && node playground/.output/server/index.mjs",
-    "dev:preview:generate": "npm run dev:generate && npx serve playground/dist",
+    "dev:preview:build": "nr dev:build && node playground/.output/server/index.mjs",
+    "dev:preview:generate": "nr dev:generate && serve playground/dist",
     "prepublishOnly": "npm run prepack",
     "release": "bumpp && npm publish",
     "lint": "eslint .",
-    "lint-fix": "nr lint --fix"
+    "lint-fix": "nr lint --fix",
+    "test:build:serve": "PORT=4173 node playground/.output/server/index.mjs",
+    "test:generate:serve": "PORT=4173 serve playground/dist",
+    "test:build": "nr dev:build && TEST_BUILD=true vitest run && TEST_BUILD=true playwright test",
+    "test:generate": "nr dev:generate && vitest run && playwright test",
+    "test": "nr test:build && nr test:generate",
+    "test:with-build": "nr dev:prepare && nr prepack && nr test"
   },
   "peerDependencies": {
-    "@nuxt/kit": "^3.0.0 || ^3.1.0",
+    "@nuxt/kit": "^3.0.0",
     "vite-plugin-pwa": "^0.14.0"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.2.0",
-    "vite-plugin-pwa": "^0.14.4"
+    "@nuxt/kit": "^3.4.3",
+    "vite-plugin-pwa": "^0.14.7"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.35.2",
-    "@antfu/ni": "^0.20.0",
-    "@nuxt/module-builder": "^0.2.1",
-    "@nuxt/schema": "^3.2.0",
-    "@nuxt/test-utils": "^3.2.0",
+    "@antfu/eslint-config": "^0.38.6",
+    "@antfu/ni": "^0.21.3",
+    "@nuxt/module-builder": "^0.3.1",
+    "@nuxt/schema": "^3.4.3",
+    "@nuxt/test-utils": "^3.4.3",
+    "@playwright/test": "^1.33.0",
     "bumpp": "^8.2.1",
-    "eslint": "^8.34.0",
-    "nuxt": "^3.2.0",
-    "typescript": "^4.9.5"
+    "eslint": "^8.40.0",
+    "nuxt": "^3.4.3",
+    "serve": "^14.2.0",
+    "typescript": "^5.0.4",
+    "vitest": "^0.31.0"
   },
   "build": {
     "externals": [

@@ -55,3 +55,8 @@ dev-dist/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Playwright test
+/test-results/
+/playwright-report/
+/playwright/.cache/
