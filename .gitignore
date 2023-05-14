@@ -56,7 +56,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-# Plawright test
+# Playwright test
 /test-results/
 /playwright-report/
 /playwright/.cache/
