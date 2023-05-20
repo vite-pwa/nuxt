@@ -12,20 +12,23 @@ To develop and test the `@vite-pwa/nuxt` package:
 
 1. Fork the `@vite-pwa/nuxt` repository to your own GitHub account and then clone it to your local device.
 
-2. `@vite-pwa/nuxt` uses pnpm v7. If you are working on multiple projects with different versions of pnpm, it's recommend to enable [Corepack](https://github.com/nodejs/corepack) by running `corepack enable`.
+2. `@vite-pwa/nuxt` uses pnpm v8. If you are working on multiple projects with different versions of pnpm, it's recommend to enable [Corepack](https://github.com/nodejs/corepack) by running `corepack enable`.
 
 3. Check out a branch where you can work and commit your changes:
 ```shell
 git checkout -b my-new-branch
 ```
 
-5. Run `pnpm i` in `@vite-pwa/nuxt`'s root folder
+5. Run `ni` in `@vite-pwa/nuxt`'s root folder
 
-6. Run `pnpm dev:prepare` in `@vite-pwa/nuxt`'s root folder.
+6. Run `nr dev:prepare` in `@vite-pwa/nuxt`'s root folder.
 
-7. Run `pnpm dev` in `@vite-pwa/nuxt`'s root folder.
+7. Run `nr dev` in `@vite-pwa/nuxt`'s root folder.
 
-## Testing changes
+## Running tests
 
-Work in progress.
+Before running tests, you'll need to install [Playwright](https://playwright.dev/) Chromium browser: `pnpm playwright install chromium`.
+
+Run `nr test` in `@vite-pwa/nuxt`'s root folder.
+
 
