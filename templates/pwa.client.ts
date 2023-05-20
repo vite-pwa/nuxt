@@ -2,7 +2,7 @@ import { ref, reactive, nextTick, type UnwrapNestedRefs } from 'vue'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
 import { defineNuxtPlugin } from '#imports'
 
-import { type PwaInjection } from '../src/types'
+import { type PwaInjection } from '@vite-pwa/nuxt'
 
 // @ts-ignore
 const options: { periodicSyncForUpdates: number; installPrompt?: string } = <%= JSON.stringify(options) %>
