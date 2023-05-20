@@ -19,7 +19,7 @@ To develop and test the `@vite-pwa/nuxt` package:
 git checkout -b my-new-branch
 ```
 
-5. Run `ni` in `@vite-pwa/nuxt`'s root folder
+5. Run `pnpm install` in `@vite-pwa/nuxt`'s root folder
 
 6. Run `nr dev:prepare` in `@vite-pwa/nuxt`'s root folder.
 
