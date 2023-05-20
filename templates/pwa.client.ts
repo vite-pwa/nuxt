@@ -4,7 +4,6 @@ import { defineNuxtPlugin } from '#imports'
 
 import { type PwaInjection } from '@vite-pwa/nuxt'
 
-// @ts-ignore
 const options: { periodicSyncForUpdates: number; installPrompt?: string } = <%= JSON.stringify(options) %>
 
 export default defineNuxtPlugin(() => {
