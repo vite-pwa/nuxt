@@ -58,6 +58,7 @@ export default defineNuxtConfig({
     },
     devOptions: {
       enabled: true,
+      navigateFallbackAllowlist: [/^\/$/],
       type: 'module',
     },
   },
