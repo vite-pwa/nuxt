@@ -58,7 +58,7 @@ export default defineNuxtModule<ModuleOptions>({
     })
 
     nuxt.hook('prepare:types', ({ references }) => {
-      references.push({ types: 'vite-plugin-pwa/client' })
+      references.push({ types: 'vite-plugin-pwa/vue' })
       references.push({ types: 'vite-plugin-pwa/info' })
     })
 
@@ -136,6 +136,15 @@ export default defineNuxtModule<ModuleOptions>({
 
           viteServer.middlewares.stack.push({ route: workbox, handle: emptyHandle })
         })
+        if (options.devOptions?.suppressWarnings) {
+          const suppressWarnings = `${nuxt.options.app.baseURL}suppress-warnings.js`
+          nuxt.hook('vite:serverCreated', (viteServer, { isServer }) => {
+            if (isServer)
+              return
+
+            viteServer.middlewares.stack.push({ route: suppressWarnings, handle: emptyHandle })
+          })
+        }
       }
     }
     else {
