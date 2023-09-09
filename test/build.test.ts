@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs'
+import process from 'node:process'
 import { describe, expect, it } from 'vitest'
 
 const build = process.env.TEST_BUILD === 'true'
