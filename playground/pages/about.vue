@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h1>Nuxt Vite PWA</h1>
+    <h1>About</h1>
     <NuxtLink to="/">
-      Home 1
+      Go to Home
     </NuxtLink>
   </div>
 </template>

@@ -23,7 +23,9 @@ export default defineNuxtConfig({
   },
   pwa: {
     registerType: 'autoUpdate',
-    enableSSR: true,
+    enableSSR: {
+      cache: true,
+    },
     manifest: {
       name: 'Nuxt Vite PWA',
       short_name: 'NuxtVitePWA',

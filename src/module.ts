@@ -75,7 +75,7 @@ export default defineNuxtModule<ModuleOptions>({
     const enableSSR = !nuxt.options.dev
       && nuxt.options.ssr
       && !nuxt.options._generate
-      && options.enableSSR
+      && !!options.enableSSR
       && options.strategies !== 'injectManifest'
 
     const ssrPages: NuxtPage[] = []
