@@ -4,6 +4,8 @@ import { addComponent, addPluginTemplate, createResolver, defineNuxtModule, exte
 import type { VitePluginPWAAPI } from 'vite-plugin-pwa'
 import { VitePWA } from 'vite-plugin-pwa'
 import type { Plugin } from 'vite'
+import type { NuxtPage } from '@nuxt/schema'
+import type { NitroOptions } from 'nitropack'
 import type { ModuleOptions } from './types'
 import { configurePWAOptions } from './config'
 import { regeneratePWA, writeWebManifest } from './utils'
@@ -55,6 +57,7 @@ export default defineNuxtModule<ModuleOptions>({
     await addComponent({
       name: 'VitePwaManifest',
       filePath: resolver.resolve('./runtime/VitePwaManifest'),
+      // TODO: add mode: 'client'  here??
     })
 
     nuxt.hook('prepare:types', ({ references }) => {
@@ -69,9 +72,25 @@ export default defineNuxtModule<ModuleOptions>({
       maxAge: 0,
     })
 
+    const enableSSR = !nuxt.options.dev
+      && nuxt.options.ssr
+      && !nuxt.options._generate
+      && options.enableSSR
+      && options.strategies !== 'injectManifest'
+
+    const ssrPages: NuxtPage[] = []
+    let nitroOptions: NitroOptions | undefined
     nuxt.hook('nitro:init', (nitro) => {
-      configurePWAOptions(options, nuxt, nitro.options)
+      if (enableSSR)
+        nitroOptions = nitro.options
+      else
+        configurePWAOptions(options, nuxt, nitro.options)
     })
+    if (enableSSR) {
+      nuxt.hook('pages:extend', (pages) => {
+        ssrPages.push(...pages)
+      })
+    }
 
     nuxt.hook('vite:extend', ({ config }) => {
       const plugin = config.plugins?.find(p => p && typeof p === 'object' && 'name' in p && p.name === 'vite-plugin-pwa')
@@ -80,6 +99,9 @@ export default defineNuxtModule<ModuleOptions>({
     })
 
     nuxt.hook('vite:extendConfig', async (viteInlineConfig, { isClient }) => {
+      if (enableSSR)
+        configurePWAOptions(options, nuxt, nitroOptions!, ssrPages)
+
       viteInlineConfig.plugins = viteInlineConfig.plugins || []
       const plugin = viteInlineConfig.plugins.find(p => p && typeof p === 'object' && 'name' in p && p.name === 'vite-plugin-pwa')
       if (plugin)
