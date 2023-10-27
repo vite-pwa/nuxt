@@ -80,7 +80,10 @@ this plugin.
 
 ## ⚡️ Examples
 
-You need to stop the dev server once started and then run `npm run build && npm run preview` to see the PWA in action.
+You need to stop the dev server once started and then to see the PWA in action run:
+- `dev:preview:build` (Nuxt build command + start server)
+- `dev:preview:generate` (Nuxt generate commad + start server)
+
 <table>
 <thead>
 <tr>
