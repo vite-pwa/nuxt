@@ -78,6 +78,34 @@ export default defineNuxtConfig({
 Read the [📖 documentation](https://vite-pwa-org.netlify.app/frameworks/nuxt) for a complete guide on how to configure and use
 this plugin.
 
+## ⚡️ Examples
+
+You need to stop the dev server once started and then to see the PWA in action run:
+- `dev:preview:build`: Nuxt build command + start server
+- `dev:preview:generate`: Nuxt generate command + start server
+
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>Source</th>
+<th>Playground</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Auto Update PWA</code></td>
+<td><a href="https://github.com/vite-pwa/nuxt/tree/main/playground">GitHub</a></td>
+<td>
+<a href="https://stackblitz.com/fork/github/vite-pwa/nuxt" target="_blank" rel="noopener noreferrer">
+  <img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" width="162" height="32">
+</a>
+</td>
+</tr>
+</tbody>
+</table>
+
+
 ## 👀 Full config
 
 Check out the type declaration [src/types.ts](./src/types.ts) and the following links for more details.
