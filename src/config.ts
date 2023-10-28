@@ -1,9 +1,15 @@
-import type { Nuxt } from '@nuxt/schema'
+import type { Nuxt, NuxtPage } from '@nuxt/schema'
 import { resolve } from 'pathe'
 import type { NitroConfig } from 'nitropack'
+import type { RuntimeCaching } from 'workbox-build'
 import type { ModuleOptions } from './types'
 
-export function configurePWAOptions(options: ModuleOptions, nuxt: Nuxt, nitroConfig: NitroConfig) {
+export function configurePWAOptions(
+  options: ModuleOptions,
+  nuxt: Nuxt,
+  nitroConfig: NitroConfig,
+  ssrPages?: NuxtPage[],
+) {
   if (!options.outDir) {
     const publicDir = nitroConfig.output?.publicDir ?? nuxt.options.nitro?.output?.publicDir
     options.outDir = publicDir ? resolve(publicDir) : resolve(nuxt.options.buildDir, '../.output/public')
@@ -20,6 +26,7 @@ export function configurePWAOptions(options: ModuleOptions, nuxt: Nuxt, nitroCon
   >
 
   if (options.strategies === 'injectManifest') {
+    // TODO: handle enableSSR, we need to inject the routeRules with a custom recipe
     options.injectManifest = options.injectManifest ?? {}
     config = options.injectManifest
   }
@@ -34,6 +41,40 @@ export function configurePWAOptions(options: ModuleOptions, nuxt: Nuxt, nitroCon
       options.workbox.navigateFallback = options.workbox.navigateFallback ?? nuxt.options.app.baseURL ?? '/'
       if (options.devOptions?.enabled && !options.devOptions.navigateFallbackAllowlist)
         options.devOptions.navigateFallbackAllowlist = [nuxt.options.app.baseURL ? new RegExp(nuxt.options.app.baseURL) : /\//]
+    }
+    else if (ssrPages?.length) {
+      const {
+        cache = false,
+        cacheName = 'ssr-pages',
+        offlinePage = `${nuxt.options.app.baseURL ?? '/'}error?offline`,
+      } = options.enableSSR!
+      // 1. filter prerender pages: will go to the sw precache manifest
+      // what happens if prerender is enabled but prerender routes with ssr?
+      // don't use nitroConfig, we have _nuxt and __nuxt_error
+      const prerenderPages = nuxt.options.nitro.prerender?.routes ?? []
+      const rules = collectRules(ssrPages.filter(p => !prerenderPages.includes(p.path)))
+      // 2. prepare runtime caching for ssr pages
+      const routesInfo = Array.from(rules.keys()).map(r => createSSRHandler(r))
+      // 3. configure workbox properly: since we have two builds, we need to check if previously added
+      if (routesInfo.length > 0) {
+        const navigateFallbackDenylist = options.workbox.navigateFallbackDenylist ?? []
+        const runtimeCaching = options.workbox.runtimeCaching ?? []
+        routesInfo.forEach((r) => {
+          const path = r.urlPattern as string
+          const { exp, dynamic } = rules.get(path)!
+          const source = exp.source
+          if (!navigateFallbackDenylist.some(d => d.source === source))
+            navigateFallbackDenylist.push(exp)
+
+          const index = runtimeCaching.findIndex(d => d.urlPattern === path)
+          if (index > -1)
+            runtimeCaching[index] = createSSRHandlerFunction(cache, cacheName, offlinePage, exp, dynamic)
+          else
+            runtimeCaching.push(r)
+        })
+        options.workbox.navigateFallbackDenylist = navigateFallbackDenylist
+        options.workbox.runtimeCaching = runtimeCaching
+      }
     }
     config = options.workbox
   }
@@ -58,4 +99,89 @@ function createManifestTransform(base: string): import('workbox-build').Manifest
 
     return { manifest: entries, warnings: [] }
   }
+}
+
+function createSSRHandler(route: string): RuntimeCaching {
+  return {
+    urlPattern: route,
+    handler: 'NetworkOnly',
+  }
+}
+
+function createSSRHandlerFunction(
+  cache: boolean,
+  cacheName: string,
+  offlinePage: string,
+  regex: RegExp,
+  dynamic: boolean,
+): RuntimeCaching {
+  return cache && !dynamic
+    // eslint-disable-next-line no-eval
+    ? eval(`() => ({
+    urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.match(${regex}),
+    handler: 'NetworkFirst',
+    options: {
+      cacheName: ${JSON.stringify(cacheName)},
+      cacheableResponse: {
+        statuses: [200]
+      },
+      matchOptions: {
+        ignoreVary: true,
+        ignoreSearch: true
+      },
+      plugins: [{
+        handlerDidError: async () => Response.redirect(${JSON.stringify(offlinePage)}, 302),
+        cacheWillUpdate: async ({ response }) => response.status === 200 ? response : null
+      }]
+    }
+  })`)()
+  // eslint-disable-next-line no-eval
+    : eval(`() => ({
+    urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.match(${regex}),
+    handler: 'NetworkOnly',
+    options: {
+      matchOptions: {
+        ignoreVary: true,
+        ignoreSearch: true
+      },
+      plugins: [{
+        handlerDidError: async () => Response.redirect(${JSON.stringify(offlinePage)}, 302),
+        cacheWillUpdate: async () => null
+      }]
+    }
+  })`)()
+}
+
+function createRouteRegex(path: string) {
+  const dynamicRoute = path.indexOf(':')
+  return dynamicRoute > -1
+    ? { exp: new RegExp(`^${path.slice(0, dynamicRoute)}`), dynamic: true }
+    : { exp: new RegExp(`^${path}$`), dynamic: false }
+}
+
+function traversePage(page: NuxtPage, rules: Map<string, { exp: RegExp; dynamic: boolean }>, parentRoute?: string) {
+  const path = `${parentRoute ? `${parentRoute}/` : ''}${page.path}`
+  const route = createRouteRegex(path)
+  rules.set(path, route)
+  if (!route.dynamic) {
+    if (page.children?.length) {
+      page.children?.filter(p => p.path !== '')
+        .sort((a, b) => {
+          if (a.path.startsWith(':'))
+            return 1
+
+          if (b.path.startsWith(':'))
+            return -1
+
+          return b.path.length - a.path.length
+        })
+        .forEach(p => traversePage(p, rules, path))
+    }
+  }
+}
+
+function collectRules(ssrPages: NuxtPage[]) {
+  const rules = new Map<string, { exp: RegExp; dynamic: boolean }>()
+  ssrPages.forEach(p => traversePage(p, rules))
+  return rules
 }

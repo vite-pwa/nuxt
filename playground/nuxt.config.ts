@@ -23,6 +23,9 @@ export default defineNuxtConfig({
   },
   pwa: {
     registerType: 'autoUpdate',
+    enableSSR: {
+      cache: true,
+    },
     manifest: {
       name: 'Nuxt Vite PWA',
       short_name: 'NuxtVitePWA',
@@ -48,6 +51,8 @@ export default defineNuxtConfig({
     },
     workbox: {
       navigateFallback: '/',
+      sourcemap: true,
+      mode: 'development',
       globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
     },
     client: {
@@ -57,7 +62,7 @@ export default defineNuxtConfig({
       periodicSyncForUpdates: 20,
     },
     devOptions: {
-      enabled: true,
+      enabled: false,
       suppressWarnings: true,
       navigateFallbackAllowlist: [/^\/$/],
       type: 'module',

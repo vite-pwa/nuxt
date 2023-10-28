@@ -44,6 +44,38 @@ export interface ClientOptions {
 }
 
 export interface ModuleOptions extends Partial<VitePWAOptions> {
+  /**
+   * If SSR is enabled and this option is enabled, the plugin will inject a custom runtime caching to allow
+   * SSR pages to work with NetworkOnly or NetworkFirst strategy.
+   *
+   * This option is only available when using `generateSW` strategy.
+   *
+   * Beware, your application should handle offline.
+   *
+   * @default undefined
+   */
+  enableSSR?: {
+    /**
+     * Should cache SSR pages?
+     *
+     * Dynamic routes will be automatically excluded.
+     *
+     * @default false
+     */
+    cache?: boolean
+    /**
+     * When cache is enabled, the name of the cache.
+     *
+     * @default 'ssr-pages'
+     */
+    cacheName?: string
+    /**
+     * When offline, the page fallback.
+     *
+     * @default <basePath>error?offline
+     */
+    offlinePage?: string
+  }
   registerWebManifestInRouteRules?: boolean
   /**
    * Writes the plugin to disk: defaults to false (debug).
