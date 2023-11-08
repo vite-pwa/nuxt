@@ -35,6 +35,9 @@ export function configurePWAOptions(options: ModuleOptions, nuxt: Nuxt, nitroCon
       if (options.devOptions?.enabled && !options.devOptions.navigateFallbackAllowlist)
         options.devOptions.navigateFallbackAllowlist = [nuxt.options.app.baseURL ? new RegExp(nuxt.options.app.baseURL) : /\//]
     }
+    if (!options.workbox.navigateFallback)
+      options.workbox.navigateFallback = nuxt.options.app.baseURL ?? '/'
+
     config = options.workbox
   }
   if (!nuxt.options.dev)

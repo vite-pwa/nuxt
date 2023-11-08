@@ -2,7 +2,7 @@
   "name": "@vite-pwa/nuxt",
   "type": "module",
   "version": "0.1.1",
-  "packageManager": "pnpm@8.9.2",
+  "packageManager": "pnpm@8.10.2",
   "description": "Zero-config PWA for Nuxt 3",
   "author": "antfu <anthonyfu117@hotmail.com>",
   "license": "MIT",
@@ -34,7 +34,7 @@
     "templates"
   ],
   "scripts": {
-    "prepack": "nuxt-module-build",
+    "prepack": "nuxt-module-build prepare && nuxt-module-build",
     "dev": "nuxi dev playground",
     "dev:generate": "nuxi generate playground",
     "dev:generate:netlify": "NITRO_PRESET=netlify nuxi generate playground",
@@ -43,7 +43,6 @@
     "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground",
     "dev:preview:build": "nr dev:build && node playground/.output/server/index.mjs",
     "dev:preview:generate": "nr dev:generate && serve playground/dist",
-    "prepublishOnly": "npm run prepack",
     "release": "bumpp && npm publish",
     "lint": "eslint .",
     "lint-fix": "nr lint --fix",
