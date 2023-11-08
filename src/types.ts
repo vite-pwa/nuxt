@@ -15,9 +15,14 @@ export interface PwaInjection {
   getSWRegistration: () => ServiceWorkerRegistration | undefined
 }
 
-// TODO: fix this issue upstream in nuxt/module-builder
-declare module '#app' {
+declare module '#app/nuxt' {
   interface NuxtApp {
+    $pwa: UnwrapNestedRefs<PwaInjection>
+  }
+}
+
+declare module '@vue/runtime-core' {
+  export interface ComponentCustomProperties {
     $pwa: UnwrapNestedRefs<PwaInjection>
   }
 }
