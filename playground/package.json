@@ -1,7 +1,7 @@
 {
   "name": "my-module-playground",
+  "type": "module",
   "private": true,
-  "type":  "module",
   "scripts": {
     "dev": "nuxi dev",
     "build": "nuxi build",

@@ -4,11 +4,8 @@ import { useRegisterSW } from 'virtual:pwa-register/vue'
 import { installPrompt, periodicSyncForUpdates } from 'virtual:nuxt-pwa-configuration'
 import type { PwaInjection } from './types'
 import { defineNuxtPlugin } from '#imports'
-import type { Plugin } from '#app/nuxt'
 
-const plugin: Plugin<{
-  pwa: UnwrapNestedRefs<PwaInjection>
-}> = defineNuxtPlugin(() => {
+export default defineNuxtPlugin<{ pwa?: UnwrapNestedRefs<PwaInjection> }>(() => {
   const registrationError = ref(false)
   const swActivated = ref(false)
   const showInstallPrompt = ref(false)
@@ -136,5 +133,3 @@ const plugin: Plugin<{
     },
   }
 })
-
-export default plugin
