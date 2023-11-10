@@ -1,6 +1,12 @@
 import { join } from 'node:path'
 import { mkdir } from 'node:fs/promises'
-import { addComponent, addPluginTemplate, createResolver, defineNuxtModule, extendWebpackConfig } from '@nuxt/kit'
+import {
+  addComponent,
+  addPlugin,
+  createResolver,
+  defineNuxtModule,
+  extendWebpackConfig,
+} from '@nuxt/kit'
 import type { VitePluginPWAAPI } from 'vite-plugin-pwa'
 import { VitePWA } from 'vite-plugin-pwa'
 import type { Plugin } from 'vite'
@@ -37,7 +43,7 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     const client = options.client ?? { registerPlugin: true, installPrompt: false, periodicSyncForUpdates: 0 }
-    if (client.registerPlugin) {
+    /* if (client.registerPlugin) {
       addPluginTemplate({
         src: resolver.resolve('../templates/pwa.client.ts'),
         write: nuxt.options.dev || options.writePlugin,
@@ -50,14 +56,33 @@ export default defineNuxtModule<ModuleOptions>({
                 : client.installPrompt.trim(),
         },
       })
+    } */
+
+    const runtimeDir = resolver.resolve('./runtime')
+
+    if (!nuxt.options.ssr)
+      nuxt.options.build.transpile.push(runtimeDir)
+
+    if (client.registerPlugin) {
+      addPlugin({
+        src: resolver.resolve(runtimeDir, 'plugins/pwa.client'),
+        mode: 'client',
+      })
+    }
+    else {
+      addPlugin({
+        src: resolver.resolve(runtimeDir, 'plugins/pwa.client.stub'),
+        mode: 'client',
+      })
     }
 
     await addComponent({
       name: 'VitePwaManifest',
-      filePath: resolver.resolve('./runtime/VitePwaManifest'),
+      filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
     })
 
     nuxt.hook('prepare:types', ({ references }) => {
+      references.push({ types: '@vite-pwa/nuxt/configuration' })
       references.push({ types: 'vite-plugin-pwa/vue' })
       references.push({ types: 'vite-plugin-pwa/info' })
     })
@@ -86,6 +111,8 @@ export default defineNuxtModule<ModuleOptions>({
         throw new Error('Remove vite-plugin-pwa plugin from Vite Plugins entry in Nuxt config file!')
 
       if (options.manifest && isClient) {
+        const configuration = 'virtual:nuxt-pwa-configuration'
+        const resolvedConfiguration = `\0${configuration}`
         viteInlineConfig.plugins.push({
           name: 'vite-pwa-nuxt:webmanifest:build',
           apply: 'build',
@@ -97,6 +124,26 @@ export default defineNuxtModule<ModuleOptions>({
             if (api) {
               await mkdir(manifestDir, { recursive: true })
               await writeWebManifest(manifestDir, options.manifestFilename || 'manifest.webmanifest', api)
+            }
+          },
+        }, {
+          name: 'vite-pwa-nuxt:configuration',
+          enforce: 'pre',
+          resolveId(id) {
+            if (id === configuration)
+              return resolvedConfiguration
+          },
+          load(id) {
+            if (id === resolvedConfiguration) {
+              const installPrompt = (typeof client.installPrompt === 'undefined' || client.installPrompt === false)
+                ? undefined
+                : (client.installPrompt === true || client.installPrompt.trim() === '')
+                    ? 'vite-pwa:hide-install'
+                    : client.installPrompt.trim()
+              return `export const enabled = ${client.registerPlugin}
+export const installPrompt = ${JSON.stringify(installPrompt)}
+export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates === 'number' ? client.periodicSyncForUpdates : 0}
+`
             }
           },
         })

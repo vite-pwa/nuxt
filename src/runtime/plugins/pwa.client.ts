@@ -1,16 +1,15 @@
-import { ref, reactive, nextTick, type UnwrapNestedRefs } from 'vue'
+import { nextTick, reactive, ref } from 'vue'
+import type { UnwrapNestedRefs } from 'vue'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
+import { installPrompt, periodicSyncForUpdates } from 'virtual:nuxt-pwa-configuration'
+import type { PwaInjection } from './types'
 import { defineNuxtPlugin } from '#imports'
 
-import { type PwaInjection } from '@vite-pwa/nuxt'
-
-const options: { periodicSyncForUpdates: number; installPrompt?: string } = <%= JSON.stringify(options) %>
-
-export default defineNuxtPlugin(() => {
+export default defineNuxtPlugin<{ pwa?: UnwrapNestedRefs<PwaInjection> }>(() => {
   const registrationError = ref(false)
   const swActivated = ref(false)
   const showInstallPrompt = ref(false)
-  const hideInstall = ref(!options.installPrompt ? true : localStorage.getItem(options.installPrompt) === 'true')
+  const hideInstall = ref(!installPrompt ? true : localStorage.getItem(installPrompt) === 'true')
 
   // https://thomashunter.name/posts/2021-12-11-detecting-if-pwa-twa-is-installed
   const ua = navigator.userAgent
@@ -49,7 +48,7 @@ export default defineNuxtPlugin(() => {
     },
     onRegisteredSW(swUrl, r) {
       swRegistration = r
-      const timeout = options.periodicSyncForUpdates
+      const timeout = periodicSyncForUpdates
       if (timeout > 0) {
         // should add support in pwa plugin
         if (r?.active?.state === 'activated') {
@@ -100,7 +99,7 @@ export default defineNuxtPlugin(() => {
       showInstallPrompt.value = false
       window.removeEventListener('beforeinstallprompt', beforeInstallPrompt)
       hideInstall.value = true
-      localStorage.setItem(options.installPrompt!, 'true')
+      localStorage.setItem(installPrompt!, 'true')
     }
 
     install = async () => {
@@ -118,7 +117,7 @@ export default defineNuxtPlugin(() => {
 
   return {
     provide: {
-      pwa: reactive({
+      pwa: reactive<PwaInjection>({
         isInstalled,
         showInstallPrompt,
         cancelInstall,
@@ -130,7 +129,7 @@ export default defineNuxtPlugin(() => {
         updateServiceWorker,
         cancelPrompt,
         getSWRegistration,
-      }) satisfies UnwrapNestedRefs<PwaInjection>,
+      }),
     },
   }
 })

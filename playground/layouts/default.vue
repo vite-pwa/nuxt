@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 // you don't need this: only for testing purposes
 const date = useAppConfig().buildDate
 </script>

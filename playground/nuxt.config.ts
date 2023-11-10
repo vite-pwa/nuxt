@@ -3,6 +3,8 @@ export default defineNuxtConfig({
   modules: ['../src/module'],
   experimental: {
     payloadExtraction: false,
+    typescriptBundlerResolution: true,
+    watcher: 'parcel',
   },
   nitro: {
     esbuild: {
