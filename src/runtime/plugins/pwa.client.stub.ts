@@ -1,13 +1,16 @@
 import type { UnwrapNestedRefs } from 'vue'
-import type { PwaInjection } from './types'
+import type { PwaInjection } from './pwa'
 import { defineNuxtPlugin } from '#imports'
+import type { Plugin } from '#app/nuxt'
 
-export default defineNuxtPlugin<{
+const plugin: Plugin<{
   pwa?: UnwrapNestedRefs<PwaInjection>
-}>(() => {
+}> = defineNuxtPlugin(() => {
   return {
     provide: {
       pwa: undefined,
     },
   }
 })
+
+export default plugin
