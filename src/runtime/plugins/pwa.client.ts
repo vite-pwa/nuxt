@@ -2,10 +2,13 @@ import { nextTick, reactive, ref } from 'vue'
 import type { UnwrapNestedRefs } from 'vue'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
 import { installPrompt, periodicSyncForUpdates } from 'virtual:nuxt-pwa-configuration'
-import type { PwaInjection } from './types'
+import type { PwaInjection } from './pwa'
 import { defineNuxtPlugin } from '#imports'
+import type { Plugin } from '#app/nuxt'
 
-export default defineNuxtPlugin<{ pwa?: UnwrapNestedRefs<PwaInjection> }>(() => {
+const plugin: Plugin<{
+  pwa?: UnwrapNestedRefs<PwaInjection>
+}> = defineNuxtPlugin(() => {
   const registrationError = ref(false)
   const swActivated = ref(false)
   const showInstallPrompt = ref(false)
@@ -133,3 +136,5 @@ export default defineNuxtPlugin<{ pwa?: UnwrapNestedRefs<PwaInjection> }>(() => 
     },
   }
 })
+
+export default plugin
