@@ -35,12 +35,14 @@ export function configurePWAOptions(options: ModuleOptions, nuxt: Nuxt, nitroCon
       if (options.devOptions?.enabled && !options.devOptions.navigateFallbackAllowlist)
         options.devOptions.navigateFallbackAllowlist = [nuxt.options.app.baseURL ? new RegExp(nuxt.options.app.baseURL) : /\//]
     }
-    if (!options.workbox.navigateFallback)
+    // the user may want to disable offline support
+    if (!('navigateFallback' in options.workbox))
       options.workbox.navigateFallback = nuxt.options.app.baseURL ?? '/'
 
     config = options.workbox
   }
-  if (!nuxt.options.dev)
+  // allow override manifestTransforms
+  if (!nuxt.options.dev && !config.manifestTransforms)
     config.manifestTransforms = [createManifestTransform(nuxt.options.app.baseURL ?? '/')]
 }
 
