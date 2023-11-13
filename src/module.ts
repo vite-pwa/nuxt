@@ -111,8 +111,6 @@ export default defineNuxtModule<ModuleOptions>({
         throw new Error('Remove vite-plugin-pwa plugin from Vite Plugins entry in Nuxt config file!')
 
       if (options.manifest && isClient) {
-        const configuration = 'virtual:nuxt-pwa-configuration'
-        const resolvedConfiguration = `\0${configuration}`
         viteInlineConfig.plugins.push({
           name: 'vite-pwa-nuxt:webmanifest:build',
           apply: 'build',
@@ -126,7 +124,14 @@ export default defineNuxtModule<ModuleOptions>({
               await writeWebManifest(manifestDir, options.manifestFilename || 'manifest.webmanifest', api)
             }
           },
-        }, {
+        })
+      }
+
+      if (isClient) {
+        viteInlineConfig.plugins = viteInlineConfig.plugins || []
+        const configuration = 'virtual:nuxt-pwa-configuration'
+        const resolvedConfiguration = `\0${configuration}`
+        viteInlineConfig.plugins.push({
           name: 'vite-pwa-nuxt:configuration',
           enforce: 'pre',
           resolveId(id) {
