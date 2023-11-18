@@ -10,16 +10,22 @@ import {
 import type { VitePluginPWAAPI } from 'vite-plugin-pwa'
 import { VitePWA } from 'vite-plugin-pwa'
 import type { Plugin } from 'vite'
-import type { ModuleOptions } from './types'
+import { version } from '../package.json'
+import type { PwaModuleOptions } from './types'
 import { configurePWAOptions } from './config'
 import { regeneratePWA, writeWebManifest } from './utils'
 
 export * from './types'
 
-export default defineNuxtModule<ModuleOptions>({
+export default defineNuxtModule<PwaModuleOptions>({
   meta: {
     name: 'pwa',
     configKey: 'pwa',
+    compatibility: {
+      nuxt: '^3.6.5',
+      bridge: false,
+    },
+    version,
   },
   defaults: nuxt => ({
     base: nuxt.options.app.baseURL,
@@ -82,6 +88,8 @@ export default defineNuxtModule<ModuleOptions>({
     })
 
     nuxt.hook('prepare:types', ({ references }) => {
+      const types = resolver.resolve(runtimeDir, 'plugins/types')
+      references.push({ path: resolver.resolve(nuxt.options.buildDir, types) })
       references.push({ types: '@vite-pwa/nuxt/configuration' })
       references.push({ types: 'vite-plugin-pwa/vue' })
       references.push({ types: 'vite-plugin-pwa/info' })
@@ -242,3 +250,5 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
     }
   },
 })
+
+export interface ModuleOptions extends PwaModuleOptions {}

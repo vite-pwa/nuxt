@@ -2,7 +2,7 @@ import { writeFile } from 'node:fs/promises'
 import type { VitePluginPWAAPI } from 'vite-plugin-pwa'
 import { resolve } from 'pathe'
 
-export async function regeneratePWA(dir: string, api?: VitePluginPWAAPI) {
+export async function regeneratePWA(_dir: string, api?: VitePluginPWAAPI) {
   if (!api || api.disabled)
     return
 

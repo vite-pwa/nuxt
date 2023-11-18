@@ -21,7 +21,7 @@ export interface ClientOptions {
   installPrompt?: boolean | string
 }
 
-export interface ModuleOptions extends Partial<VitePWAOptions> {
+export interface PwaModuleOptions extends Partial<VitePWAOptions> {
   registerWebManifestInRouteRules?: boolean
   /**
    * Writes the plugin to disk: defaults to false (debug).

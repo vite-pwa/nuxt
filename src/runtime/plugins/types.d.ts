@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import type { UnwrapNestedRefs } from 'vue'
 
 export interface PwaInjection {
   isInstalled: boolean
@@ -13,3 +14,17 @@ export interface PwaInjection {
   cancelPrompt: () => Promise<void>
   getSWRegistration: () => ServiceWorkerRegistration | undefined
 }
+
+declare module '#app' {
+  interface NuxtApp {
+    $pwa?: UnwrapNestedRefs<PwaInjection>
+  }
+}
+
+declare module '@vue/runtime-core' {
+  interface ComponentCustomProperties {
+    $pwa?: UnwrapNestedRefs<PwaInjection>
+  }
+}
+
+export {}
