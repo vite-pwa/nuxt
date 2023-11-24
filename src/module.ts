@@ -5,7 +5,8 @@ import {
   addPlugin,
   createResolver,
   defineNuxtModule,
-  extendWebpackConfig, getNuxtVersion,
+  extendWebpackConfig,
+  getNuxtVersion,
 } from '@nuxt/kit'
 import type { VitePluginPWAAPI } from 'vite-plugin-pwa'
 import { VitePWA } from 'vite-plugin-pwa'
