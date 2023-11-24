@@ -6,20 +6,27 @@ import {
   createResolver,
   defineNuxtModule,
   extendWebpackConfig,
+  getNuxtVersion,
 } from '@nuxt/kit'
 import type { VitePluginPWAAPI } from 'vite-plugin-pwa'
 import { VitePWA } from 'vite-plugin-pwa'
 import type { Plugin } from 'vite'
-import type { ModuleOptions } from './types'
+import { version } from '../package.json'
+import type { PwaModuleOptions } from './types'
 import { configurePWAOptions } from './config'
 import { regeneratePWA, writeWebManifest } from './utils'
 
 export * from './types'
 
-export default defineNuxtModule<ModuleOptions>({
+export default defineNuxtModule<PwaModuleOptions>({
   meta: {
     name: 'pwa',
     configKey: 'pwa',
+    compatibility: {
+      nuxt: '^3.6.5',
+      bridge: false,
+    },
+    version,
   },
   defaults: nuxt => ({
     base: nuxt.options.app.baseURL,
@@ -76,12 +83,20 @@ export default defineNuxtModule<ModuleOptions>({
       })
     }
 
-    await addComponent({
-      name: 'VitePwaManifest',
-      filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
-    })
+    await Promise.all([
+      addComponent({
+        name: 'VitePwaManifest',
+        filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
+      }),
+      addComponent({
+        name: 'NuxtPwaManifest',
+        filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
+      }),
+    ])
 
     nuxt.hook('prepare:types', ({ references }) => {
+      const types = resolver.resolve(runtimeDir, 'plugins/types')
+      references.push({ path: resolver.resolve(nuxt.options.buildDir, types) })
       references.push({ types: '@vite-pwa/nuxt/configuration' })
       references.push({ types: 'vite-plugin-pwa/vue' })
       references.push({ types: 'vite-plugin-pwa/info' })
@@ -223,22 +238,45 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
           }
         })
       }
-      nuxt.hook('nitro:init', (nitro) => {
-        nitro.hooks.hook('rollup:before', async () => {
-          await regeneratePWA(
-            options.outDir!,
-            resolveVitePluginPWAAPI(),
-          )
-        })
-      })
-      if (nuxt.options._generate) {
-        nuxt.hook('close', async () => {
+      const nuxtVersion = (getNuxtVersion(nuxt) as string).split('.').map(v => Number.parseInt(v))
+      const nuxt3_8 = nuxtVersion.length > 1 && (nuxtVersion[0] > 3 || (nuxtVersion[0] === 3 && nuxtVersion[1] >= 8))
+      if (nuxt3_8) {
+        nuxt.hook('nitro:build:public-assets', async () => {
           await regeneratePWA(
             options.outDir!,
             resolveVitePluginPWAAPI(),
           )
         })
       }
+      else {
+        nuxt.hook('nitro:init', (nitro) => {
+          nitro.hooks.hook('rollup:before', async () => {
+            await regeneratePWA(
+              options.outDir!,
+              resolveVitePluginPWAAPI(),
+            )
+          })
+        })
+        if (nuxt.options._generate) {
+          nuxt.hook('close', async () => {
+            await regeneratePWA(
+              options.outDir!,
+              resolveVitePluginPWAAPI(),
+            )
+          })
+        }
+      }
     }
   },
 })
+
+export interface ModuleOptions extends PwaModuleOptions {}
+
+declare module '@nuxt/schema' {
+  interface NuxtConfig {
+    ['vuetify']?: Partial<ModuleOptions>
+  }
+  interface NuxtOptions {
+    ['vuetify']?: ModuleOptions
+  }
+}
