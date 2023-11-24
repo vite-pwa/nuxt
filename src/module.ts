@@ -83,10 +83,16 @@ export default defineNuxtModule<PwaModuleOptions>({
       })
     }
 
-    await addComponent({
-      name: 'VitePwaManifest',
-      filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
-    })
+    await Promise.all([
+      addComponent({
+        name: 'VitePwaManifest',
+        filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
+      }),
+      addComponent({
+        name: 'NuxtPwaManifest',
+        filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
+      }),
+    ])
 
     nuxt.hook('prepare:types', ({ references }) => {
       const types = resolver.resolve(runtimeDir, 'plugins/types')
