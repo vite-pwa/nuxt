@@ -28,6 +28,10 @@ describe(`test-${build ? 'build' : 'generate'}`, () => {
     expect(match && match.length === 1, 'missing about route (/about) in sw precache manifest').toBeTruthy()
     match = swContent.match(/url:\s*"_nuxt\/.*\.(css|js)"/)
     expect(match && match.length > 0, 'missing _nuxt/**.(css|js) in sw precache manifest').toBeTruthy()
+    match = swContent.match(/url:\s*"(.*\/)?_payload.json"/)
+    expect(match && match.length === 2, 'missing _payload.json and about/_payload.json entries in sw precache manifest').toBeTruthy()
+    match = swContent.match(/url:\s*"_nuxt\/builds\/.*\.json"/)
+    expect(match && match.length > 0, 'missing App Manifest json entries in sw precache manifest').toBeTruthy()
     if (build) {
       match = swContent.match(/url:\s*"server\//)
       expect(match === null, 'found server/ entries in sw precache manifest').toBeTruthy()

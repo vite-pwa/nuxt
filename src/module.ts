@@ -43,6 +43,8 @@ export default defineNuxtModule<PwaModuleOptions>({
   }),
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
+    const nuxtVersion = (getNuxtVersion(nuxt) as string).split('.').map(v => Number.parseInt(v))
+    const nuxt3_8 = nuxtVersion.length > 1 && (nuxtVersion[0] > 3 || (nuxtVersion[0] === 3 && nuxtVersion[1] >= 8))
 
     let vitePwaClientPlugin: Plugin | undefined
     const resolveVitePluginPWAAPI = (): VitePluginPWAAPI | undefined => {
@@ -110,7 +112,7 @@ export default defineNuxtModule<PwaModuleOptions>({
     })
 
     nuxt.hook('nitro:init', (nitro) => {
-      configurePWAOptions(options, nuxt, nitro.options)
+      configurePWAOptions(nuxt3_8, options, nuxt, nitro.options)
     })
 
     nuxt.hook('vite:extend', ({ config }) => {
@@ -238,8 +240,6 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
           }
         })
       }
-      const nuxtVersion = (getNuxtVersion(nuxt) as string).split('.').map(v => Number.parseInt(v))
-      const nuxt3_8 = nuxtVersion.length > 1 && (nuxtVersion[0] > 3 || (nuxtVersion[0] === 3 && nuxtVersion[1] >= 8))
       if (nuxt3_8) {
         nuxt.hook('nitro:build:public-assets', async () => {
           await regeneratePWA(

@@ -3,7 +3,12 @@ import { resolve } from 'pathe'
 import type { NitroConfig } from 'nitropack'
 import type { PwaModuleOptions } from './types'
 
-export function configurePWAOptions(options: PwaModuleOptions, nuxt: Nuxt, nitroConfig: NitroConfig) {
+export function configurePWAOptions(
+  nuxt3_8: boolean,
+  options: PwaModuleOptions,
+  nuxt: Nuxt,
+  nitroConfig: NitroConfig,
+) {
   if (!options.outDir) {
     const publicDir = nitroConfig.output?.publicDir ?? nuxt.options.nitro?.output?.publicDir
     options.outDir = publicDir ? resolve(publicDir) : resolve(nuxt.options.buildDir, '../.output/public')
@@ -41,14 +46,33 @@ export function configurePWAOptions(options: PwaModuleOptions, nuxt: Nuxt, nitro
 
     config = options.workbox
   }
+  // handle payload extraction
+  if (nuxt.options.experimental.payloadExtraction) {
+    config.globPatterns = config.globPatterns ?? []
+    config.globPatterns.push('**/_payload.json')
+  }
+  let appManifestFolder: string | undefined
+  // check for Nuxt App Manifest
+  if (nuxt3_8 && nuxt.options.experimental.appManifest) {
+    config.globPatterns = config.globPatterns ?? []
+    appManifestFolder = nuxt.options.app.buildAssetsDir ?? '_nuxt/'
+    if (appManifestFolder[0] === '/')
+      appManifestFolder = appManifestFolder.slice(1)
+
+    if (appManifestFolder[appManifestFolder.length - 1] !== '/')
+      appManifestFolder += '/'
+
+    appManifestFolder += 'builds/'
+
+    config.globPatterns.push(`${appManifestFolder}**/*.json`)
+  }
   // allow override manifestTransforms
   if (!nuxt.options.dev && !config.manifestTransforms)
-    config.manifestTransforms = [createManifestTransform(nuxt.options.app.baseURL ?? '/')]
+    config.manifestTransforms = [createManifestTransform(nuxt.options.app.baseURL ?? '/', appManifestFolder)]
 }
 
-function createManifestTransform(base: string): import('workbox-build').ManifestTransform {
+function createManifestTransform(base: string, appManifestFolder?: string): import('workbox-build').ManifestTransform {
   return async (entries) => {
-    // prefix non html assets with base
     entries.filter(e => e && e.url.endsWith('.html')).forEach((e) => {
       const url = e.url.startsWith('/') ? e.url.slice(1) : e.url
       if (url === 'index.html') {
@@ -60,6 +84,15 @@ function createManifestTransform(base: string): import('workbox-build').Manifest
         e.url = parts.length > 1 ? parts.slice(0, parts.length - 1).join('/') : parts[0]
       }
     })
+
+    if (appManifestFolder) {
+      const regExp = /\/[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}\.json$/gi
+      // we need to remove the revision from the sw prechaing manifest, UUID is enough:
+      // we don't use dontCacheBustURLsMatching, single regex
+      entries.filter(e => e && e.url.startsWith(appManifestFolder) && regExp.test(e.url)).forEach((e) => {
+        e.revision = null
+      })
+    }
 
     return { manifest: entries, warnings: [] }
   }
