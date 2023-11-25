@@ -66,7 +66,7 @@
     "@antfu/eslint-config": "^0.43.1",
     "@antfu/ni": "^0.21.10",
     "@nuxt/module-builder": "^0.5.4",
-    "@nuxt/schema": "^3.8.1",
+    "@nuxt/schema": "^3.8.2",
     "@nuxt/test-utils": "^3.8.1",
     "@playwright/test": "^1.37.1",
     "@types/node": "^18",
