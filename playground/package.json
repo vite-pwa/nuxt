@@ -8,6 +8,7 @@
     "generate": "nuxi generate"
   },
   "devDependencies": {
+    "@vite-pwa/nuxt": "workspace:*",
     "nuxt": "^3.8.2"
   }
 }

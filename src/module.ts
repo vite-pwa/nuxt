@@ -274,9 +274,9 @@ export interface ModuleOptions extends PwaModuleOptions {}
 
 declare module '@nuxt/schema' {
   interface NuxtConfig {
-    ['vuetify']?: Partial<ModuleOptions>
+    ['pwa']?: Partial<ModuleOptions>
   }
   interface NuxtOptions {
-    ['vuetify']?: ModuleOptions
+    ['pwa']?: ModuleOptions
   }
 }

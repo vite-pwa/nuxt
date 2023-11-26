@@ -75,6 +75,9 @@ importers:
 
   playground:
     devDependencies:
+      '@vite-pwa/nuxt':
+        specifier: workspace:*
+        version: link:..
       nuxt:
         specifier: ^3.8.2
         version: 3.8.2(@types/node@18.11.18)(eslint@8.54.0)(rollup@3.29.4)(typescript@5.3.2)(vite@4.5.0)(vue-tsc@1.8.22)
