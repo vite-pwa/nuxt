@@ -46,6 +46,13 @@ export function configurePWAOptions(
 
     config = options.workbox
   }
+  // Vite 5 support
+  let dontCacheBustURLsMatching = nuxt.options.app.buildAssetsDir ?? '_nuxt/'
+  if (dontCacheBustURLsMatching[0] === '/')
+    dontCacheBustURLsMatching = dontCacheBustURLsMatching.slice(1)
+  if (dontCacheBustURLsMatching[dontCacheBustURLsMatching.length - 1] !== '/')
+    dontCacheBustURLsMatching += '/'
+  config.dontCacheBustURLsMatching = new RegExp(dontCacheBustURLsMatching)
   // handle payload extraction
   if (nuxt.options.experimental.payloadExtraction) {
     config.globPatterns = config.globPatterns ?? []
