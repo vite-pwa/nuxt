@@ -46,26 +46,31 @@ export function configurePWAOptions(
 
     config = options.workbox
   }
+
+  let buildAssetsDir = nuxt.options.app.buildAssetsDir ?? '_nuxt/'
+  if (buildAssetsDir[0] === '/')
+    buildAssetsDir = buildAssetsDir.slice(1)
+  if (buildAssetsDir[buildAssetsDir.length - 1] !== '/')
+    buildAssetsDir += '/'
+
+  // Vite 5 support: allow override dontCacheBustURLsMatching
+  if (!('dontCacheBustURLsMatching' in config))
+    config.dontCacheBustURLsMatching = new RegExp(buildAssetsDir)
+
   // handle payload extraction
   if (nuxt.options.experimental.payloadExtraction) {
     config.globPatterns = config.globPatterns ?? []
     config.globPatterns.push('**/_payload.json')
   }
+
+  // handle Nuxt App Manifest
   let appManifestFolder: string | undefined
-  // check for Nuxt App Manifest
   if (nuxt3_8 && nuxt.options.experimental.appManifest) {
     config.globPatterns = config.globPatterns ?? []
-    appManifestFolder = nuxt.options.app.buildAssetsDir ?? '_nuxt/'
-    if (appManifestFolder[0] === '/')
-      appManifestFolder = appManifestFolder.slice(1)
-
-    if (appManifestFolder[appManifestFolder.length - 1] !== '/')
-      appManifestFolder += '/'
-
-    appManifestFolder += 'builds/'
-
+    appManifestFolder = `${buildAssetsDir}builds/`
     config.globPatterns.push(`${appManifestFolder}**/*.json`)
   }
+
   // allow override manifestTransforms
   if (!nuxt.options.dev && !config.manifestTransforms)
     config.manifestTransforms = [createManifestTransform(nuxt.options.app.baseURL ?? '/', appManifestFolder)]

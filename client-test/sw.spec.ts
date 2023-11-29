@@ -39,6 +39,7 @@ test('The service worker is registered and cache storage is present', async ({ p
   expect(urls.some(url => url.startsWith('manifest.webmanifest?__WB_REVISION__='))).toEqual(true)
   expect(urls.some(url => url.startsWith('?__WB_REVISION__='))).toEqual(true)
   expect(urls.some(url => url.startsWith('about?__WB_REVISION__='))).toEqual(true)
+  // dontCacheBustURLsMatching: any asset in _nuxt folder shouldn't have a revision (?__WB_REVISION__=)
   expect(urls.some(url => url.startsWith('_nuxt/') && url.endsWith('.css'))).toEqual(true)
   expect(urls.some(url => url.startsWith('_nuxt/') && url.endsWith('.js'))).toEqual(true)
   expect(urls.some(url => url.includes('_payload.json?__WB_REVISION__='))).toEqual(true)
