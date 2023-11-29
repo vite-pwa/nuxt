@@ -59,8 +59,15 @@ export function configurePWAOptions(
 
   // handle payload extraction
   if (nuxt.options.experimental.payloadExtraction) {
-    config.globPatterns = config.globPatterns ?? []
-    config.globPatterns.push('**/_payload.json')
+    const enableGlobPatterns = nuxt.options._generate
+      || (
+        !!nitroConfig.prerender?.routes?.length
+        || Object.values(nitroConfig.routeRules ?? {}).some(r => r.prerender)
+      )
+    if (enableGlobPatterns) {
+      config.globPatterns = config.globPatterns ?? []
+      config.globPatterns.push('**/_payload.json')
+    }
   }
 
   // handle Nuxt App Manifest
