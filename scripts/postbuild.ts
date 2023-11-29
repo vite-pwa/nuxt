@@ -13,17 +13,7 @@ writeFileSync(
   'utf-8',
 )
 
-// fix d.ts/d.mts imports
-const dtsModule = resolve('dist/types.d.ts')
-const dtsModuleContent = readFileSync(dtsModule, 'utf-8')
-writeFileSync(
-  dtsModule,
-  dtsModuleContent.replaceAll(
-    'from \'./module\'',
-    'from \'./module.js\'',
-  ),
-  'utf-8',
-)
+// fix d.mts imports
 const mDtsModule = resolve('dist/types.d.mts')
 const mDtsModuleContent = readFileSync(mDtsModule, 'utf-8')
 writeFileSync(
