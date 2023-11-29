@@ -37,7 +37,7 @@
     "*.d.ts"
   ],
   "scripts": {
-    "prepack": "nuxt-module-build prepare && nuxt-module-build build && esno scripts/postbuild.ts",
+    "prepack": "nuxt-module-build prepare && nuxt-module-build build && jiti scripts/postbuild.ts",
     "dev": "nuxi dev playground",
     "dev:generate": "nuxi generate playground",
     "dev:generate:netlify": "NITRO_PRESET=netlify nuxi generate playground",
@@ -72,7 +72,6 @@
     "@types/node": "^18",
     "bumpp": "^9.2.0",
     "eslint": "^8.54.0",
-    "esno": "^4.0.0",
     "node-fetch-native": "^1.4.1",
     "nuxt": "^3.8.2",
     "publint": "^0.2.5",
