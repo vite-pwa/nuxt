@@ -30,14 +30,14 @@
     },
     "./*": "./*"
   },
-  "main": "./dist/module.cjs",
+  "main": "./dist/module.mjs",
   "types": "./dist/types.d.ts",
   "files": [
     "dist",
     "*.d.ts"
   ],
   "scripts": {
-    "prepack": "nuxt-module-build prepare && nuxt-module-build build",
+    "prepack": "nuxt-module-build prepare && nuxt-module-build build && jiti scripts/postbuild.ts",
     "dev": "nuxi dev playground",
     "dev:generate": "nuxi generate playground",
     "dev:generate:netlify": "NITRO_PRESET=netlify nuxi generate playground",
