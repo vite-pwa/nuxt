@@ -78,12 +78,6 @@ export default defineNuxtModule<PwaModuleOptions>({
         mode: 'client',
       })
     }
-    else {
-      addPlugin({
-        src: resolver.resolve(runtimeDir, 'plugins/pwa.client.stub'),
-        mode: 'client',
-      })
-    }
 
     await Promise.all([
       addComponent({
@@ -97,8 +91,7 @@ export default defineNuxtModule<PwaModuleOptions>({
     ])
 
     nuxt.hook('prepare:types', ({ references }) => {
-      const types = resolver.resolve(runtimeDir, 'plugins/types')
-      references.push({ path: resolver.resolve(nuxt.options.buildDir, types) })
+      references.push({ path: resolver.resolve(runtimeDir, 'plugins/types') })
       references.push({ types: '@vite-pwa/nuxt/configuration' })
       references.push({ types: 'vite-plugin-pwa/vue' })
       references.push({ types: 'vite-plugin-pwa/info' })

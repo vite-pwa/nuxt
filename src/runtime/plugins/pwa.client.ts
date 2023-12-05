@@ -120,7 +120,7 @@ const plugin: Plugin<{
 
   return {
     provide: {
-      pwa: reactive<PwaInjection>({
+      pwa: reactive({
         isInstalled,
         showInstallPrompt,
         cancelInstall,
@@ -132,7 +132,7 @@ const plugin: Plugin<{
         updateServiceWorker,
         cancelPrompt,
         getSWRegistration,
-      }),
+      }) satisfies UnwrapNestedRefs<PwaInjection>,
     },
   }
 })
