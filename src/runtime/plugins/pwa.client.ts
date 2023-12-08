@@ -1,7 +1,7 @@
 import { nextTick, reactive, ref } from 'vue'
 import type { UnwrapNestedRefs } from 'vue'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
-import { installPrompt, periodicSyncForUpdates } from 'virtual:nuxt-pwa-configuration'
+import { display, installPrompt, periodicSyncForUpdates } from 'virtual:nuxt-pwa-configuration'
 import type { PwaInjection } from './types'
 import { defineNuxtPlugin } from '#imports'
 import type { Plugin } from '#app'
@@ -17,8 +17,16 @@ const plugin: Plugin<{
   // https://thomashunter.name/posts/2021-12-11-detecting-if-pwa-twa-is-installed
   const ua = navigator.userAgent
   const ios = ua.match(/iPhone|iPad|iPod/)
-  const standalone = window.matchMedia('(display-mode: standalone)').matches
-  const isInstalled = !!(standalone || (ios && !ua.match(/Safari/)))
+  const useDisplay = display === 'standalone' || display === 'minimal-ui' ? `${display}` : 'standalone'
+  const standalone = window.matchMedia(`(display-mode: ${useDisplay})`).matches
+  const isInstalled = ref(!!(standalone || (ios && !ua.match(/Safari/))))
+  const isPWAInstalled = ref(isInstalled.value)
+
+  window.matchMedia(`(display-mode: ${useDisplay})`).addEventListener('change', (e) => {
+    // PWA on fullscreen mode will not match standalone nor minimal-ui
+    if (!isPWAInstalled.value && e.matches)
+      isPWAInstalled.value = true
+  })
 
   let swRegistration: ServiceWorkerRegistration | undefined
 
@@ -122,6 +130,7 @@ const plugin: Plugin<{
     provide: {
       pwa: reactive({
         isInstalled,
+        isPWAInstalled,
         showInstallPrompt,
         cancelInstall,
         install,

@@ -2,7 +2,11 @@ import type { Ref } from 'vue'
 import type { UnwrapNestedRefs } from 'vue'
 
 export interface PwaInjection {
+  /**
+   * @deprecated use `isPWAInstalled` instead
+   */
   isInstalled: boolean
+  isPWAInstalled: Ref<boolean>
   showInstallPrompt: Ref<boolean>
   cancelInstall: () => void
   install: () => Promise<void>

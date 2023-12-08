@@ -150,12 +150,14 @@ export default defineNuxtModule<PwaModuleOptions>({
           },
           load(id) {
             if (id === resolvedConfiguration) {
+              const display = typeof options.manifest !== 'boolean' ? options.manifest?.display ?? 'standalone' : 'standalone'
               const installPrompt = (typeof client.installPrompt === 'undefined' || client.installPrompt === false)
                 ? undefined
                 : (client.installPrompt === true || client.installPrompt.trim() === '')
                     ? 'vite-pwa:hide-install'
                     : client.installPrompt.trim()
               return `export const enabled = ${client.registerPlugin}
+export const display = '${display}'
 export const installPrompt = ${JSON.stringify(installPrompt)}
 export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates === 'number' ? client.periodicSyncForUpdates : 0}
 `
