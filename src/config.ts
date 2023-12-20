@@ -92,7 +92,7 @@ function createManifestTransform(
   appManifestFolder?: string,
 ): import('workbox-build').ManifestTransform {
   return async (entries) => {
-    entries.filter(e => e && e.url.endsWith('.html')).forEach((e) => {
+    entries.filter(e => e.url.endsWith('.html')).forEach((e) => {
       const url = e.url.startsWith('/') ? e.url.slice(1) : e.url
       if (url === 'index.html') {
         e.url = base
@@ -108,7 +108,7 @@ function createManifestTransform(
       const regExp = /(\/)?[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}\.json$/i
       // we need to remove the revision from the sw prechaing manifest, UUID is enough:
       // we don't use dontCacheBustURLsMatching, single regex
-      entries.filter(e => e && e.url.startsWith(appManifestFolder) && regExp.test(e.url)).forEach((e) => {
+      entries.filter(e => e.url.startsWith(appManifestFolder) && regExp.test(e.url)).forEach((e) => {
         e.revision = null
       })
       // add revision to latest.json file: we are excluding `_nuxt/` assets from dontCacheBustURLsMatching
@@ -128,7 +128,7 @@ function createManifestTransform(
           })
         })
 
-        const latestEntry = entries.find(e => e && e.url === latest)
+        const latestEntry = entries.find(e => e.url === latest)
         if (latestEntry)
           latestEntry.revision = revision
         else
