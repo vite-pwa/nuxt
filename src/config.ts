@@ -1,3 +1,6 @@
+import { lstat } from 'node:fs/promises'
+import { createHash } from 'node:crypto'
+import { createReadStream } from 'node:fs'
 import type { Nuxt } from '@nuxt/schema'
 import { resolve } from 'pathe'
 import type { NitroConfig } from 'nitropack'
@@ -80,10 +83,14 @@ export function configurePWAOptions(
 
   // allow override manifestTransforms
   if (!nuxt.options.dev && !config.manifestTransforms)
-    config.manifestTransforms = [createManifestTransform(nuxt.options.app.baseURL ?? '/', appManifestFolder)]
+    config.manifestTransforms = [createManifestTransform(nuxt.options.app.baseURL ?? '/', options.outDir, appManifestFolder)]
 }
 
-function createManifestTransform(base: string, appManifestFolder?: string): import('workbox-build').ManifestTransform {
+function createManifestTransform(
+  base: string,
+  publicFolder: string,
+  appManifestFolder?: string,
+): import('workbox-build').ManifestTransform {
   return async (entries) => {
     entries.filter(e => e && e.url.endsWith('.html')).forEach((e) => {
       const url = e.url.startsWith('/') ? e.url.slice(1) : e.url
@@ -104,6 +111,32 @@ function createManifestTransform(base: string, appManifestFolder?: string): impo
       entries.filter(e => e && e.url.startsWith(appManifestFolder) && regExp.test(e.url)).forEach((e) => {
         e.revision = null
       })
+      // add revision to latest.json file: we are excluding `_nuxt/` assets from dontCacheBustURLsMatching
+      const latest = `${appManifestFolder}latest.json`
+      const latestJson = resolve(publicFolder, latest)
+      const data = await lstat(latestJson).catch(() => undefined)
+      if (data?.isFile()) {
+        const revision = await new Promise<string>((resolve, reject) => {
+          const cHash = createHash('MD5')
+          const stream = createReadStream(latestJson)
+          stream.on('error', (err) => {
+            reject(err)
+          })
+          stream.on('data', chunk => cHash.update(chunk))
+          stream.on('end', () => {
+            resolve(`${cHash.digest('hex')}`)
+          })
+        })
+
+        const latestEntry = entries.find(e => e && e.url === latest)
+        if (latestEntry)
+          latestEntry.revision = revision
+        else
+          entries.push({ url: latest, revision, size: data.size })
+      }
+      else {
+        entries = entries.filter(e => e.url !== latest)
+      }
     }
 
     return { manifest: entries, warnings: [] }
