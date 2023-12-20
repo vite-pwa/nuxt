@@ -105,6 +105,7 @@ function createManifestTransform(
     })
 
     if (appManifestFolder) {
+      // this shouldn't be necessary, since we are using dontCacheBustURLsMatching
       const regExp = /(\/)?[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}\.json$/i
       // we need to remove the revision from the sw prechaing manifest, UUID is enough:
       // we don't use dontCacheBustURLsMatching, single regex
@@ -124,7 +125,7 @@ function createManifestTransform(
           })
           stream.on('data', chunk => cHash.update(chunk))
           stream.on('end', () => {
-            resolve(`${cHash.digest('hex')}`)
+            resolve(cHash.digest('hex'))
           })
         })
 
