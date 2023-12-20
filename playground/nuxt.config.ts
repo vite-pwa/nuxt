@@ -24,6 +24,7 @@ export default defineNuxtConfig({
     buildDate: new Date().toISOString(),
   },
   pwa: {
+    mode: 'development',
     registerType: 'autoUpdate',
     manifest: {
       name: 'Nuxt Vite PWA',
@@ -56,6 +57,9 @@ export default defineNuxtConfig({
       // you don't need to include this: only for testing purposes
       // if enabling periodic sync for update use 1 hour or so (periodicSyncForUpdates: 3600)
       periodicSyncForUpdates: 20,
+    },
+    experimental: {
+      includeAllowlist: true,
     },
     devOptions: {
       enabled: true,

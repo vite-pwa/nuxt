@@ -5,6 +5,7 @@ import type { Nuxt } from '@nuxt/schema'
 import { resolve } from 'pathe'
 import type { NitroConfig } from 'nitropack'
 import type { PwaModuleOptions } from './types'
+import { escapeStringRegexp } from './utils'
 
 export function configurePWAOptions(
   nuxt3_8: boolean,
@@ -70,6 +71,45 @@ export function configurePWAOptions(
     if (enableGlobPatterns) {
       config.globPatterns = config.globPatterns ?? []
       config.globPatterns.push('**/_payload.json')
+    }
+  }
+
+  if (!nuxt.options.dev && options.strategies !== 'injectManifest' && options.experimental?.includeAllowlist) {
+    let fallback = typeof options.experimental?.includeAllowlist === 'object' ? options.experimental.includeAllowlist.redirectPage ?? '404' : '404'
+    fallback = fallback.startsWith('/') ? fallback : `${options.base ?? '/'}${fallback}`
+
+    const pagesExtends: string[] = []
+    const pages = new Promise<string[]>((resolve) => {
+      resolve(pagesExtends)
+    })
+
+    nuxt.hook('prerender:routes', ({ routes }) => {
+      if (!nuxt.options._generate && !routes.has(fallback))
+        throw new Error(`You are running "build" command and the redirect page for experimental "includeAllowlist" not being prerendered: ${fallback}`)
+
+      pagesExtends.push(...routes)
+    })
+
+    options.integration = {
+      async beforeBuildServiceWorker(resolved) {
+        const routes = await pages
+        if (!routes.length)
+          return
+
+        resolved.workbox.navigateFallbackAllowlist = resolved.workbox.navigateFallbackAllowlist ?? []
+        resolved.workbox.navigateFallbackAllowlist.push(...routes.map(r => new RegExp(`^${escapeStringRegexp(r)}$`)))
+        resolved.workbox.runtimeCaching = resolved.workbox.runtimeCaching ?? []
+        resolved.workbox.runtimeCaching.push(eval(`() => ({
+          urlPattern: ({ request, sameOrigin }) => sameOrigin && request.mode === 'navigate',
+          handler: 'NetworkOnly',
+          options: {
+            plugins: [{
+              handlerDidError: async () => Response.redirect(${JSON.stringify(fallback)}, 302),
+              cacheWillUpdate: async () => null
+            }]
+          }
+        })`)())
+      },
     }
   }
 
