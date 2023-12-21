@@ -40,6 +40,7 @@
     "prepack": "nuxt-module-build prepare && nuxt-module-build build && jiti scripts/postbuild.ts",
     "dev": "nuxi dev playground",
     "dev:generate": "nuxi generate playground",
+    "dev:generate:allowlist": "ALLOW_LIST=true nuxi generate playground",
     "dev:generate:netlify": "NITRO_PRESET=netlify nuxi generate playground",
     "dev:generate:vercel": "NITRO_PRESET=vercel nuxi generate playground",
     "dev:build": "nuxi build playground",
@@ -53,7 +54,7 @@
     "test:generate:serve": "PORT=4173 serve playground/dist",
     "test:build": "nr dev:build && TEST_BUILD=true vitest run && TEST_BUILD=true playwright test",
     "test:generate": "nr dev:generate && vitest run && playwright test",
-    "test:generate:allowlist": "ALLOW_LIST=true nr dev:generate && ALLOW_LIST=true vitest run && ALLOW_LIST=true playwright test",
+    "test:generate:allowlist": "nr dev:generate:allowlist && ALLOW_LIST=true vitest run && ALLOW_LIST=true playwright test",
     "test": "nr test:build && nr test:generate && nr test:generate:allowlist",
     "test:with-build": "nr dev:prepare && nr prepack && nr test"
   },

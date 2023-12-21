@@ -38,7 +38,7 @@ describe(`test-${build ? 'build' : 'generate'}`, () => {
         // TODO: test runtime caching
       }
       else {
-        match = swContent.match(/Response.redirect\(['"]\/404['"], 302\)/)
+        match = swContent.match(/Response\.redirect\(['"]\/404['"], 302\)/)
         expect(match && match.length > 0, 'missing runtime caching entry for /404').toBeTruthy()
       }
     }
