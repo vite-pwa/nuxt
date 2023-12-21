@@ -1,5 +1,10 @@
+import process from 'node:process'
+
+const build = process.env.TEST_BUILD === 'true'
+const allowList = process.env.ALLOW_LIST === 'true'
+
 export default defineNuxtConfig({
-  /* ssr: false, */
+  ssr: true,
   modules: ['@vite-pwa/nuxt'],
   experimental: {
     payloadExtraction: true,
@@ -58,9 +63,11 @@ export default defineNuxtConfig({
       // if enabling periodic sync for update use 1 hour or so (periodicSyncForUpdates: 3600)
       periodicSyncForUpdates: 20,
     },
-    experimental: {
-      includeAllowlist: true,
-    },
+    experimental: build || !allowList
+      ? undefined
+      : {
+          includeAllowlist: true,
+        },
     devOptions: {
       enabled: true,
       suppressWarnings: true,
