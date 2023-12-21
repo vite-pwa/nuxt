@@ -99,7 +99,9 @@ export function configurePWAOptions(
         resolved.workbox.navigateFallbackAllowlist = resolved.workbox.navigateFallbackAllowlist ?? []
         resolved.workbox.navigateFallbackAllowlist.push(...routes.map(r => new RegExp(`^${escapeStringRegexp(r)}$`)))
         resolved.workbox.runtimeCaching = resolved.workbox.runtimeCaching ?? []
-        resolved.workbox.runtimeCaching.push(eval(`() => ({
+        const { createContext, runInContext } = await import('node:vm')
+        const context = createContext()
+        resolved.workbox.runtimeCaching.push(runInContext(`() => ({
           urlPattern: ({ request, sameOrigin }) => sameOrigin && request.mode === 'navigate',
           handler: 'NetworkOnly',
           options: {
@@ -108,7 +110,7 @@ export function configurePWAOptions(
               cacheWillUpdate: async () => null
             }]
           }
-        })`)())
+        })`, context)())
       },
     }
   }
