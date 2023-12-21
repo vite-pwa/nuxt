@@ -1,7 +1,6 @@
 import process from 'node:process'
 import { expect, test } from '@playwright/test'
 
-const build = process.env.TEST_BUILD === 'true'
 const allowlist = process.env.ALLOW_LIST === 'true'
 
 test('The service worker is registered and cache storage is present', async ({ browser }) => {
@@ -53,18 +52,13 @@ test('The service worker is registered and cache storage is present', async ({ b
   expect(urls.some(url => url.includes('_nuxt/builds/latest.json?__WB_REVISION__='))).toEqual(true)
   // test missing page
   if (allowlist) {
-    if (build) {
-      // TODO: test runtime caching
-    }
-    else {
-      await page.goto('/missing')
-      const url = await page.evaluate(async () => {
-        await new Promise(resolve => setTimeout(resolve, 3000))
-        return location.href
-      })
-      expect(url).toBe('http://localhost:4173/missing')
-      await expect(page.getByText('404')).toBeVisible()
-      await expect(page.getByText('Page not found: /missing')).toBeVisible()
-    }
+    await page.goto('/missing')
+    const url = await page.evaluate(async () => {
+      await new Promise(resolve => setTimeout(resolve, 3000))
+      return location.href
+    })
+    expect(url).toBe('http://localhost:4173/missing')
+    await expect(page.getByText('404')).toBeVisible()
+    await expect(page.getByText('Page not found: /missing')).toBeVisible()
   }
 })

@@ -35,7 +35,8 @@ describe(`test-${build ? 'build' : 'generate'}`, () => {
     expect(match && match.length > 0, 'missing App Manifest json entries in sw precache manifest').toBeTruthy()
     if (allowList) {
       if (build) {
-        // TODO: test runtime caching
+        match = swContent.match(/Response\.redirect\(['"]\/['"], 302\)/)
+        expect(match && match.length > 0, 'missing runtime caching entry for /').toBeTruthy()
       }
       else {
         match = swContent.match(/Response\.redirect\(['"]\/404['"], 302\)/)

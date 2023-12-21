@@ -63,13 +63,15 @@ export default defineNuxtConfig({
       // if enabling periodic sync for update use 1 hour or so (periodicSyncForUpdates: 3600)
       periodicSyncForUpdates: 20,
     },
-    experimental: build || !allowList
-      ? undefined
-      : {
-          includeAllowlist: true,
-        },
+    experimental: allowList
+      ? {
+          includeAllowlist: {
+            redirectPage: build ? '/' : '404',
+          },
+        }
+      : undefined,
     devOptions: {
-      enabled: true,
+      enabled: false,
       suppressWarnings: true,
       navigateFallbackAllowlist: [/^\/$/],
       type: 'module',
