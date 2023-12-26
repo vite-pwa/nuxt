@@ -45,7 +45,9 @@ Zero-config PWA Plugin for Nuxt 3
 
 ## 📦 Install
 
-> Requires Vite 3.2.0+ and Nuxt 3.0.0+
+> From v0.4.0, `@vite-pwa/nuxt` requires Vite 5 and Nuxt 3.9.0+.
+
+> For older versions, `@vite-pwa/nuxt` requires Vite 3.2.0+ and Nuxt 3.0.0+
 
 ```bash
 npm i @vite-pwa/nuxt -D 
