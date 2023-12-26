@@ -9,6 +9,6 @@
   },
   "devDependencies": {
     "@vite-pwa/nuxt": "workspace:*",
-    "nuxt": "^3.8.2"
+    "nuxt": "^3.9.0"
   }
 }
