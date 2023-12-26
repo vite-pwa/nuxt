@@ -6,9 +6,11 @@ const allowList = process.env.ALLOW_LIST === 'true'
 export default defineNuxtConfig({
   ssr: true,
   modules: ['@vite-pwa/nuxt'],
+  future: {
+    typescriptBundlerResolution: true,
+  },
   experimental: {
     payloadExtraction: true,
-    typescriptBundlerResolution: true,
     watcher: 'parcel',
   },
   nitro: {
