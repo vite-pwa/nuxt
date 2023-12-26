@@ -37,7 +37,7 @@
     "*.d.ts"
   ],
   "scripts": {
-    "prepack": "nuxt-module-build prepare && nuxt-module-build build && jiti scripts/postbuild.ts",
+    "prepack": "nuxt-module-build prepare && nuxt-module-build build",
     "dev": "nuxi dev playground",
     "dev:generate": "nuxi generate playground",
     "dev:generate:netlify": "NITRO_PRESET=netlify nuxi generate playground",
@@ -65,7 +65,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^0.43.1",
     "@antfu/ni": "^0.21.10",
-    "@nuxt/module-builder": "^0.5.4",
+    "@nuxt/module-builder": "^0.5.5",
     "@nuxt/schema": "^3.9.0",
     "@nuxt/test-utils": "^3.9.0",
     "@playwright/test": "^1.40.1",
