@@ -1,9 +1,11 @@
 export default defineNuxtConfig({
   /* ssr: false, */
   modules: ['@vite-pwa/nuxt'],
+  future: {
+    typescriptBundlerResolution: true,
+  },
   experimental: {
     payloadExtraction: true,
-    typescriptBundlerResolution: true,
     watcher: 'parcel',
   },
   nitro: {
