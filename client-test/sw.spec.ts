@@ -1,6 +1,11 @@
+import process from 'node:process'
 import { expect, test } from '@playwright/test'
 
-test('The service worker is registered and cache storage is present', async ({ page }) => {
+const allowlist = process.env.ALLOW_LIST === 'true'
+
+test('The service worker is registered and cache storage is present', async ({ browser }) => {
+  const context = await browser.newContext()
+  const page = await context.newPage()
   await page.goto('/')
 
   const swURL = await page.evaluate(async () => {
@@ -44,4 +49,16 @@ test('The service worker is registered and cache storage is present', async ({ p
   expect(urls.some(url => url.startsWith('_nuxt/') && url.endsWith('.js'))).toEqual(true)
   expect(urls.some(url => url.includes('_payload.json?__WB_REVISION__='))).toEqual(true)
   expect(urls.some(url => url.startsWith('_nuxt/builds/') && url.includes('.json'))).toEqual(true)
+  expect(urls.some(url => url.includes('_nuxt/builds/latest.json?__WB_REVISION__='))).toEqual(true)
+  // test missing page
+  if (allowlist) {
+    await page.goto('/missing')
+    const url = await page.evaluate(async () => {
+      await new Promise(resolve => setTimeout(resolve, 3000))
+      return location.href
+    })
+    expect(url).toBe('http://localhost:4173/missing')
+    await expect(page.getByText('404')).toBeVisible()
+    await expect(page.getByText('Page not found: /missing')).toBeVisible()
+  }
 })

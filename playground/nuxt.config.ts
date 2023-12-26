@@ -1,5 +1,10 @@
+import process from 'node:process'
+
+const build = process.env.TEST_BUILD === 'true'
+const allowList = process.env.ALLOW_LIST === 'true'
+
 export default defineNuxtConfig({
-  /* ssr: false, */
+  ssr: true,
   modules: ['@vite-pwa/nuxt'],
   future: {
     typescriptBundlerResolution: true,
@@ -26,6 +31,7 @@ export default defineNuxtConfig({
     buildDate: new Date().toISOString(),
   },
   pwa: {
+    mode: 'development',
     registerType: 'autoUpdate',
     manifest: {
       name: 'Nuxt Vite PWA',
@@ -59,8 +65,15 @@ export default defineNuxtConfig({
       // if enabling periodic sync for update use 1 hour or so (periodicSyncForUpdates: 3600)
       periodicSyncForUpdates: 20,
     },
+    experimental: allowList
+      ? {
+          includeAllowlist: {
+            redirectPage: build ? '/' : '404',
+          },
+        }
+      : undefined,
     devOptions: {
-      enabled: true,
+      enabled: false,
       suppressWarnings: true,
       navigateFallbackAllowlist: [/^\/$/],
       type: 'module',

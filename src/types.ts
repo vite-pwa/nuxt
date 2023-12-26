@@ -21,6 +21,15 @@ export interface ClientOptions {
   installPrompt?: boolean | string
 }
 
+export interface AllowListOptions {
+  /**
+   * The redirection page when the route is not found.
+   *
+   * @default '404'
+   */
+  redirectPage?: string
+}
+
 export interface PwaModuleOptions extends Partial<VitePWAOptions> {
   registerWebManifestInRouteRules?: boolean
   /**
@@ -31,4 +40,19 @@ export interface PwaModuleOptions extends Partial<VitePWAOptions> {
    * Options for plugin.
    */
   client?: ClientOptions
+  /**
+   * Experimental options.
+   */
+  experimental?: {
+    /**
+     * Only for `generateSW` strategy, include the logic to handle the `workbox.navigateFallbackAllowlist` option.
+     *
+     * When using `true`, this module will include a Workbox runtime caching for all dynamic and missing routes using `NetworkOnly` strategy via `404` redirection.
+     *
+     * You can create a custom page to replace `404` using the `redirectPage` option, remember the page **MUST** be prerenderer, cannot be dynamic or SSR page.
+     *
+     * @default false
+     */
+    includeAllowlist?: boolean | AllowListOptions
+  }
 }
