@@ -1,9 +1,9 @@
 <template>
   <div>
     <h1>Nuxt Vite PWA</h1>
-    <div>
+    <ClientOnly>
       PWA Installed: {{ $pwa?.isPWAInstalled }}
-    </div>
+    </ClientOnly>
     <NuxtLink to="/about">
       About
     </NuxtLink>

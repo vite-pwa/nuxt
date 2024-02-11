@@ -1,5 +1,10 @@
+import process from 'node:process'
+
+const sw = process.env.SW === 'true'
+
 export default defineNuxtConfig({
   /* ssr: false, */
+  // typescript,
   modules: ['@vite-pwa/nuxt'],
   future: {
     typescriptBundlerResolution: true,
@@ -25,7 +30,13 @@ export default defineNuxtConfig({
     // you don't need to include this: only for testing purposes
     buildDate: new Date().toISOString(),
   },
+  vite: {
+    logLevel: 'info',
+  },
   pwa: {
+    strategies: sw ? 'injectManifest' : 'generateSW',
+    srcDir: sw ? 'service-worker' : undefined,
+    filename: sw ? 'sw.ts' : undefined,
     registerType: 'autoUpdate',
     manifest: {
       name: 'Nuxt Vite PWA',
@@ -53,6 +64,9 @@ export default defineNuxtConfig({
     workbox: {
       globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
     },
+    injectManifest: {
+      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+    },
     client: {
       installPrompt: true,
       // you don't need to include this: only for testing purposes
@@ -62,6 +76,7 @@ export default defineNuxtConfig({
     devOptions: {
       enabled: true,
       suppressWarnings: true,
+      navigateFallback: '/',
       navigateFallbackAllowlist: [/^\/$/],
       type: 'module',
     },
