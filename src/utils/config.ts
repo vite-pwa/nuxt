@@ -4,7 +4,7 @@ import { createReadStream } from 'node:fs'
 import type { Nuxt } from '@nuxt/schema'
 import { resolve } from 'pathe'
 import type { NitroConfig } from 'nitropack'
-import type { PwaModuleOptions } from './types'
+import type { PwaModuleOptions } from '../types'
 
 export function configurePWAOptions(
   nuxt3_8: boolean,
@@ -84,6 +84,14 @@ export function configurePWAOptions(
   // allow override manifestTransforms
   if (!nuxt.options.dev && !config.manifestTransforms)
     config.manifestTransforms = [createManifestTransform(nuxt.options.app.baseURL ?? '/', options.outDir, appManifestFolder)]
+
+  if (options.pwaAssets) {
+    options.pwaAssets.integration = {
+      baseUrl: nuxt.options.app.baseURL ?? '/',
+      publicDir: nuxt.options.dir.public,
+      outDir: options.outDir,
+    }
+  }
 }
 
 function createManifestTransform(
