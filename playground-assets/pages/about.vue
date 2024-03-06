@@ -8,10 +8,10 @@
       PWA Installed: {{ $pwa?.isPWAInstalled }}
     </ClientOnly>
     <br>
-    <NuxtLink to="/about">
-      About
+    <NuxtLink to="/">
+      Home
     </NuxtLink>
     <br>
-    <PwaTransparentImage image="pwa-64x64.png" alt="PWA Icon" />
+    <PwaTransparentImage image="pwa-192x192.png" alt="PWA Icon" />
   </div>
 </template>
