@@ -1,13 +1,16 @@
 {
-  "name": "playground",
+  "name": "playground-assets",
   "type": "module",
   "private": true,
   "scripts": {
     "dev": "nuxi dev",
+    "dev-sw": "SW=true nuxi dev",
     "build": "nuxi build",
+    "build-sw": "SW=true nuxi build",
     "generate": "nuxi generate"
   },
   "devDependencies": {
+    "@vite-pwa/assets-generator": "^0.2.4",
     "@vite-pwa/nuxt": "workspace:*",
     "nuxt": "^3.10.1"
   }
