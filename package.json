@@ -39,19 +39,13 @@
   "scripts": {
     "prepack": "nuxt-module-build prepare && nuxt-module-build build",
     "dev": "nuxi dev playground",
-    "dev:assets": "nuxi dev playground-assets",
     "dev:generate": "nuxi generate playground",
-    "dev:generate:assets": "nuxi generate playground-assets",
     "dev:generate:netlify": "NITRO_PRESET=netlify nuxi generate playground",
     "dev:generate:vercel": "NITRO_PRESET=vercel nuxi generate playground",
     "dev:build": "nuxi build playground",
-    "dev:build:assets": "nuxi build playground-assets",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
-    "dev:prepare:assets": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground-assets",
     "dev:preview:build": "nr dev:build && node playground/.output/server/index.mjs",
     "dev:preview:generate": "nr dev:generate && serve playground/dist",
-    "dev:preview:build:assets": "nr dev:build:assets && node playground-assets/.output/server/index.mjs",
-    "dev:preview:generate:assets": "nr dev:generate:assets && serve playground-assets/dist",
     "release": "bumpp && npm publish",
     "lint": "eslint .",
     "lint-fix": "nr lint --fix",
@@ -66,7 +60,7 @@
     "@nuxt/kit": "^3.9.0",
     "pathe": "^1.1.1",
     "ufo": "^1.3.2",
-    "vite-plugin-pwa": ">=0.19.0 <1"
+    "vite-plugin-pwa": ">=0.19.2 <1"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.43.1",

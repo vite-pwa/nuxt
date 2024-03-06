@@ -34,6 +34,7 @@ export default defineNuxtConfig({
     logLevel: 'info',
   },
   pwa: {
+    mode: 'development',
     strategies: 'generateSW',
     registerType: 'autoUpdate',
     manifest: {
@@ -44,7 +45,7 @@ export default defineNuxtConfig({
     pwaAssets: {
       config: true,
     },
-    injectManifest: {
+    workbox: {
       globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
     },
     client: {
