@@ -39,6 +39,7 @@
   "scripts": {
     "prepack": "nuxt-module-build prepare && nuxt-module-build build",
     "dev": "nuxi dev playground",
+    "dev:assets": "nuxi dev playground-assets",
     "dev:generate": "nuxi generate playground",
     "dev:generate:assets": "nuxi generate playground-assets",
     "dev:generate:netlify": "NITRO_PRESET=netlify nuxi generate playground",
