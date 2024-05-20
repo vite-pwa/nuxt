@@ -122,7 +122,7 @@ const plugin: Plugin<{
       showInstallPrompt.value = false
       await nextTick()
       deferredPrompt.prompt()
-      await deferredPrompt.userChoice
+      return await deferredPrompt.userChoice
     }
   }
 
