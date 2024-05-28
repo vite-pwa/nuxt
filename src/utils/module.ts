@@ -20,7 +20,11 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
     return vitePwaClientPlugin?.api
   }
 
-  const client = options.client ?? { registerPlugin: true, installPrompt: false, periodicSyncForUpdates: 0 }
+  const client = options.client ?? {
+    registerPlugin: true,
+    installPrompt: false,
+    periodicSyncForUpdates: 0,
+  }
   /* if (client.registerPlugin) {
     addPluginTemplate({
       src: resolver.resolve('../templates/pwa.client.ts'),
