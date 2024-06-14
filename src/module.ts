@@ -12,7 +12,7 @@ export default defineNuxtModule<PwaModuleOptions>({
     name: 'pwa',
     configKey: 'pwa',
     compatibility: {
-      nuxt: '^3.6.5',
+      nuxt: '>=3.6.5',
       bridge: false,
     },
     version,
