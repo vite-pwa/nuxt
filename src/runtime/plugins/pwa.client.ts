@@ -2,7 +2,7 @@ import { nextTick, reactive, ref } from 'vue'
 import type { UnwrapNestedRefs } from 'vue'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
 import { display, installPrompt, periodicSyncForUpdates } from 'virtual:nuxt-pwa-configuration'
-import type { PwaInjection } from './types'
+import type { BeforeInstallPromptEvent, PwaInjection, UserChoice } from './types'
 import { defineNuxtPlugin } from '#imports'
 import type { Plugin } from '#app'
 
@@ -83,20 +83,15 @@ const plugin: Plugin<{
     needRefresh.value = false
   }
 
-  let install: () => Promise<void> = () => Promise.resolve()
+  let install: () => Promise<UserChoice | undefined> = () => Promise.resolve(undefined)
   let cancelInstall: () => void = () => {}
 
   if (!hideInstall.value) {
-    type InstallPromptEvent = Event & {
-      prompt: () => void
-      userChoice: Promise<{ outcome: 'dismissed' | 'accepted' }>
-    }
-
-    let deferredPrompt: InstallPromptEvent | undefined
+    let deferredPrompt: BeforeInstallPromptEvent | undefined
 
     const beforeInstallPrompt = (e: Event) => {
       e.preventDefault()
-      deferredPrompt = e as InstallPromptEvent
+      deferredPrompt = e as BeforeInstallPromptEvent
       showInstallPrompt.value = true
     }
     window.addEventListener('beforeinstallprompt', beforeInstallPrompt)
@@ -116,13 +111,13 @@ const plugin: Plugin<{
     install = async () => {
       if (!showInstallPrompt.value || !deferredPrompt) {
         showInstallPrompt.value = false
-        return
+        return undefined
       }
 
       showInstallPrompt.value = false
       await nextTick()
       deferredPrompt.prompt()
-      await deferredPrompt.userChoice
+      return await deferredPrompt.userChoice
     }
   }
 
