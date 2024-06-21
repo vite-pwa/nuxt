@@ -2,7 +2,7 @@ import { nextTick, reactive, ref } from 'vue'
 import type { UnwrapNestedRefs } from 'vue'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
 import { display, installPrompt, periodicSyncForUpdates } from 'virtual:nuxt-pwa-configuration'
-import type {BeforeInstallPromptEvent, PwaInjection, UserChoice} from './types'
+import type { BeforeInstallPromptEvent, PwaInjection, UserChoice } from './types'
 import { defineNuxtPlugin } from '#imports'
 import type { Plugin } from '#app'
 
