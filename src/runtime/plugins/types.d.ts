@@ -1,11 +1,14 @@
 import type { Ref } from 'vue'
 import type { UnwrapNestedRefs } from 'vue'
 
-export type UserChoiceType = 'accepted' | 'dismissed'
-
-export type UserChoice = {
-  outcome: UserChoiceType
+export interface UserChoice {
+  outcome: 'accepted' | 'dismissed'
   platform: string
+}
+
+export type BeforeInstallPromptEvent = Event & {
+  prompt: () => void
+  userChoice: Promise<UserChoice>
 }
 
 export interface PwaInjection {
@@ -16,7 +19,7 @@ export interface PwaInjection {
   isPWAInstalled: Ref<boolean>
   showInstallPrompt: Ref<boolean>
   cancelInstall: () => void
-  install: () => Promise<UserChoice>
+  install: () => Promise<UserChoice | undefined>
   swActivated: Ref<boolean>
   registrationError: Ref<boolean>
   offlineReady: Ref<boolean>
