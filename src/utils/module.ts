@@ -9,6 +9,7 @@ import type { PwaModuleOptions } from '../types'
 import { configurePWAOptions } from './config'
 import { regeneratePWA, writeWebManifest } from './utils'
 import { registerPwaIconsTypes } from './pwa-icons-types'
+import { addPWAIconsPluginTemplate } from './pwa-icons-helper'
 
 export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
   const resolver = createResolver(import.meta.url)
@@ -52,9 +53,7 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
     })
   }
 
-  addPlugin({
-    src: resolver.resolve(runtimeDir, 'plugins/pwa-icons.mjs'),
-  })
+  addPWAIconsPluginTemplate()
 
   await Promise.all([
     addComponent({
