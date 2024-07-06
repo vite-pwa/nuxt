@@ -136,7 +136,7 @@ function configureEntry<K extends keyof PWAIcons>(key: K) {
       ...icon,
       asImage: {
         src: icon.url,
-        key: \`\${key}-$\{icon.name}\`
+        key: \`\${key}-\${icon.name}\`
       }
     }
     if (icon.width && icon.height) {
@@ -171,7 +171,6 @@ export default defineNuxtPlugin(() => {
       } satisfies PWAIcons
     }
   }
-
 })
 `,
     })
