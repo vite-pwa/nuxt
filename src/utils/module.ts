@@ -53,7 +53,9 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
     })
   }
 
-  addPWAIconsPluginTemplate()
+  const pwaAssetsEnabled = !!options.pwaAssets && options.pwaAssets.disabled !== true
+
+  addPWAIconsPluginTemplate(pwaAssetsEnabled)
 
   await Promise.all([
     addComponent({
