@@ -1,5 +1,8 @@
 name: CR
 
+env:
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+
 on:
   pull_request:
     branches: [main]
