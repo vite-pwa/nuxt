@@ -1,6 +1,6 @@
 <p align='center'>
 <img src='https://raw.githubusercontent.com/vite-pwa/nuxt/main/hero.png' alt="@vite-pwa/nuxt - Zero-config PWA for Nuxt 3"><br>
-Zero-config PWA Plugin for Nuxt 3
+Zero-config PWA Plugin for Nuxt 3X
 </p>
 
 <p align='center'>
