@@ -23,7 +23,7 @@ export async function registerPwaIconsTypes(
     }
   }
 
-  nuxt.options.alias['#pwa'] = resolver.resolve(runtimeDir, 'composables/index.mjs')
+  nuxt.options.alias['#pwa'] = resolver.resolve(runtimeDir, 'composables/index.js')
   nuxt.options.build.transpile.push('#pwa')
 
   addImports([
