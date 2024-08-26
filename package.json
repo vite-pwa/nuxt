@@ -53,7 +53,8 @@
     "test:generate:serve": "PORT=4173 serve playground/dist",
     "test:build": "nr dev:build && TEST_BUILD=true vitest run && TEST_BUILD=true playwright test",
     "test:generate": "nr dev:generate && vitest run && playwright test",
-    "test": "nr test:build && nr test:generate",
+    "test:local": "nr test:build && nr test:generate",
+    "test": "NUXT_ECOSYSTEM_CI=true nr test:build && nr test:generate",
     "test:with-build": "nr dev:prepare && nr prepack && nr test"
   },
   "dependencies": {
