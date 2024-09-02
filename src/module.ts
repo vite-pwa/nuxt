@@ -7,7 +7,9 @@ import { doSetup } from './utils/module'
 
 export * from './types'
 
-export default defineNuxtModule<PwaModuleOptions>({
+export interface ModuleOptions extends PwaModuleOptions {}
+
+export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'pwa',
     configKey: 'pwa',
@@ -34,14 +36,3 @@ export default defineNuxtModule<PwaModuleOptions>({
     await doSetup(options, nuxt)
   },
 })
-
-export interface ModuleOptions extends PwaModuleOptions {}
-
-declare module '@nuxt/schema' {
-  interface NuxtConfig {
-    ['pwa']?: Partial<ModuleOptions>
-  }
-  interface NuxtOptions {
-    ['pwa']?: ModuleOptions
-  }
-}
