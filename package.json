@@ -10,7 +10,7 @@
   "homepage": "https://github.com/vite-pwa/nuxt#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vite-pwa/nuxt.git"
+    "url": "git+https://github.com/vite-pwa/nuxt.git"
   },
   "bugs": "https://github.com/vite-pwa/nuxt/issues",
   "keywords": [
