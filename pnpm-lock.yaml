@@ -15,8 +15,8 @@ importers:
         specifier: ^3.10.1
         version: 3.11.2(rollup@3.29.4)
       '@vite-pwa/assets-generator':
-        specifier: ^0.2.4
-        version: 0.2.4
+        specifier: ^0.2.6
+        version: 0.2.6
       pathe:
         specifier: ^1.1.1
         version: 1.1.2
@@ -24,8 +24,8 @@ importers:
         specifier: ^1.3.2
         version: 1.5.3
       vite-plugin-pwa:
-        specifier: '>=0.20.3 <1'
-        version: 0.20.3(@vite-pwa/assets-generator@0.2.4)(vite@5.2.10(@types/node@18.19.31)(terser@5.31.0))(workbox-build@7.1.0)(workbox-window@7.1.0)
+        specifier: '>=0.20.4 <1'
+        version: 0.20.4(@vite-pwa/assets-generator@0.2.6)(vite@5.2.10(@types/node@18.19.31)(terser@5.31.0))(workbox-build@7.1.0)(workbox-window@7.1.0)
     devDependencies:
       '@antfu/eslint-config':
         specifier: ^0.43.1
@@ -2006,6 +2006,11 @@ packages:
     engines: {node: '>=16.14.0'}
     hasBin: true
 
+  '@vite-pwa/assets-generator@0.2.6':
+    resolution: {integrity: sha512-kK44dXltvoubEo5B+6tCGjUrOWOE1+dA4DForbFpO1rKy2wSkAVGrs8tyfN6DzTig89/QKyV8XYodgmaKyrYng==}
+    engines: {node: '>=16.14.0'}
+    hasBin: true
+
   '@vitejs/plugin-vue-jsx@3.1.0':
     resolution: {integrity: sha512-w9M6F3LSEU5kszVb9An2/MmXNxocAnUb3WhRr8bHlimhDrXNt6n6D2nJQR3UXpGlZHh/EsgouOHCsM8V3Ln+WA==}
     engines: {node: ^14.18.0 || >=16.0.0}
@@ -2840,6 +2845,15 @@ packages:
 
   debug@4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
+    engines: {node: '>=6.0'}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
+
+  debug@4.3.6:
+    resolution: {integrity: sha512-O/09Bd4Z1fBrU4VzkhFqVgpPzaGbw6Sm9FEkBT1A/YBXQFGuuSxa1dN2nxgxS34JmKXqYx8CZAwEVoJFImUXIg==}
     engines: {node: '>=6.0'}
     peerDependencies:
       supports-color: '*'
@@ -6036,11 +6050,11 @@ packages:
       '@nuxt/kit':
         optional: true
 
-  vite-plugin-pwa@0.20.3:
-    resolution: {integrity: sha512-aqCOWWSwfX4o6H+6NyEvhzFs3eENBqYFKUK4FYx5OZ3jGio73BE189bPz9+BBgjHBLozldQVSmZTHySVC2zNkg==}
+  vite-plugin-pwa@0.20.4:
+    resolution: {integrity: sha512-AreLrlstKCn56bzfIIhg5P4p12QNsYmHfKiSlrVk9FK8028IfBFeMvhQNSumBgQmb4RaHLm0SaOLvh/rzOImvw==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
-      '@vite-pwa/assets-generator': ^0.2.4
+      '@vite-pwa/assets-generator': ^0.2.6
       vite: ^3.1.0 || ^4.0.0 || ^5.0.0
       workbox-build: ^7.1.0
       workbox-window: ^7.1.0
@@ -8898,6 +8912,15 @@ snapshots:
       sharp-ico: 0.1.5
       unconfig: 0.3.13
 
+  '@vite-pwa/assets-generator@0.2.6':
+    dependencies:
+      cac: 6.7.14
+      colorette: 2.0.20
+      consola: 3.2.3
+      sharp: 0.32.6
+      sharp-ico: 0.1.5
+      unconfig: 0.3.13
+
   '@vitejs/plugin-vue-jsx@3.1.0(vite@5.2.10(@types/node@18.19.31)(terser@5.31.0))(vue@3.4.26(typescript@5.4.5))':
     dependencies:
       '@babel/core': 7.24.5
@@ -10008,6 +10031,10 @@ snapshots:
       ms: 2.1.3
 
   debug@4.3.4:
+    dependencies:
+      ms: 2.1.2
+
+  debug@4.3.6:
     dependencies:
       ms: 2.1.2
 
@@ -13921,16 +13948,16 @@ snapshots:
       - rollup
       - supports-color
 
-  vite-plugin-pwa@0.20.3(@vite-pwa/assets-generator@0.2.4)(vite@5.2.10(@types/node@18.19.31)(terser@5.31.0))(workbox-build@7.1.0)(workbox-window@7.1.0):
+  vite-plugin-pwa@0.20.4(@vite-pwa/assets-generator@0.2.6)(vite@5.2.10(@types/node@18.19.31)(terser@5.31.0))(workbox-build@7.1.0)(workbox-window@7.1.0):
     dependencies:
-      debug: 4.3.4
+      debug: 4.3.6
       pretty-bytes: 6.1.1
       tinyglobby: 0.2.5
       vite: 5.2.10(@types/node@18.19.31)(terser@5.31.0)
       workbox-build: 7.1.0
       workbox-window: 7.1.0
     optionalDependencies:
-      '@vite-pwa/assets-generator': 0.2.4
+      '@vite-pwa/assets-generator': 0.2.6
     transitivePeerDependencies:
       - supports-color
 
