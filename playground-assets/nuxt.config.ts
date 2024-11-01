@@ -1,7 +1,3 @@
-import process from 'node:process'
-
-const sw = process.env.SW === 'true'
-
 export default defineNuxtConfig({
   /* ssr: false, */
   // typescript,
