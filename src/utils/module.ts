@@ -1,6 +1,13 @@
 import { join } from 'node:path'
 import { mkdir } from 'node:fs/promises'
-import { addComponent, addPlugin, createResolver, extendWebpackConfig, getNuxtVersion } from '@nuxt/kit'
+import {
+  addComponent,
+  addDevServerHandler,
+  addPlugin,
+  createResolver,
+  extendWebpackConfig,
+  getNuxtVersion,
+} from '@nuxt/kit'
 import type { Plugin } from 'vite'
 import type { Nuxt } from '@nuxt/schema'
 import type { VitePluginPWAAPI } from 'vite-plugin-pwa'
@@ -252,6 +259,25 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
             return
 
           viteServer.middlewares.stack.push({ route: suppressWarnings, handle: emptyHandle })
+        })
+      }
+      const { sourcemap = nuxt.options.sourcemap.client === true } = options.workbox ?? {}
+      if (sourcemap) {
+        const swMap = `${nuxt.options.app.baseURL}${options.filename ?? 'sw.js'}.map`
+        const resolvedSwMapFile = join(nuxt.options.buildDir, 'dev-sw-dist', swMap)
+        const worboxMap = `${nuxt.options.app.baseURL}workbox-`
+        addDevServerHandler({
+          route: '',
+          handler: await import('h3').then(({ defineLazyEventHandler }) => defineLazyEventHandler(async () => {
+            const { dev } = await import('./dev')
+            return dev(
+              swMap,
+              resolvedSwMapFile,
+              worboxMap,
+              nuxt.options.buildDir,
+              nuxt.options.app.baseURL,
+            )
+          })),
         })
       }
     }
