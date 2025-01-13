@@ -21,6 +21,13 @@ export interface ClientOptions {
   installPrompt?: boolean | string
 }
 
+export interface I18nOptions {
+  /**
+   * Split manifest per locale : defaults to false.
+   */
+  splitManifest?: boolean
+}
+
 export interface PwaModuleOptions extends Partial<VitePWAOptions> {
   registerWebManifestInRouteRules?: boolean
   /**
@@ -30,5 +37,9 @@ export interface PwaModuleOptions extends Partial<VitePWAOptions> {
   /**
    * Options for plugin.
    */
-  client?: ClientOptions
+  client?: ClientOptions,
+  /**
+   * Options for i18n.
+   */
+  i18n?: I18nOptions,
 }
