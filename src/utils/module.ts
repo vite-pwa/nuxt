@@ -1,5 +1,4 @@
 import { join } from 'node:path'
-import { mkdir } from 'node:fs/promises'
 import {
   addComponent,
   addDevServerHandler,
@@ -142,8 +141,7 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
 
           const api = resolveVitePluginPWAAPI()
           if (api) {
-            await mkdir(manifestDir, { recursive: true })
-            await writeWebManifest(manifestDir, options.manifestFilename || 'manifest.webmanifest', api, pwaAssets)
+            await writeWebManifest(manifestDir, options, api, pwaAssets)
           }
         },
       })
