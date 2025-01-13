@@ -73,8 +73,16 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
       filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
     }),
     addComponent({
+      name: 'NuxtPwaManifestI18n',
+      filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifestI18n'),
+    }),
+    addComponent({
       name: 'NuxtPwaAssets',
       filePath: resolver.resolve(runtimeDir, 'components/NuxtPwaAssets'),
+    }),
+    addComponent({
+      name: 'NuxtPwaAssetsI18n',
+      filePath: resolver.resolve(runtimeDir, 'components/NuxtPwaAssetsI18n'),
     }),
     addComponent({
       name: 'PwaAppleImage',
