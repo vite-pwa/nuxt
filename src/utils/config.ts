@@ -141,13 +141,12 @@ function createManifestTransform(
         if (latestEntry)
           latestEntry.revision = revision
         else
-          entries.push({ url: latest, revision, size: data.size })
+          entries.push({ url: base+latest, revision, size: data.size })
       }
       else {
         entries = entries.filter(e => e.url !== latest)
       }
     }
-
     return { manifest: entries, warnings: [] }
   }
 }
