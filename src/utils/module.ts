@@ -315,7 +315,7 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
     if (nuxt3_8) {
       nuxt.hook('nitro:build:public-assets', async () => {
         await regeneratePWA(
-          options.outDir!,
+          options,
           pwaAssets,
           resolveVitePluginPWAAPI(),
         )
@@ -325,7 +325,7 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
       nuxt.hook('nitro:init', (nitro) => {
         nitro.hooks.hook('rollup:before', async () => {
           await regeneratePWA(
-            options.outDir!,
+            options,
             pwaAssets,
             resolveVitePluginPWAAPI(),
           )
@@ -334,7 +334,7 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
       if (nuxt.options._generate) {
         nuxt.hook('close', async () => {
           await regeneratePWA(
-            options.outDir!,
+            options,
             pwaAssets,
             resolveVitePluginPWAAPI(),
           )

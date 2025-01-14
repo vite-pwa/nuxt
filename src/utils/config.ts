@@ -61,7 +61,7 @@ export function configurePWAOptions(
     config.dontCacheBustURLsMatching = new RegExp(buildAssetsDir)
 
   // handle payload extraction
-  if (nuxt.options.experimental.payloadExtraction) {
+  if (nuxt.options.experimental.payloadExtraction && !options.i18n?.splitServiceWorker) {
     const enableGlobPatterns = nuxt.options._generate
       || (
         !!nitroConfig.prerender?.routes?.length

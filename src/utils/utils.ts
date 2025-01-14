@@ -2,7 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import type { VitePluginPWAAPI, PwaModuleOptions } from 'vite-plugin-pwa'
 import { resolve } from 'pathe'
 
-export async function regeneratePWA(_dir: string, pwaAssets: boolean, api?: VitePluginPWAAPI) {
+export async function regeneratePWA(options: PwaModuleOptions, pwaAssets: boolean, api?: VitePluginPWAAPI) {
   if (pwaAssets) {
     const pwaAssetsGenerator = await api?.pwaAssetsGenerator()
     if (pwaAssetsGenerator)
@@ -12,7 +12,12 @@ export async function regeneratePWA(_dir: string, pwaAssets: boolean, api?: Vite
   if (!api || api.disabled)
     return
 
-  await api.generateSW()
+  if (options.i18n?.splitServiceWorker == true) {
+    const i18n = await import('./i18n')
+    await Promise.all((await i18n.swOptions(options)).map(api.generateSW))
+  } else {
+    await api.generateSW()
+  }
 }
 
 export async function writeWebManifest(dir: string, options: PwaModuleOptions, api: VitePluginPWAAPI, pwaAssets: boolean) {
