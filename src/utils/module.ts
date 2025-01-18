@@ -1,5 +1,4 @@
 import { join } from 'node:path'
-import { mkdir } from 'node:fs/promises'
 import {
   addComponent,
   addDevServerHandler,
@@ -74,8 +73,16 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
       filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
     }),
     addComponent({
+      name: 'NuxtPwaManifestI18n',
+      filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifestI18n'),
+    }),
+    addComponent({
       name: 'NuxtPwaAssets',
       filePath: resolver.resolve(runtimeDir, 'components/NuxtPwaAssets'),
+    }),
+    addComponent({
+      name: 'NuxtPwaAssetsI18n',
+      filePath: resolver.resolve(runtimeDir, 'components/NuxtPwaAssetsI18n'),
     }),
     addComponent({
       name: 'PwaAppleImage',
@@ -142,8 +149,7 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
 
           const api = resolveVitePluginPWAAPI()
           if (api) {
-            await mkdir(manifestDir, { recursive: true })
-            await writeWebManifest(manifestDir, options.manifestFilename || 'manifest.webmanifest', api, pwaAssets)
+            await writeWebManifest(manifestDir, options, api, pwaAssets)
           }
         },
       })
@@ -172,6 +178,8 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
 export const display = '${display}'
 export const installPrompt = ${JSON.stringify(installPrompt)}
 export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates === 'number' ? client.periodicSyncForUpdates : 0}
+export const i18nSplitManifest = ${options.i18n?.splitManifest}
+export const i18nSplitServiceWorker = ${options.i18n?.splitServiceWorker}
 `
           }
         },
@@ -309,7 +317,7 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
     if (nuxt3_8) {
       nuxt.hook('nitro:build:public-assets', async () => {
         await regeneratePWA(
-          options.outDir!,
+          options,
           pwaAssets,
           resolveVitePluginPWAAPI(),
         )
@@ -319,7 +327,7 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
       nuxt.hook('nitro:init', (nitro) => {
         nitro.hooks.hook('rollup:before', async () => {
           await regeneratePWA(
-            options.outDir!,
+            options,
             pwaAssets,
             resolveVitePluginPWAAPI(),
           )
@@ -328,7 +336,7 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
       if (nuxt.options._generate) {
         nuxt.hook('close', async () => {
           await regeneratePWA(
-            options.outDir!,
+            options,
             pwaAssets,
             resolveVitePluginPWAAPI(),
           )
