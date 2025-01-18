@@ -1,14 +1,14 @@
 import { nextTick, reactive, ref } from 'vue'
 import type { UnwrapNestedRefs } from 'vue'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
-import { display, installPrompt, periodicSyncForUpdates } from 'virtual:nuxt-pwa-configuration'
+import { display, installPrompt, periodicSyncForUpdates, i18nSplitServiceWorker } from 'virtual:nuxt-pwa-configuration'
 import type { BeforeInstallPromptEvent, PwaInjection, UserChoice } from './types'
 import { defineNuxtPlugin } from '#imports'
 import type { Plugin } from '#app'
 
 const plugin: Plugin<{
   pwa?: UnwrapNestedRefs<PwaInjection>
-}> = defineNuxtPlugin(() => {
+}> = defineNuxtPlugin(({$router, $config}) => {
   const registrationError = ref(false)
   const swActivated = ref(false)
   const showInstallPrompt = ref(false)
@@ -50,10 +50,18 @@ const plugin: Plugin<{
     }, timeout)
   }
 
+  let baseUrl = ""
+  if (i18nSplitServiceWorker) {
+    const separator = $config.public.i18n.routesNameSeparator
+    const locale = $router.currentRoute.value.name.split(separator)[1]
+    baseUrl = $router.resolve({name:`index${separator}${locale}`}).path
+  }
+
   const {
     offlineReady, needRefresh, updateServiceWorker,
   } = useRegisterSW({
     immediate: true,
+    baseUrl: baseUrl,
     onRegisterError() {
       registrationError.value = true
     },

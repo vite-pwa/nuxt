@@ -178,6 +178,8 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
 export const display = '${display}'
 export const installPrompt = ${JSON.stringify(installPrompt)}
 export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates === 'number' ? client.periodicSyncForUpdates : 0}
+export const i18nSplitManifest = ${options.i18n?.splitManifest}
+export const i18nSplitServiceWorker = ${options.i18n?.splitServiceWorker}
 `
           }
         },
