@@ -1,6 +1,6 @@
 import { lstat } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
-import { createReadStream } from 'node:fs'
+import { createReadStream, readFileSync } from 'node:fs'
 import type { Nuxt } from '@nuxt/schema'
 import { resolve } from 'pathe'
 import type { NitroConfig } from 'nitropack'
@@ -142,6 +142,12 @@ function createManifestTransform(
           latestEntry.revision = revision
         else
           entries.push({ url: base+latest, revision, size: data.size })
+
+        const id = JSON.parse(readFileSync(latestJson, "utf8")).id
+        entries.filter(e => e.url.match(/.*_payload.js(on)?$/)).forEach((e) => {
+          e.revision = null
+          e.url += `?${id}`
+        })
       }
       else {
         entries = entries.filter(e => e.url !== latest)
