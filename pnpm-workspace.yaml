@@ -3,3 +3,6 @@ packages:
   - playground-assets/
 onlyBuiltDependencies:
   - sharp
+ignoredBuiltDependencies:
+  - esbuild
+  - vue-demi
