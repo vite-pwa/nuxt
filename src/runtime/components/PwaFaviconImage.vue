@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useFaviconPwaIcon } from '#pwa'
 import type { PwaFaviconImageProps } from '#build/pwa-icons/PwaFaviconImage'
+import { useFaviconPwaIcon } from '#pwa'
 
 const props = defineProps<PwaFaviconImageProps>()
 

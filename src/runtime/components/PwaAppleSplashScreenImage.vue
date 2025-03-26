@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useAppleSplashScreenPwaIcon } from '#pwa'
 import type { PwaAppleSplashScreenImageProps } from '#build/pwa-icons/PwaAppleSplashScreenImage'
+import { useAppleSplashScreenPwaIcon } from '#pwa'
 
 const props = defineProps<PwaAppleSplashScreenImageProps>()
 

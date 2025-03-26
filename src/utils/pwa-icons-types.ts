@@ -1,8 +1,8 @@
-import type { Nuxt } from '@nuxt/schema'
-import { addImports, addTypeTemplate } from '@nuxt/kit'
 import type { Resolver } from '@nuxt/kit'
+import type { Nuxt } from '@nuxt/schema'
 import type { PwaModuleOptions } from '../types'
 import type { DtsInfo } from './pwa-icons-helper'
+import { addImports, addTypeTemplate } from '@nuxt/kit'
 import { addPwaTypeTemplate, pwaIcons } from './pwa-icons-helper'
 
 export async function registerPwaIconsTypes(

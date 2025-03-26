@@ -1,5 +1,9 @@
-import { join } from 'node:path'
+import type { Nuxt } from '@nuxt/schema'
+import type { Plugin } from 'vite'
+import type { VitePluginPWAAPI } from 'vite-plugin-pwa'
+import type { PwaModuleOptions } from '../types'
 import { mkdir } from 'node:fs/promises'
+import { join } from 'node:path'
 import {
   addComponent,
   addDevServerHandler,
@@ -8,15 +12,11 @@ import {
   extendWebpackConfig,
   getNuxtVersion,
 } from '@nuxt/kit'
-import type { Plugin } from 'vite'
-import type { Nuxt } from '@nuxt/schema'
-import type { VitePluginPWAAPI } from 'vite-plugin-pwa'
 import { VitePWA } from 'vite-plugin-pwa'
-import type { PwaModuleOptions } from '../types'
 import { configurePWAOptions } from './config'
-import { regeneratePWA, writeWebManifest } from './utils'
-import { registerPwaIconsTypes } from './pwa-icons-types'
 import { addPWAIconsPluginTemplate } from './pwa-icons-helper'
+import { registerPwaIconsTypes } from './pwa-icons-types'
+import { regeneratePWA, writeWebManifest } from './utils'
 
 export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
   const resolver = createResolver(import.meta.url)
@@ -212,7 +212,7 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
             if (!url)
               return next()
 
-            if (!/\.(ico|png|svg|webp)$/.test(url))
+            if (!/\.(?:ico|png|svg|webp)$/.test(url))
               return next()
 
             const pwaAssetsGenerator = await resolveVitePluginPWAAPI()?.pwaAssetsGenerator()

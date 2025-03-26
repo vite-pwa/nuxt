@@ -1,5 +1,5 @@
-import { writeFile } from 'node:fs/promises'
 import type { VitePluginPWAAPI } from 'vite-plugin-pwa'
+import { writeFile } from 'node:fs/promises'
 import { resolve } from 'pathe'
 
 export async function regeneratePWA(_dir: string, pwaAssets: boolean, api?: VitePluginPWAAPI) {

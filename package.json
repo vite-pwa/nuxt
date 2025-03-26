@@ -34,8 +34,8 @@
   "main": "./dist/module.mjs",
   "types": "./dist/types.d.ts",
   "files": [
-    "dist",
-    "*.d.ts"
+    "*.d.ts",
+    "dist"
   ],
   "scripts": {
     "prepack": "nuxt-module-build prepare && nuxt-module-build build",
@@ -75,7 +75,7 @@
     "vite-plugin-pwa": ">=0.21.2 <1"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.43.1",
+    "@antfu/eslint-config": "^4.11.0",
     "@antfu/ni": "^0.21.10",
     "@nuxt/module-builder": "^0.8.3",
     "@nuxt/schema": "^3.10.1",
@@ -83,7 +83,7 @@
     "@playwright/test": "^1.40.1",
     "@types/node": "^18",
     "bumpp": "^9.2.0",
-    "eslint": "^8.54.0",
+    "eslint": "^9.23.0",
     "node-fetch-native": "^1.4.1",
     "nuxt": "^3.10.1",
     "publint": "^0.2.5",

@@ -1,12 +1,12 @@
-import { computed, toValue } from 'vue'
+import type { PwaAppleImageProps } from '#build/pwa-icons/PwaAppleImage'
+import type { PwaAppleSplashScreenImageProps } from '#build/pwa-icons/PwaAppleSplashScreenImage'
+import type { PwaFaviconImageProps } from '#build/pwa-icons/PwaFaviconImage'
+import type { PwaMaskableImageProps } from '#build/pwa-icons/PwaMaskableImage'
+import type { PwaTransparentImageProps } from '#build/pwa-icons/PwaTransparentImage'
 import type { MaybeRef, UnwrapNestedRefs } from 'vue'
 import type { PwaInjection } from '../plugins/types'
 import { useNuxtApp } from '#imports'
-import type { PwaTransparentImageProps } from '#build/pwa-icons/PwaTransparentImage'
-import type { PwaMaskableImageProps } from '#build/pwa-icons/PwaMaskableImage'
-import type { PwaFaviconImageProps } from '#build/pwa-icons/PwaFaviconImage'
-import type { PwaAppleImageProps } from '#build/pwa-icons/PwaAppleImage'
-import type { PwaAppleSplashScreenImageProps } from '#build/pwa-icons/PwaAppleSplashScreenImage'
+import { computed, toValue } from 'vue'
 
 export interface PWAImage {
   image: string

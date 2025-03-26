@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useApplePwaIcon } from '#pwa'
 import type { PwaAppleImageProps } from '#build/pwa-icons/PwaAppleImage'
+import { useApplePwaIcon } from '#pwa'
 
 const props = defineProps<PwaAppleImageProps>()
 

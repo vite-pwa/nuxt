@@ -27,7 +27,6 @@ Zero-config PWA Plugin for Nuxt 3
   </a>
 </p>
 
-
 ## 🚀 Features
 
 - 📖 [**Documentation & guides**](https://vite-pwa-org.netlify.app/)
@@ -102,14 +101,12 @@ You need to stop the dev server once started and then to see the PWA in action r
 </tbody>
 </table>
 
-
 ## 👀 Full config
 
 Check out the type declaration [src/types.ts](./src/types.ts) and the following links for more details.
 
 - [Web app manifests](https://developer.mozilla.org/en-US/docs/Web/Manifest)
 - [Workbox](https://developers.google.com/web/tools/workbox)
-
 
 ## 📄 License
 

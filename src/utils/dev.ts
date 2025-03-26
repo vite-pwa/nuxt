@@ -1,5 +1,5 @@
-import { join } from 'node:path'
 import fs from 'node:fs'
+import { join } from 'node:path'
 import { eventHandler } from 'h3'
 
 export function dev(
@@ -18,10 +18,10 @@ export function dev(
       ? resolvedSwMapFile
       : url.startsWith(worboxMap) && url.endsWith('.js.map')
         ? join(
-          buildDir,
-          'dev-sw-dist',
-          url.slice(baseURL.length),
-        )
+            buildDir,
+            'dev-sw-dist',
+            url.slice(baseURL.length),
+          )
         : undefined
 
     if (file) {

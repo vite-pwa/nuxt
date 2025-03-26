@@ -1,7 +1,7 @@
 import type { MetaObject } from '@nuxt/schema'
-import { defineComponent, ref } from 'vue'
-import { pwaInfo } from 'virtual:pwa-info'
 import { useHead } from '#imports'
+import { pwaInfo } from 'virtual:pwa-info'
+import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   async setup() {
