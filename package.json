@@ -1,7 +1,7 @@
 {
   "name": "@vite-pwa/nuxt",
   "type": "module",
-  "version": "0.10.7",
+  "version": "0.10.8",
   "packageManager": "pnpm@10.6.5",
   "description": "Zero-config PWA for Nuxt 3",
   "author": "antfu <anthonyfu117@hotmail.com>",
