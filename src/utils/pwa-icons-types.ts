@@ -27,6 +27,7 @@ export async function registerPwaIconsTypes(
   nuxt.options.build.transpile.push('#pwa')
 
   addImports([
+    'usePWA',
     'useTransparentPwaIcon',
     'useMaskablePwaIcon',
     'useFaviconPwaIcon',
