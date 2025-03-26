@@ -1,13 +1,14 @@
-import process from 'node:process'
-import { basename, relative, resolve } from 'node:path'
-import { readFile } from 'node:fs/promises'
 import type { Nuxt } from '@nuxt/schema'
-import { instructions } from '@vite-pwa/assets-generator/api/instructions'
 import type { UserConfig } from '@vite-pwa/assets-generator/config'
-import { loadConfig } from '@vite-pwa/assets-generator/config'
 import type { ResolvedPWAAssetsOptions } from 'vite-plugin-pwa'
 import type { PwaModuleOptions } from '../types'
-import { type DtsInfo, generatePwaImageType, pwaIcons } from './pwa-icons-helper'
+import type { DtsInfo } from './pwa-icons-helper'
+import { readFile } from 'node:fs/promises'
+import { basename, relative, resolve } from 'node:path'
+import process from 'node:process'
+import { instructions } from '@vite-pwa/assets-generator/api/instructions'
+import { loadConfig } from '@vite-pwa/assets-generator/config'
+import { generatePwaImageType, pwaIcons } from './pwa-icons-helper'
 
 export async function preparePWAIconTypes(
   options: PwaModuleOptions,

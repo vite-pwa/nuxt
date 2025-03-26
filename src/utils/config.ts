@@ -1,10 +1,10 @@
-import { lstat } from 'node:fs/promises'
-import { createHash } from 'node:crypto'
-import { createReadStream } from 'node:fs'
 import type { Nuxt } from '@nuxt/schema'
-import { resolve } from 'pathe'
 import type { NitroConfig } from 'nitropack'
 import type { PwaModuleOptions } from '../types'
+import { createHash } from 'node:crypto'
+import { createReadStream } from 'node:fs'
+import { lstat } from 'node:fs/promises'
+import { resolve } from 'pathe'
 
 export function configurePWAOptions(
   nuxt3_8: boolean,
@@ -23,8 +23,8 @@ export function configurePWAOptions(
 
   let config: Partial<
     import('workbox-build').BasePartial
-    & import('workbox-build').GlobPartial
-    & import('workbox-build').RequiredGlobDirectoryPartial
+      & import('workbox-build').GlobPartial
+      & import('workbox-build').RequiredGlobDirectoryPartial
   >
 
   if (options.strategies === 'injectManifest') {
@@ -114,6 +114,7 @@ function createManifestTransform(
 
     if (appManifestFolder) {
       // this shouldn't be necessary, since we are using dontCacheBustURLsMatching
+      // eslint-disable-next-line regexp/no-unused-capturing-group,regexp/no-useless-assertions
       const regExp = /(\/)?[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}\.json$/i
       // we need to remove the revision from the sw prechaing manifest, UUID is enough:
       // we don't use dontCacheBustURLsMatching, single regex

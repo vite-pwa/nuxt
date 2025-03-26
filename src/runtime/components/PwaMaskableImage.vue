@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useMaskablePwaIcon } from '#pwa'
 import type { PwaMaskableImageProps } from '#build/pwa-icons/PwaMaskableImage'
+import { useMaskablePwaIcon } from '#pwa'
 
 const props = defineProps<PwaMaskableImageProps>()
 

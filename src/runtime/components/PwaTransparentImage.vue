@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useTransparentPwaIcon } from '#pwa'
 import type { PwaTransparentImageProps } from '#build/pwa-icons/PwaTransparentImage'
+import { useTransparentPwaIcon } from '#pwa'
 
 const props = defineProps<PwaTransparentImageProps>()
 

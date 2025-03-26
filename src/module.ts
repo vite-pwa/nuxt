@@ -1,8 +1,6 @@
-import {
-  defineNuxtModule,
-} from '@nuxt/kit'
-import { version } from '../package.json'
 import type { PwaModuleOptions } from './types'
+import { defineNuxtModule } from '@nuxt/kit'
+import { version } from '../package.json'
 import { doSetup } from './utils/module'
 
 export * from './types'

@@ -30,5 +30,3 @@ git checkout -b my-new-branch
 Before running tests, you'll need to install [Playwright](https://playwright.dev/) Chromium browser: `pnpm playwright install chromium`.
 
 Run `nr test:local` in `@vite-pwa/nuxt`'s root folder.
-
-
