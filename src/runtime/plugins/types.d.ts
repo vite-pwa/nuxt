@@ -27,7 +27,7 @@ export interface PwaInjection {
   updateServiceWorker: (reloadPage?: boolean | undefined) => Promise<void>
   cancelPrompt: () => Promise<void>
   /**
-   * Use a plugin and the new Nuxt Runtime Client Hooks:
+   * From version 0.10.8 it is deprecated, use a plugin instead with the new Nuxt Runtime Client Hooks:
    * ```ts
    * // plugins/pwa.client.ts
    * export default defineNuxtPlugin((nuxtApp) => {
@@ -44,7 +44,8 @@ export interface PwaInjection {
    *   })
    * })
    * ```
-   * @depreacated
+   *
+   * @deprecated
    */
   getSWRegistration: () => ServiceWorkerRegistration | undefined
 }
