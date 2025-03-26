@@ -38,7 +38,8 @@ const plugin: Plugin<{
 
     const registerPeriodicSync = (swUrl: string, r: ServiceWorkerRegistration, timeout: number) => {
       setInterval(async () => {
-        if (('connection' in navigator) && !navigator.onLine)
+        // prevent fetch when installing new service worker
+        if ((r && r.installing) || (('connection' in navigator) && !navigator.onLine))
           return
 
         const resp = await fetch(swUrl, {
@@ -71,20 +72,20 @@ const plugin: Plugin<{
         // should add support in pwa plugin
         if (r?.active?.state === 'activated') {
           swActivated.value = true
-          nuxtApp.hooks.callHook('service-worker:activated', { url: swUrl, registration: r })
           if (timeout > 0) {
             registerPeriodicSync(swUrl, r, timeout * 1000)
           }
+          nuxtApp.hooks.callHook('service-worker:activated', { url: swUrl, registration: r })
         }
         else if (r?.installing) {
           r.installing.addEventListener('statechange', (e) => {
             const sw = e.target as ServiceWorker
             swActivated.value = sw.state === 'activated'
             if (swActivated.value) {
-              nuxtApp.hooks.callHook('service-worker:activated', { url: swUrl, registration: r })
               if (timeout > 0) {
                 registerPeriodicSync(swUrl, r, timeout * 1000)
               }
+              nuxtApp.hooks.callHook('service-worker:activated', { url: swUrl, registration: r })
             }
           })
         }
