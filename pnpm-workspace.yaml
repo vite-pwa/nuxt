@@ -1,8 +1,8 @@
 packages:
   - playground/
   - playground-assets/
-onlyBuiltDependencies:
-  - sharp
 ignoredBuiltDependencies:
   - esbuild
   - vue-demi
+onlyBuiltDependencies:
+  - sharp

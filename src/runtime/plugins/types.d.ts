@@ -26,6 +26,27 @@ export interface PwaInjection {
   needRefresh: Ref<boolean>
   updateServiceWorker: (reloadPage?: boolean | undefined) => Promise<void>
   cancelPrompt: () => Promise<void>
+  /**
+   * From version 0.10.8 it is deprecated, use a plugin instead with the new Nuxt Runtime Client Hooks:
+   * ```ts
+   * // plugins/pwa.client.ts
+   * export default defineNuxtPlugin((nuxtApp) => {
+   *   nuxtApp.hook('service-worker:registered', ({ url, registration }) => {
+   *     // eslint-disable-next-line no-console
+   *     console.log(`service worker registered at ${url}`, registration)
+   *   })
+   *   nuxtApp.hook('service-worker:registration-failed', ({ error }) => {
+   *     console.error(`service worker registration failed`, error)
+   *   })
+   *   nuxtApp.hook('service-worker:activated', ({ url, registration }) => {
+   *     // eslint-disable-next-line no-console
+   *     console.log(`service worker activated at ${url}`, registration)
+   *   })
+   * })
+   * ```
+   *
+   * @deprecated
+   */
   getSWRegistration: () => ServiceWorkerRegistration | undefined
 }
 
