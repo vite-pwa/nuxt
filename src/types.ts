@@ -27,16 +27,17 @@ export interface PwaModuleOptions extends Partial<VitePWAOptions> {
    */
   experimental?: {
     /**
-     * NOTE: this option will be ignored if using `injectManifest` strategy or when Nuxt experimental payload extraction
-     * is disabled.
+     * NOTE: this option will be ignored if using the `injectManifest` strategy or when Nuxt experimental payload
+     * extraction is disabled.
      *
-     * Enable custom runtime caching to resolve the payload.json requests with query parameters:
+     * Enable custom runtime caching to resolve the payload.json requests with query parameters when offline:
      * - Workbox doesn't allow to configure `precacheAndRoute` `urlManipulation` option when using the `generateSW` strategy.
      * - Nuxt SSG will generate a payload.json file and will fetch it with a query parameter.
-     * - The service worker cannot resolve the payload.json request with query parameters, and you won't get the payload.
+     * - The service worker cannot resolve the payload.json request with query parameters, and you won't get the payload when offline.
      *
      * Enabling this option will add a custom runtime caching handler to the service worker to resolve the payload files
-     * with query parameters.
+     * with query parameters when offline: the runtime caching handler will redirect to the payload.json file without
+     * query parameters when the original request fails.
      *
      * If you're using `injectManifest` strategy, you can fix the issue in your custom service worker adding the
      * following `urlManipulation` callback to the `precacheAndRouter` call:
