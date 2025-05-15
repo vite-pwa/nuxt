@@ -32,6 +32,7 @@ export function configurePWAOptions(
     config = options.injectManifest
   }
   else {
+    options.strategies = 'generateSW'
     options.workbox = options.workbox ?? {}
     if (options.registerType === 'autoUpdate' && (options.client?.registerPlugin || options.injectRegister === 'script' || options.injectRegister === 'inline')) {
       options.workbox.clientsClaim = true
@@ -70,6 +71,25 @@ export function configurePWAOptions(
     if (enableGlobPatterns) {
       config.globPatterns = config.globPatterns ?? []
       config.globPatterns.push('**/_payload.json')
+      if (options.strategies === 'generateSW' && options.experimental?.enableWorkboxPayloadQueryParams) {
+        options.workbox!.runtimeCaching = options.workbox!.runtimeCaching ?? []
+        options.workbox!.runtimeCaching.push({
+          urlPattern: /\/_payload\.json\?/,
+          handler: 'NetworkOnly',
+          options: {
+            plugins: [{
+              /* this callback will be called when the fetch call fails */
+              handlerDidError: async ({ request }) => {
+                const url = new URL(request.url)
+                url.search = ''
+                return Response.redirect(url.href, 302)
+              },
+              /* this callback will prevent caching the response */
+              cacheWillUpdate: async () => null,
+            }],
+          },
+        })
+      }
     }
   }
 
