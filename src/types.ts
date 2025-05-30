@@ -1,5 +1,7 @@
 import type { VitePWAOptions } from 'vite-plugin-pwa'
 
+export type { ResolvedVitePWAOptions } from 'vite-plugin-pwa'
+
 export interface ClientOptions {
   /**
    * Exposes the plugin: defaults to true.

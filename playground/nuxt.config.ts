@@ -5,7 +5,15 @@ const sw = process.env.SW === 'true'
 export default defineNuxtConfig({
   /* ssr: false, */
   // typescript,
-  modules: ['@vite-pwa/nuxt'],
+  modules: [
+    '@vite-pwa/nuxt',
+    (_, nuxt) => {
+      nuxt.hook('pwa:beforeBuildServiceWorker', (options, prerenderedRoutes) => {
+        console.log('prerenderedRoutes', prerenderedRoutes)
+        console.log('options', options)
+      })
+    },
+  ],
   future: {
     typescriptBundlerResolution: true,
   },

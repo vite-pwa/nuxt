@@ -112,6 +112,21 @@ export function configurePWAOptions(
       outDir: options.outDir,
     }
   }
+
+  const integration = options.integration ?? {}
+  const { beforeBuildServiceWorker: original, ...rest } = integration
+  const prerenderedRoutes = new Set<string>()
+  nuxt.hook('prerender:routes', ({ routes }) => {
+    for (const page of Array.from(routes))
+      prerenderedRoutes.add(page)
+  })
+  options.integration = {
+    ...rest,
+    async beforeBuildServiceWorker(options) {
+      await original?.(options)
+      await nuxt.callHook('pwa:beforeBuildServiceWorker', options, prerenderedRoutes)
+    },
+  }
 }
 
 function createManifestTransform(
