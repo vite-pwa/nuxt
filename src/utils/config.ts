@@ -122,11 +122,49 @@ export function configurePWAOptions(
   })
   options.integration = {
     ...rest,
-    async beforeBuildServiceWorker(options) {
-      await original?.(options)
-      await nuxt.callHook('pwa:beforeBuildServiceWorker', options, prerenderedRoutes)
+    async beforeBuildServiceWorker(resolvedPwaOptions) {
+      await original?.(resolvedPwaOptions)
+      await nuxt.callHook('pwa:beforeBuildServiceWorker', resolvedPwaOptions, prerenderedRoutes)
+      if (resolvedPwaOptions.strategies !== 'injectManifest' && options.experimental?.includeAllowlist) {
+        resolvedPwaOptions.workbox.navigateFallbackAllowlist ??= []
+        resolvedPwaOptions.workbox.runtimeCaching ??= []
+        const { workbox: { navigateFallbackAllowlist, runtimeCaching }, base } = resolvedPwaOptions
+        runtimeCaching.push({
+          urlPattern: ({ request, sameOrigin }) => {
+            return sameOrigin && request.mode === 'navigate'
+          },
+          handler: 'NetworkOnly',
+          options: {
+            plugins: [{
+              /* this callback will be called when the fetch call fails */
+              handlerDidError: async () => Response.redirect('404', 302),
+              /* this callback will prevent caching the response */
+              cacheWillUpdate: async () => null,
+            }],
+          },
+        })
+        const existing = new Set(navigateFallbackAllowlist.map(r => r.source))
+        for (const route of prerenderedRoutes) {
+          const regex = new RegExp(route === resolvedPwaOptions.base
+            ? `^${escapeStringRegexp(base)}$`
+            : `^${escapeStringRegexp(route.startsWith(base) ? route : `${base}${route}`)}$`,
+          )
+          if (existing.has(regex.source))
+            continue
+
+          navigateFallbackAllowlist.push(regex)
+        }
+      }
     },
   }
+}
+
+function escapeStringRegexp(value: string) {
+  // Escape characters with special meaning either inside or outside character sets.
+  // Use a simple backslash escape when it’s always valid, and a `\xnn` escape when the simpler form would be disallowed by Unicode patterns’ stricter grammar.
+  return value
+    .replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
+    .replace(/-/g, '\\x2d')
 }
 
 function createManifestTransform(

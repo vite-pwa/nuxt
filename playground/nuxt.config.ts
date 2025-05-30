@@ -9,8 +9,16 @@ export default defineNuxtConfig({
     '@vite-pwa/nuxt',
     (_, nuxt) => {
       nuxt.hook('pwa:beforeBuildServiceWorker', (options, prerenderedRoutes) => {
-        console.log('prerenderedRoutes', prerenderedRoutes)
-        console.log('options', options)
+        options.workbox.navigateFallbackAllowlist ??= []
+        const { workbox: { navigateFallbackAllowlist }, base } = options
+        for (const route of prerenderedRoutes) {
+          if (route === '/') {
+            navigateFallbackAllowlist.push(/^\/$/)
+          }
+          else {
+            navigateFallbackAllowlist.push(new RegExp(`^${route.startsWith(base) ? route : `${base}${route}`}$`))
+          }
+        }
       })
     },
   ],
@@ -80,6 +88,9 @@ export default defineNuxtConfig({
       // you don't need to include this: only for testing purposes
       // if enabling periodic sync for update use 1 hour or so (periodicSyncForUpdates: 3600)
       periodicSyncForUpdates: 20,
+    },
+    experimental: {
+      includeAllowlist: true,
     },
     devOptions: {
       enabled: true,
