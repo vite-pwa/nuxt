@@ -8,10 +8,10 @@ export default defineNuxtConfig({
   modules: [
     '@vite-pwa/nuxt',
     (_, nuxt) => {
-      nuxt.hook('pwa:beforeBuildServiceWorker', (options, prerenderedRoutes) => {
+      nuxt.hook('pwa:beforeBuildServiceWorker', (options, prerenderRoutes) => {
         options.workbox.navigateFallbackAllowlist ??= []
         const { workbox: { navigateFallbackAllowlist }, base } = options
-        for (const route of prerenderedRoutes) {
+        for (const route of prerenderRoutes) {
           if (route === '/') {
             navigateFallbackAllowlist.push(/^\/$/)
           }

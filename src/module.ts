@@ -11,7 +11,7 @@ export interface ModuleOptions extends PwaModuleOptions {}
 export interface ModuleHooks {
   'pwa:beforeBuildServiceWorker': (
     options: ResolvedVitePWAOptions,
-    prerenderedRoutes: Set<string>,
+    prerenderRoutes: Set<string>,
   ) => HookResult
 }
 

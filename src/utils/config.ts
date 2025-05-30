@@ -115,10 +115,10 @@ export function configurePWAOptions(
 
   const integration = options.integration ?? {}
   const { beforeBuildServiceWorker: original, ...rest } = integration
-  const prerenderedRoutes = new Set<string>()
+  const prerenderRoutes = new Set<string>()
   nuxt.hook('prerender:routes', ({ routes }) => {
     for (const page of Array.from(routes))
-      prerenderedRoutes.add(page)
+      prerenderRoutes.add(page)
   })
   // @ts-expect-error missing hook at 3.11
   nuxt.hook('pages:resolved', (pages: NuxtPage[]) => {
@@ -127,7 +127,7 @@ export function configurePWAOptions(
       for (const page of pages) {
         if (page.path) {
           const route = page.path === base ? base : `${page.path.startsWith(base) ? page.path : `${base}${page.path}`}`
-          prerenderedRoutes.add(route)
+          prerenderRoutes.add(route)
         }
       }
     }
@@ -135,7 +135,7 @@ export function configurePWAOptions(
       for (const page of pages) {
         if (page.path && page.meta?.prerender === true) {
           const route = page.path === base ? base : `${page.path.startsWith(base) ? page.path : `${base}${page.path}`}`
-          prerenderedRoutes.add(route)
+          prerenderRoutes.add(route)
         }
       }
     }
@@ -144,7 +144,7 @@ export function configurePWAOptions(
     ...rest,
     async beforeBuildServiceWorker(resolvedPwaOptions) {
       await original?.(resolvedPwaOptions)
-      await nuxt.callHook('pwa:beforeBuildServiceWorker', resolvedPwaOptions, prerenderedRoutes)
+      await nuxt.callHook('pwa:beforeBuildServiceWorker', resolvedPwaOptions, prerenderRoutes)
       if (resolvedPwaOptions.strategies !== 'injectManifest' && options.experimental?.includeAllowlist) {
         resolvedPwaOptions.workbox.navigateFallbackAllowlist ??= []
         resolvedPwaOptions.workbox.runtimeCaching ??= []
@@ -164,7 +164,7 @@ export function configurePWAOptions(
           },
         })
         const existing = new Set(navigateFallbackAllowlist.map(r => r.source))
-        for (const route of prerenderedRoutes) {
+        for (const route of prerenderRoutes) {
           const regex = new RegExp(route === resolvedPwaOptions.base
             ? `^${escapeStringRegexp(base)}$`
             : `^${escapeStringRegexp(route.startsWith(base) ? route : `${base}${route}`)}$`,
