@@ -36,7 +36,7 @@ export default defineNuxtConfig({
       },
     },
     prerender: {
-      routes: ['/', '/about'],
+      routes: ['/'/* , '/about' */],
     },
   },
   imports: {

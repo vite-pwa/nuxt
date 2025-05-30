@@ -1,4 +1,4 @@
-import type { Nuxt } from '@nuxt/schema'
+import type { Nuxt, NuxtPage } from '@nuxt/schema'
 import type { NitroConfig } from 'nitropack'
 import type { PwaModuleOptions } from '../types'
 import { createHash } from 'node:crypto'
@@ -119,6 +119,26 @@ export function configurePWAOptions(
   nuxt.hook('prerender:routes', ({ routes }) => {
     for (const page of Array.from(routes))
       prerenderedRoutes.add(page)
+  })
+  // @ts-expect-error missing hook at 3.11
+  nuxt.hook('pages:resolved', (pages: NuxtPage[]) => {
+    const base = options.base ?? '/'
+    if (nuxt.options._generate) {
+      for (const page of pages) {
+        if (page.path) {
+          const route = page.path === base ? base : `${page.path.startsWith(base) ? page.path : `${base}${page.path}`}`
+          prerenderedRoutes.add(route)
+        }
+      }
+    }
+    else {
+      for (const page of pages) {
+        if (page.path && page.meta?.prerender === true) {
+          const route = page.path === base ? base : `${page.path.startsWith(base) ? page.path : `${base}${page.path}`}`
+          prerenderedRoutes.add(route)
+        }
+      }
+    }
   })
   options.integration = {
     ...rest,
