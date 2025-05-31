@@ -1,3 +1,4 @@
+import type { HookResult } from '@nuxt/schema'
 import type { ResolvedVitePWAOptions, VitePWAOptions } from 'vite-plugin-pwa'
 
 export interface ClientOptions {
