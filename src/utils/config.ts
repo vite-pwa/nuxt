@@ -112,6 +112,19 @@ export function configurePWAOptions(
       outDir: options.outDir,
     }
   }
+
+  const integration = options.integration ?? {}
+  const {
+    beforeBuildServiceWorker: original,
+    ...rest
+  } = integration
+  options.integration = {
+    ...rest,
+    async beforeBuildServiceWorker(resolvedPwaOptions) {
+      await original?.(resolvedPwaOptions)
+      await nuxt.callHook('pwa:beforeBuildServiceWorker', resolvedPwaOptions)
+    },
+  }
 }
 
 function createManifestTransform(

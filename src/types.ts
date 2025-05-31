@@ -1,5 +1,7 @@
 import type { VitePWAOptions } from 'vite-plugin-pwa'
 
+export type { ResolvedVitePWAOptions } from 'vite-plugin-pwa'
+
 export interface ClientOptions {
   /**
    * Exposes the plugin: defaults to true.
@@ -52,11 +54,12 @@ export interface PwaModuleOptions extends Partial<VitePWAOptions> {
      *         const newUrl = new URL(url.href)
      *         newUrl.search = ''
      *         urls.push(newUrl)
-     *      }
-     *      return urls
-     *    }
-     *  }
+     *       }
+     *       return urls
+     *     }
+     *   }
      * )
+     * ```
      */
     enableWorkboxPayloadQueryParams?: true
   }

@@ -5,7 +5,14 @@ const sw = process.env.SW === 'true'
 export default defineNuxtConfig({
   /* ssr: false, */
   // typescript,
-  modules: ['@vite-pwa/nuxt'],
+  modules: [
+    '@vite-pwa/nuxt',
+    (_, nuxt) => {
+      nuxt.hook('pwa:beforeBuildServiceWorker', (options) => {
+        console.log('pwa:beforeBuildServiceWorker: ', options.base)
+      })
+    },
+  ],
   future: {
     typescriptBundlerResolution: true,
   },
@@ -20,7 +27,7 @@ export default defineNuxtConfig({
       },
     },
     prerender: {
-      routes: ['/', '/about'],
+      routes: ['/'/* , '/about' */],
     },
   },
   imports: {
@@ -72,6 +79,9 @@ export default defineNuxtConfig({
       // you don't need to include this: only for testing purposes
       // if enabling periodic sync for update use 1 hour or so (periodicSyncForUpdates: 3600)
       periodicSyncForUpdates: 20,
+    },
+    experimental: {
+      includeAllowlist: true,
     },
     devOptions: {
       enabled: true,
