@@ -54,11 +54,12 @@ export interface PwaModuleOptions extends Partial<VitePWAOptions> {
      *         const newUrl = new URL(url.href)
      *         newUrl.search = ''
      *         urls.push(newUrl)
-     *      }
-     *      return urls
-     *    }
-     *  }
+     *       }
+     *       return urls
+     *     }
+     *   }
      * )
+     * ```
      */
     enableWorkboxPayloadQueryParams?: true
   }
