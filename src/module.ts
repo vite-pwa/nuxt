@@ -9,10 +9,7 @@ export * from './types'
 export interface ModuleOptions extends PwaModuleOptions {}
 
 export interface ModuleHooks {
-  'pwa:beforeBuildServiceWorker': (
-    options: ResolvedVitePWAOptions,
-    prerenderRoutes: Set<string>,
-  ) => HookResult
+  'pwa:beforeBuildServiceWorker': (options: ResolvedVitePWAOptions) => HookResult
 }
 
 export interface ModuleRuntimeHooks {

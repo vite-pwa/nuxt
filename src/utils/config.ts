@@ -1,4 +1,4 @@
-import type { Nuxt, NuxtPage } from '@nuxt/schema'
+import type { Nuxt } from '@nuxt/schema'
 import type { NitroConfig } from 'nitropack'
 import type { PwaModuleOptions } from '../types'
 import { createHash } from 'node:crypto'
@@ -114,77 +114,17 @@ export function configurePWAOptions(
   }
 
   const integration = options.integration ?? {}
-  const { beforeBuildServiceWorker: original, ...rest } = integration
-  const prerenderRoutes = new Set<string>()
-  nuxt.hook('prerender:routes', ({ routes }) => {
-    for (const page of Array.from(routes))
-      prerenderRoutes.add(page)
-  })
-  // @ts-expect-error missing hook at 3.11
-  nuxt.hook('pages:resolved', (pages: NuxtPage[]) => {
-    const base = options.base ?? '/'
-    if (nuxt.options._generate) {
-      for (const page of pages) {
-        if (page.path) {
-          const route = page.path === base ? base : `${page.path.startsWith(base) ? page.path : `${base}${page.path}`}`
-          prerenderRoutes.add(route)
-        }
-      }
-    }
-    else {
-      for (const page of pages) {
-        if (page.path && page.meta?.prerender === true) {
-          const route = page.path === base ? base : `${page.path.startsWith(base) ? page.path : `${base}${page.path}`}`
-          prerenderRoutes.add(route)
-        }
-      }
-    }
-  })
+  const {
+    beforeBuildServiceWorker: original,
+    ...rest
+  } = integration
   options.integration = {
     ...rest,
     async beforeBuildServiceWorker(resolvedPwaOptions) {
       await original?.(resolvedPwaOptions)
-      await nuxt.callHook('pwa:beforeBuildServiceWorker', resolvedPwaOptions, prerenderRoutes)
-      if (resolvedPwaOptions.strategies !== 'injectManifest' && options.experimental?.includeAllowlist) {
-        resolvedPwaOptions.workbox.navigateFallbackAllowlist ??= []
-        resolvedPwaOptions.workbox.runtimeCaching ??= []
-        const { workbox: { navigateFallbackAllowlist, runtimeCaching }, base } = resolvedPwaOptions
-        runtimeCaching.push({
-          urlPattern: ({ request, sameOrigin }) => {
-            return sameOrigin && request.mode === 'navigate'
-          },
-          handler: 'NetworkOnly',
-          options: {
-            plugins: [{
-              /* this callback will be called when the fetch call fails */
-              handlerDidError: async () => Response.redirect('404', 302),
-              /* this callback will prevent caching the response */
-              cacheWillUpdate: async () => null,
-            }],
-          },
-        })
-        const existing = new Set(navigateFallbackAllowlist.map(r => r.source))
-        for (const route of prerenderRoutes) {
-          const regex = new RegExp(route === resolvedPwaOptions.base
-            ? `^${escapeStringRegexp(base)}$`
-            : `^${escapeStringRegexp(route.startsWith(base) ? route : `${base}${route}`)}$`,
-          )
-          if (existing.has(regex.source))
-            continue
-
-          navigateFallbackAllowlist.push(regex)
-        }
-      }
+      await nuxt.callHook('pwa:beforeBuildServiceWorker', resolvedPwaOptions)
     },
   }
-}
-
-function escapeStringRegexp(value: string) {
-  // Escape characters with special meaning either inside or outside character sets.
-  // Use a simple backslash escape when it’s always valid, and a `\xnn` escape when the simpler form would be disallowed by Unicode patterns’ stricter grammar.
-  return value
-    .replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
-    .replace(/-/g, '\\x2d')
 }
 
 function createManifestTransform(
