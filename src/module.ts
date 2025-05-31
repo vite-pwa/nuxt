@@ -1,5 +1,5 @@
 import type { HookResult } from '@nuxt/schema'
-import type { PwaModuleOptions, ResolvedVitePWAOptions } from './types'
+import type { PwaModuleHooks, PwaModuleOptions } from './types'
 import { defineNuxtModule } from '@nuxt/kit'
 import { version } from '../package.json'
 import { doSetup } from './utils/module'
@@ -8,9 +8,7 @@ export * from './types'
 
 export interface ModuleOptions extends PwaModuleOptions {}
 
-export interface ModuleHooks {
-  'pwa:beforeBuildServiceWorker': (options: ResolvedVitePWAOptions) => HookResult
-}
+export interface ModuleHooks extends PwaModuleHooks {}
 
 export interface ModuleRuntimeHooks {
   /**
