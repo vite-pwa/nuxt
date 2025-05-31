@@ -1,6 +1,5 @@
-import type { VitePWAOptions } from 'vite-plugin-pwa'
-
-export type { ResolvedVitePWAOptions } from 'vite-plugin-pwa'
+import type { HookResult } from '@nuxt/schema'
+import type { ResolvedVitePWAOptions, VitePWAOptions } from 'vite-plugin-pwa'
 
 export interface ClientOptions {
   /**
@@ -72,4 +71,8 @@ export interface PwaModuleOptions extends Partial<VitePWAOptions> {
    * Options for plugin.
    */
   client?: ClientOptions
+}
+
+export interface PwaModuleHooks {
+  'pwa:beforeBuildServiceWorker': (options: ResolvedVitePWAOptions) => HookResult
 }
