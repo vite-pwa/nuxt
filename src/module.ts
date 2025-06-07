@@ -42,7 +42,6 @@ export default defineNuxtModule<ModuleOptions>({
     configKey: 'pwa',
     compatibility: {
       nuxt: '>=3.6.5',
-      bridge: false,
     },
     version,
   },
