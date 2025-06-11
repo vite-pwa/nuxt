@@ -63,7 +63,7 @@ export function configurePWAOptions(
 
   // handle payload extraction
   if (nuxt.options.experimental.payloadExtraction) {
-    const enableGlobPatterns = nuxt.options._generate
+    const enableGlobPatterns = nuxt.options.nitro.static || (nuxt.options as any)._generate /* TODO: remove in future */
       || (
         !!nitroConfig.prerender?.routes?.length
         || Object.values(nitroConfig.routeRules ?? {}).some(r => r.prerender)
