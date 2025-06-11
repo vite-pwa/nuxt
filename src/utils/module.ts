@@ -325,7 +325,7 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
           )
         })
       })
-      if (nuxt.options._generate) {
+      if (nuxt.options.nitro.static || (nuxt.options as any)._generate /* TODO: remove in future */) {
         nuxt.hook('close', async () => {
           await regeneratePWA(
             options.outDir!,
