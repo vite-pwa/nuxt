@@ -3,8 +3,9 @@ import type { UserConfig } from '@vite-pwa/assets-generator/config'
 import type { ResolvedPWAAssetsOptions } from 'vite-plugin-pwa'
 import type { PwaModuleOptions } from '../types'
 import type { DtsInfo } from './pwa-icons-helper'
-import { readFile } from 'node:fs/promises'
-import { basename, relative, resolve } from 'node:path'
+import fs from 'node:fs'
+import { access, readFile } from 'node:fs/promises'
+import { basename, dirname, relative, resolve } from 'node:path'
 import process from 'node:process'
 import { instructions } from '@vite-pwa/assets-generator/api/instructions'
 import { loadConfig } from '@vite-pwa/assets-generator/config'
@@ -13,6 +14,7 @@ import { generatePwaImageType, pwaIcons } from './pwa-icons-helper'
 export async function preparePWAIconTypes(
   options: PwaModuleOptions,
   nuxt: Nuxt,
+  isNuxt4: boolean,
 ) {
   if (!options.pwaAssets || options.pwaAssets.disabled)
     return
@@ -39,14 +41,15 @@ export async function preparePWAIconTypes(
     return
 
   const useImage = Array.isArray(images) ? images[0] : images
-  const imageFile = resolve(root, useImage)
+  // const imageFile = resolve(root, useImage)
+  const imageFile = await tryToResolveImage(root, sources, useImage)
   const publicDir = resolve(root, nuxt.options.dir.public ?? 'public')
   const imageName = relative(publicDir, imageFile)
 
   const xhtml = userHeadLinkOptions?.xhtml === true
   const includeId = userHeadLinkOptions?.includeId === true
   const assetsInstructions = await instructions({
-    imageResolver: () => readFile(resolve(root, useImage)),
+    imageResolver: () => readFile(imageFile),
     imageName,
     preset,
     faviconPreset: userHeadLinkOptions?.preset,
@@ -67,11 +70,11 @@ export async function preparePWAIconTypes(
       apple: appleNames,
       appleSplashScreen: appleSplashScreenNames,
     }),
-    transparent: generatePwaImageType('PwaTransparentImage', transparentNames),
-    maskable: generatePwaImageType('PwaMaskableImage', maskableNames),
-    favicon: generatePwaImageType('PwaFaviconImage', faviconNames),
-    apple: generatePwaImageType('PwaAppleImage', appleNames),
-    appleSplashScreen: generatePwaImageType('PwaAppleSplashScreenImage', appleSplashScreenNames),
+    transparent: generatePwaImageType('PwaTransparentImage', isNuxt4, transparentNames),
+    maskable: generatePwaImageType('PwaMaskableImage', isNuxt4, maskableNames),
+    favicon: generatePwaImageType('PwaFaviconImage', isNuxt4, faviconNames),
+    apple: generatePwaImageType('PwaAppleImage', isNuxt4, appleNames),
+    appleSplashScreen: generatePwaImageType('PwaAppleSplashScreenImage', isNuxt4, appleSplashScreenNames),
   } satisfies DtsInfo
 
   if (nuxt.options.dev && nuxt.options.ssr) {
@@ -129,4 +132,36 @@ async function loadConfiguration(root: string, pwaAssets: ResolvedPWAAssetsOptio
       ? root
       : { config: pwaAssets.config },
   )
+}
+
+async function checkFileExists(pathname: string): Promise<boolean> {
+  try {
+    await access(pathname, fs.constants.R_OK)
+  }
+  catch {
+    return false
+  }
+
+  return true
+}
+
+async function tryToResolveImage(
+  root: string,
+  sources: string[],
+  image: string,
+): Promise<string> {
+  const imagePath = resolve(root, image)
+  // first check if the image is in the root directory
+  if (await checkFileExists(imagePath)) {
+    return imagePath
+  }
+
+  for (const source of sources) {
+    const sourceImage = resolve(dirname(source), image)
+    if (await checkFileExists(sourceImage)) {
+      return sourceImage
+    }
+  }
+
+  return imagePath
 }
