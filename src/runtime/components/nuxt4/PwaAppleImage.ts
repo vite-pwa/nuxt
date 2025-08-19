@@ -6,7 +6,7 @@ export default defineComponent<PwaAppleImageProps>({
   name: 'PwaAppleImage',
   inheritAttrs: false,
   setup() {
-    const props = getCurrentInstance()?.attrs as unknown as PwaAppleImageProps
+    const props = (getCurrentInstance()?.attrs ?? '') as unknown as PwaAppleImageProps
     const { icon } = useApplePwaIcon(props)
     return () => {
       const data = icon.value

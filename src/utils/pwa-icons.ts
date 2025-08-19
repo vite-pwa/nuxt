@@ -41,7 +41,6 @@ export async function preparePWAIconTypes(
     return
 
   const useImage = Array.isArray(images) ? images[0] : images
-  // const imageFile = resolve(root, useImage)
   const imageFile = await tryToResolveImage(root, sources, useImage)
   const publicDir = resolve(root, nuxt.options.dir.public ?? 'public')
   const imageName = relative(publicDir, imageFile)
