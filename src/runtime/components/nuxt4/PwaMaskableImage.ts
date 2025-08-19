@@ -6,7 +6,7 @@ export default defineComponent<PwaMaskableImageProps>({
   name: 'PwaMaskableImage',
   inheritAttrs: false,
   setup() {
-    const props = (getCurrentInstance()?.attrs ?? '') as unknown as PwaMaskableImageProps
+    const props = (getCurrentInstance()?.attrs ?? {}) as unknown as PwaMaskableImageProps
     const { icon } = useMaskablePwaIcon(props)
     return () => {
       const data = icon.value

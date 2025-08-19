@@ -6,7 +6,7 @@ export default defineComponent<PwaFaviconImageProps>({
   name: 'PwaFaviconImage',
   inheritAttrs: false,
   setup() {
-    const props = (getCurrentInstance()?.attrs ?? '') as unknown as PwaFaviconImageProps
+    const props = (getCurrentInstance()?.attrs ?? {}) as unknown as PwaFaviconImageProps
     const { icon } = useFaviconPwaIcon(props)
     return () => {
       const data = icon.value

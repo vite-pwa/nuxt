@@ -6,7 +6,7 @@ export default defineComponent<PwaAppleSplashScreenImageProps>({
   name: 'PwaAppleSplashScreenImage',
   inheritAttrs: false,
   setup() {
-    const props = (getCurrentInstance()?.attrs ?? '') as unknown as PwaAppleSplashScreenImageProps
+    const props = (getCurrentInstance()?.attrs ?? {}) as unknown as PwaAppleSplashScreenImageProps
     const { icon } = useAppleSplashScreenPwaIcon(props)
     return () => {
       const data = icon.value
