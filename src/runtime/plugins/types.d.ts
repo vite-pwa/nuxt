@@ -73,6 +73,7 @@ export interface PwaInjection {
   registrationError: Ref<boolean>
   /**
    * Becomes `true` when the app is ready to work offline (precache completed).
+   * This flag is activated only once, when the service worker is registered and activated for first time.
    */
   offlineReady: Ref<boolean>
   /**
