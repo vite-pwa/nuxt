@@ -56,11 +56,11 @@ export async function registerPwaIconsTypes(
       getContents: () => pwaIcons(),
     })
   }
-  addPwaTypeTemplate('PwaTransparentImage', dts?.transparent)
-  addPwaTypeTemplate('PwaMaskableImage', dts?.maskable)
-  addPwaTypeTemplate('PwaFaviconImage', dts?.favicon)
-  addPwaTypeTemplate('PwaAppleImage', dts?.apple)
-  addPwaTypeTemplate('PwaAppleSplashScreenImage', dts?.appleSplashScreen)
+  addPwaTypeTemplate('PwaTransparentImage', isNuxt4, dts?.transparent)
+  addPwaTypeTemplate('PwaMaskableImage', isNuxt4, dts?.maskable)
+  addPwaTypeTemplate('PwaFaviconImage', isNuxt4, dts?.favicon)
+  addPwaTypeTemplate('PwaAppleImage', isNuxt4, dts?.apple)
+  addPwaTypeTemplate('PwaAppleSplashScreenImage', isNuxt4, dts?.appleSplashScreen)
 
   return !!dts
 }

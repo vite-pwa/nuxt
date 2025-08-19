@@ -1,16 +1,21 @@
-import type { PwaAppleImageProps } from '#build/pwa-icons/PwaAppleImage.js'
-import { useApplePwaIcon } from '#pwa'
-import { defineComponent, h } from 'vue'
+import type { PwaAppleSplashScreenImageProps } from '#build/pwa-icons/PwaAppleSplashScreenImage.js'
+import { useAppleSplashScreenPwaIcon } from '#pwa'
+import { defineComponent, getCurrentInstance, h } from 'vue'
 
-export default defineComponent<PwaAppleImageProps>({
-  setup(props) {
-    const { icon } = useApplePwaIcon(props)
+export default defineComponent<PwaAppleSplashScreenImageProps>({
+  name: 'PwaAppleSplashScreenImage',
+  inheritAttrs: false,
+  setup() {
+    const props = (getCurrentInstance()?.attrs ?? '') as unknown as PwaAppleSplashScreenImageProps
+    const { icon } = useAppleSplashScreenPwaIcon(props)
     return () => {
       const data = icon.value
       if (!data)
         return
 
-      return h('img', data)
+      const { image: _, ...rest } = data
+
+      return h('img', { ...rest })
     }
   },
 })

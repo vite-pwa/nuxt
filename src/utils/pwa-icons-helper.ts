@@ -19,6 +19,7 @@ export interface PwaIconsTypes {
 
 export function addPwaTypeTemplate(
   filename: string,
+  isNuxt4: boolean,
   content?: string,
 ) {
   if (content?.length) {
@@ -31,7 +32,7 @@ export function addPwaTypeTemplate(
   else {
     addTypeTemplate({
       write: true,
-      getContents: () => generatePwaImageType(filename),
+      getContents: () => generatePwaImageType(filename, isNuxt4),
       filename: `pwa-icons/${filename}.d.ts`,
     })
   }
