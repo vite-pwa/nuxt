@@ -10,15 +10,17 @@ export async function registerPwaIconsTypes(
   nuxt: Nuxt,
   resolver: Resolver,
   runtimeDir: string,
+  isNuxt4: boolean,
 ) {
   const pwaAssets = options.pwaAssets && !options.pwaAssets.disabled && (options.pwaAssets.config === true || !!options.pwaAssets.preset)
   let dts: DtsInfo | undefined
   if (pwaAssets) {
     try {
       const { preparePWAIconTypes } = await import('./pwa-icons')
-      dts = await preparePWAIconTypes(options, nuxt)
+      dts = await preparePWAIconTypes(options, nuxt, isNuxt4)
     }
-    catch {
+    catch (e) {
+      console.error('Error preparing PWA icon types:', e)
       dts = undefined
     }
   }
@@ -36,7 +38,7 @@ export async function registerPwaIconsTypes(
   ].map(key => ({
     name: key,
     as: key,
-    from: resolver.resolve(runtimeDir, 'composables/index'),
+    from: resolver.resolve(runtimeDir, 'composables/index.js'),
   })))
 
   const dtsContent = dts?.dts
@@ -54,11 +56,11 @@ export async function registerPwaIconsTypes(
       getContents: () => pwaIcons(),
     })
   }
-  addPwaTypeTemplate('PwaTransparentImage', dts?.transparent)
-  addPwaTypeTemplate('PwaMaskableImage', dts?.maskable)
-  addPwaTypeTemplate('PwaFaviconImage', dts?.favicon)
-  addPwaTypeTemplate('PwaAppleImage', dts?.apple)
-  addPwaTypeTemplate('PwaAppleSplashScreenImage', dts?.appleSplashScreen)
+  addPwaTypeTemplate('PwaTransparentImage', isNuxt4, dts?.transparent)
+  addPwaTypeTemplate('PwaMaskableImage', isNuxt4, dts?.maskable)
+  addPwaTypeTemplate('PwaFaviconImage', isNuxt4, dts?.favicon)
+  addPwaTypeTemplate('PwaAppleImage', isNuxt4, dts?.apple)
+  addPwaTypeTemplate('PwaAppleSplashScreenImage', isNuxt4, dts?.appleSplashScreen)
 
   return !!dts
 }
