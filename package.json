@@ -2,7 +2,7 @@
   "name": "@vite-pwa/nuxt",
   "type": "module",
   "version": "1.0.4",
-  "packageManager": "pnpm@10.11.0",
+  "packageManager": "pnpm@10.18.2",
   "description": "Zero-config PWA for Nuxt 3",
   "author": "antfu <anthonyfu117@hotmail.com>",
   "license": "MIT",
@@ -72,7 +72,7 @@
     "@nuxt/kit": "^3.9.0",
     "pathe": "^1.1.1",
     "ufo": "^1.3.2",
-    "vite-plugin-pwa": "^1.0.0"
+    "vite-plugin-pwa": "^1.1.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.11.0",
