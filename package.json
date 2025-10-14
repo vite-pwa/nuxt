@@ -28,6 +28,7 @@
     "./configuration": {
       "types": "./configuration.d.ts"
     },
+    "./helpers": "./helpers.js",
     "./package.json": "./package.json",
     "./*": "./*"
   },
@@ -35,7 +36,8 @@
   "types": "./dist/types.d.ts",
   "files": [
     "*.d.ts",
-    "dist"
+    "dist",
+    "helpers.js"
   ],
   "scripts": {
     "prepack": "nuxt-module-build prepare && nuxt-module-build build",
