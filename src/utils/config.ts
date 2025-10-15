@@ -102,8 +102,13 @@ export function configurePWAOptions(
   }
 
   // allow override manifestTransforms
-  if (!nuxt.options.dev && !config.manifestTransforms)
-    config.manifestTransforms = [createManifestTransform(nuxt.options.app.baseURL ?? '/', options.outDir, appManifestFolder)]
+  if (options.devOptions?.enabled && !options.devOptions.navigateFallbackAllowlist) {
+    const baseURL = nuxt.options.app.baseURL
+    // fix #214
+    options.devOptions.navigateFallbackAllowlist = [baseURL
+      ? new RegExp(`^${baseURL.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}$`)
+      : /^\/$/]
+  }
 
   if (options.pwaAssets) {
     options.pwaAssets.integration = {
