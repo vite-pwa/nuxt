@@ -41,8 +41,13 @@ export function configurePWAOptions(
     if (nuxt.options.dev) {
       // on dev force always to use the root
       options.workbox.navigateFallback = options.workbox.navigateFallback ?? nuxt.options.app.baseURL ?? '/'
-      if (options.devOptions?.enabled && !options.devOptions.navigateFallbackAllowlist)
-        options.devOptions.navigateFallbackAllowlist = [nuxt.options.app.baseURL ? new RegExp(nuxt.options.app.baseURL) : /\//]
+      if (options.devOptions?.enabled && !options.devOptions.navigateFallbackAllowlist) {
+        const baseURL = nuxt.options.app.baseURL
+        // fix #214
+        options.devOptions.navigateFallbackAllowlist = [baseURL
+          ? new RegExp(`^${baseURL.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}$`)
+          : /^\/$/]
+      }
     }
     // the user may want to disable offline support
     if (!('navigateFallback' in options.workbox))
@@ -102,13 +107,8 @@ export function configurePWAOptions(
   }
 
   // allow override manifestTransforms
-  if (options.devOptions?.enabled && !options.devOptions.navigateFallbackAllowlist) {
-    const baseURL = nuxt.options.app.baseURL
-    // fix #214
-    options.devOptions.navigateFallbackAllowlist = [baseURL
-      ? new RegExp(`^${baseURL.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}$`)
-      : /^\/$/]
-  }
+  if (!nuxt.options.dev && !config.manifestTransforms)
+    config.manifestTransforms = [createManifestTransform(nuxt.options.app.baseURL ?? '/', options.outDir, appManifestFolder)]
 
   if (options.pwaAssets) {
     options.pwaAssets.integration = {
