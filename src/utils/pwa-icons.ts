@@ -1,29 +1,30 @@
 import type { Nuxt } from '@nuxt/schema'
 import type { UserConfig } from '@vite-pwa/assets-generator/config'
 import type { ResolvedPWAAssetsOptions } from 'vite-plugin-pwa'
-import type { PwaModuleOptions } from '../types'
+import type { NuxtPWAContext } from '../context'
 import type { DtsInfo } from './pwa-icons-helper'
-import { readFile } from 'node:fs/promises'
-import { basename, relative, resolve } from 'node:path'
+import fs from 'node:fs'
+import { access, readFile } from 'node:fs/promises'
+import { dirname } from 'node:path'
 import process from 'node:process'
 import { instructions } from '@vite-pwa/assets-generator/api/instructions'
 import { loadConfig } from '@vite-pwa/assets-generator/config'
+import { basename, isAbsolute, relative, resolve } from 'pathe'
 import { generatePwaImageType, pwaIcons } from './pwa-icons-helper'
 
 export async function preparePWAIconTypes(
-  options: PwaModuleOptions,
-  nuxt: Nuxt,
+  ctx: NuxtPWAContext,
 ) {
+  const { options, nuxt } = ctx
   if (!options.pwaAssets || options.pwaAssets.disabled)
     return
 
-  const configuration = resolvePWAAssetsOptions(options)
+  const configuration = resolvePWAAssetsOptions(ctx)
   if (!configuration || configuration.disabled)
     return
 
-  // use vite root: pwa plugin using vite root, nuxt will configure vite root properly
   const root = nuxt.options.vite.root ?? process.cwd()
-  const { config, sources } = await loadConfiguration(root, configuration)
+  const { config, sources } = await loadConfiguration(nuxt, root, configuration)
   if (!config.preset)
     return
 
@@ -39,8 +40,11 @@ export async function preparePWAIconTypes(
     return
 
   const useImage = Array.isArray(images) ? images[0] : images
-  const imageFile = resolve(root, useImage)
-  const publicDir = resolve(root, nuxt.options.dir.public ?? 'public')
+  // const imageFile = resolve(root, useImage)
+  const imageFile = await tryToResolveImage(root, sources, useImage)
+  const publicDir = nuxt.options.dir.public
+    ? (isAbsolute(nuxt.options.dir.public) ? nuxt.options.dir.public : resolve(nuxt.options.rootDir, nuxt.options.dir.public))
+    : resolve(nuxt.options.rootDir, 'public')
   const imageName = relative(publicDir, imageFile)
 
   const xhtml = userHeadLinkOptions?.xhtml === true
@@ -82,7 +86,8 @@ export async function preparePWAIconTypes(
   return dts
 }
 
-function resolvePWAAssetsOptions(options: PwaModuleOptions) {
+function resolvePWAAssetsOptions(ctx: NuxtPWAContext) {
+  const { options, nuxt, nuxt4, nuxt4Compat } = ctx
   if (!options.pwaAssets)
     return
 
@@ -90,7 +95,7 @@ function resolvePWAAssetsOptions(options: PwaModuleOptions) {
     disabled: useDisabled,
     config,
     preset,
-    image = 'public/favicon.svg',
+    image,
     htmlPreset = '2023',
     overrideManifestIcons = false,
     includeHtmlHeadLinks = true,
@@ -98,13 +103,31 @@ function resolvePWAAssetsOptions(options: PwaModuleOptions) {
     integration,
   } = options.pwaAssets ?? {}
 
-  const disabled = useDisabled || (!config && !preset)
+  const disabled = !(useDisabled === true) ? false : (!config && !preset)
+  const publicDir = nuxt.options.dir.public
+    ? (isAbsolute(nuxt.options.dir.public) ? basename(nuxt.options.dir.public) : nuxt.options.dir.public)
+    : 'public'
+
+  // prepare
+  options.pwaAssets = {
+    disabled,
+    config: disabled || !config ? false : config,
+    preset: disabled || config ? false : preset ?? 'minimal-2023',
+    // nuxt4 or nuxt v3 v4compat using app as root (vite root)
+    image: image || (nuxt4 || nuxt4Compat ? `../${publicDir}/favicon.svg` : `${publicDir}/favicon.svg`),
+    htmlPreset,
+    overrideManifestIcons,
+    includeHtmlHeadLinks,
+    injectThemeColor,
+    integration,
+  }
 
   return <ResolvedPWAAssetsOptions>{
     disabled,
     config: disabled || !config ? false : config,
     preset: disabled || config ? false : preset ?? 'minimal-2023',
-    images: [image],
+    // nuxt4 or nuxt v3 v4compat using app as root (vite root)
+    images: [image || (nuxt4 || nuxt4Compat ? `../${publicDir}/favicon.svg` : `${publicDir}/favicon.svg`)],
     htmlPreset,
     overrideManifestIcons,
     includeHtmlHeadLinks,
@@ -113,7 +136,11 @@ function resolvePWAAssetsOptions(options: PwaModuleOptions) {
   }
 }
 
-async function loadConfiguration(root: string, pwaAssets: ResolvedPWAAssetsOptions) {
+async function loadConfiguration(
+  nuxt: Nuxt,
+  root: string,
+  pwaAssets: ResolvedPWAAssetsOptions,
+) {
   if (pwaAssets.config === false) {
     return await loadConfig<UserConfig>(root, {
       config: false,
@@ -129,4 +156,36 @@ async function loadConfiguration(root: string, pwaAssets: ResolvedPWAAssetsOptio
       ? root
       : { config: pwaAssets.config },
   )
+}
+
+async function checkFileExists(pathname: string): Promise<boolean> {
+  try {
+    await access(pathname, fs.constants.R_OK)
+  }
+  catch {
+    return false
+  }
+
+  return true
+}
+
+async function tryToResolveImage(
+  root: string,
+  sources: string[],
+  image: string,
+): Promise<string> {
+  const imagePath = resolve(root, image)
+  // first check if the image is in the root directory
+  if (await checkFileExists(imagePath)) {
+    return imagePath
+  }
+
+  for (const source of sources) {
+    const sourceImage = resolve(dirname(source), image)
+    if (await checkFileExists(sourceImage)) {
+      return sourceImage
+    }
+  }
+
+  return imagePath
 }

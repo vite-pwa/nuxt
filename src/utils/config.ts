@@ -4,7 +4,7 @@ import type { PwaModuleOptions } from '../types'
 import { createHash } from 'node:crypto'
 import { createReadStream } from 'node:fs'
 import { lstat } from 'node:fs/promises'
-import { resolve } from 'pathe'
+import { isAbsolute, resolve } from 'pathe'
 
 export function configurePWAOptions(
   nuxt3_8: boolean,
@@ -111,9 +111,12 @@ export function configurePWAOptions(
     config.manifestTransforms = [createManifestTransform(nuxt.options.app.baseURL ?? '/', options.outDir, appManifestFolder)]
 
   if (options.pwaAssets) {
+    const publicDir = nuxt.options.dir.public
+      ? (isAbsolute(nuxt.options.dir.public) ? nuxt.options.dir.public : resolve(nuxt.options.rootDir, nuxt.options.dir.public))
+      : resolve(nuxt.options.rootDir, 'public')
     options.pwaAssets.integration = {
       baseUrl: nuxt.options.app.baseURL ?? '/',
-      publicDir: nuxt.options.dir.public,
+      publicDir,
       outDir: options.outDir,
     }
   }

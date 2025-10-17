@@ -1,6 +1,7 @@
 import type { Nuxt } from '@nuxt/schema'
 import type { Plugin } from 'vite'
 import type { VitePluginPWAAPI } from 'vite-plugin-pwa'
+import type { NuxtPWAContext } from '../context'
 import type { PwaModuleOptions } from '../types'
 import { mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -22,6 +23,19 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
   const resolver = createResolver(import.meta.url)
   const nuxtVersion = (getNuxtVersion(nuxt) as string).split('.').map(v => Number.parseInt(v))
   const nuxt3_8 = nuxtVersion.length > 1 && (nuxtVersion[0] > 3 || (nuxtVersion[0] === 3 && nuxtVersion[1] >= 8))
+  const nuxt4 = nuxtVersion.length > 1 && nuxtVersion[0] >= 4
+  const future = nuxt.options.future as any
+
+  const ctx: NuxtPWAContext = {
+    nuxt,
+    nuxt3_8,
+    nuxt4,
+    // included at v3.12.0, then removed and included back again for v5 compatibility: we only need the layout to configure correctly the pwa assets image
+    // https://github.com/nuxt/nuxt/releases/tag/v3.12.0
+    nuxt4Compat: nuxt4 ? true : ('compatibilityVersion' in future && typeof future.compatibilityVersion === 'number') && future.compatibilityVersion >= 4,
+    resolver: createResolver(import.meta.url),
+    options,
+  }
 
   let vitePwaClientPlugin: Plugin | undefined
   const resolveVitePluginPWAAPI = (): VitePluginPWAAPI | undefined => {
@@ -107,7 +121,7 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
     references.push({ types: 'vite-plugin-pwa/pwa-assets' })
   })
 
-  const pwaAssets = await registerPwaIconsTypes(options, nuxt, resolver, runtimeDir)
+  const pwaAssets = await registerPwaIconsTypes(ctx, runtimeDir)
 
   const manifestDir = join(nuxt.options.buildDir, 'manifests')
   nuxt.options.nitro.publicAssets = nuxt.options.nitro.publicAssets || []

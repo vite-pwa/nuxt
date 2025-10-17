@@ -1,22 +1,20 @@
-import type { Resolver } from '@nuxt/kit'
-import type { Nuxt } from '@nuxt/schema'
-import type { PwaModuleOptions } from '../types'
+import type { NuxtPWAContext } from '../context'
 import type { DtsInfo } from './pwa-icons-helper'
 import { addImports, addTypeTemplate } from '@nuxt/kit'
 import { addPwaTypeTemplate, pwaIcons } from './pwa-icons-helper'
 
 export async function registerPwaIconsTypes(
-  options: PwaModuleOptions,
-  nuxt: Nuxt,
-  resolver: Resolver,
+  ctx: NuxtPWAContext,
   runtimeDir: string,
 ) {
-  const pwaAssets = options.pwaAssets && !options.pwaAssets.disabled && (options.pwaAssets.config === true || !!options.pwaAssets.preset)
+  const { options, nuxt, resolver } = ctx
+  // we need to resolve first the PWA assets options: the resolved options set at pwa-icons::resolvePWAAssetsOptions
+  const pwaAssets = options.pwaAssets && !options.pwaAssets.disabled
   let dts: DtsInfo | undefined
   if (pwaAssets) {
     try {
       const { preparePWAIconTypes } = await import('./pwa-icons')
-      dts = await preparePWAIconTypes(options, nuxt)
+      dts = await preparePWAIconTypes(ctx)
     }
     catch {
       dts = undefined
