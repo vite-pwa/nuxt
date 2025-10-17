@@ -1,4 +1,3 @@
-import type { Nuxt } from '@nuxt/schema'
 import type { UserConfig } from '@vite-pwa/assets-generator/config'
 import type { ResolvedPWAAssetsOptions } from 'vite-plugin-pwa'
 import type { NuxtPWAContext } from '../context'
@@ -24,7 +23,7 @@ export async function preparePWAIconTypes(
     return
 
   const root = nuxt.options.vite.root ?? process.cwd()
-  const { config, sources } = await loadConfiguration(nuxt, root, configuration)
+  const { config, sources } = await loadConfiguration(root, configuration)
   if (!config.preset)
     return
 
@@ -137,7 +136,6 @@ function resolvePWAAssetsOptions(ctx: NuxtPWAContext) {
 }
 
 async function loadConfiguration(
-  nuxt: Nuxt,
   root: string,
   pwaAssets: ResolvedPWAAssetsOptions,
 ) {
