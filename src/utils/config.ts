@@ -3,7 +3,6 @@ import type { NuxtPWAContext } from '../context'
 import { createHash } from 'node:crypto'
 import { createReadStream } from 'node:fs'
 import { lstat } from 'node:fs/promises'
-import { resolveAlias } from '@nuxt/kit'
 import { resolve } from 'pathe'
 
 export function configurePWAOptions(
@@ -18,7 +17,7 @@ export function configurePWAOptions(
 
   // generate dev sw in .nuxt folder: we don't need to remove it
   if (options.devOptions?.enabled)
-    options.devOptions.resolveTempFolder = () => resolve(resolveAlias('#build'), 'dev-sw-dist')
+    options.devOptions.resolveTempFolder = () => resolve(nuxt.options.buildDir, 'dev-sw-dist')
 
   let config: Partial<
     import('workbox-build').BasePartial
