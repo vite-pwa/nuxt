@@ -41,7 +41,7 @@ export default defineNuxtConfig({
     pwaAssets: {
       config: true,
       // config: false,
-      // image: 'public/favicon.svg',
+      // image: 'favicon.svg',
     },
     workbox: {
       globPatterns: ['**/*.{js,css,html,png,svg,ico}'],

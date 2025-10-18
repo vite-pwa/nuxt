@@ -21,6 +21,7 @@ export async function preparePWAIconTypes(
   if (!configuration || configuration.disabled)
     return
 
+  // use the same logic vite-plugin-pwa uses to load the configuration
   const root = nuxt.options.vite.root ?? process.cwd()
   const { config, sources } = await loadConfiguration(root, configuration)
   if (!config.preset)
