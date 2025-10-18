@@ -1,17 +1,15 @@
-import type { Nuxt } from '@nuxt/schema'
 import type { NitroConfig } from 'nitropack'
-import type { PwaModuleOptions } from '../types'
+import type { NuxtPWAContext } from '../context'
 import { createHash } from 'node:crypto'
 import { createReadStream } from 'node:fs'
 import { lstat } from 'node:fs/promises'
 import { resolve } from 'pathe'
 
 export function configurePWAOptions(
-  nuxt3_8: boolean,
-  options: PwaModuleOptions,
-  nuxt: Nuxt,
+  ctx: NuxtPWAContext,
   nitroConfig: NitroConfig,
 ) {
+  const { nuxt3_8, options, nuxt } = ctx
   if (!options.outDir) {
     const publicDir = nitroConfig.output?.publicDir ?? nuxt.options.nitro?.output?.publicDir
     options.outDir = publicDir ? resolve(publicDir) : resolve(nuxt.options.buildDir, '../.output/public')
@@ -113,7 +111,7 @@ export function configurePWAOptions(
   if (options.pwaAssets) {
     options.pwaAssets.integration = {
       baseUrl: nuxt.options.app.baseURL ?? '/',
-      publicDir: nuxt.options.dir.public,
+      publicDir: ctx.publicDirFolder,
       outDir: options.outDir,
     }
   }

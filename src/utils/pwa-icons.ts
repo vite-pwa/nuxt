@@ -1,27 +1,27 @@
-import type { Nuxt } from '@nuxt/schema'
 import type { UserConfig } from '@vite-pwa/assets-generator/config'
 import type { ResolvedPWAAssetsOptions } from 'vite-plugin-pwa'
-import type { PwaModuleOptions } from '../types'
+import type { NuxtPWAContext } from '../context'
 import type { DtsInfo } from './pwa-icons-helper'
-import { readFile } from 'node:fs/promises'
-import { basename, relative, resolve } from 'node:path'
+import fs from 'node:fs'
+import { access, readFile } from 'node:fs/promises'
 import process from 'node:process'
 import { instructions } from '@vite-pwa/assets-generator/api/instructions'
 import { loadConfig } from '@vite-pwa/assets-generator/config'
+import { basename, relative, resolve } from 'pathe'
 import { generatePwaImageType, pwaIcons } from './pwa-icons-helper'
 
 export async function preparePWAIconTypes(
-  options: PwaModuleOptions,
-  nuxt: Nuxt,
+  ctx: NuxtPWAContext,
 ) {
+  const { options, nuxt } = ctx
   if (!options.pwaAssets || options.pwaAssets.disabled)
     return
 
-  const configuration = resolvePWAAssetsOptions(options)
+  const configuration = await resolvePWAAssetsOptions(ctx)
   if (!configuration || configuration.disabled)
     return
 
-  // use vite root: pwa plugin using vite root, nuxt will configure vite root properly
+  // use the same logic vite-plugin-pwa uses to load the configuration
   const root = nuxt.options.vite.root ?? process.cwd()
   const { config, sources } = await loadConfiguration(root, configuration)
   if (!config.preset)
@@ -39,14 +39,14 @@ export async function preparePWAIconTypes(
     return
 
   const useImage = Array.isArray(images) ? images[0] : images
-  const imageFile = resolve(root, useImage)
-  const publicDir = resolve(root, nuxt.options.dir.public ?? 'public')
+  const imageFile = await tryToResolveImage(ctx, useImage)
+  const publicDir = ctx.publicDirFolder
   const imageName = relative(publicDir, imageFile)
 
   const xhtml = userHeadLinkOptions?.xhtml === true
   const includeId = userHeadLinkOptions?.includeId === true
   const assetsInstructions = await instructions({
-    imageResolver: () => readFile(resolve(root, useImage)),
+    imageResolver: () => readFile(imageFile),
     imageName,
     preset,
     faviconPreset: userHeadLinkOptions?.preset,
@@ -67,11 +67,11 @@ export async function preparePWAIconTypes(
       apple: appleNames,
       appleSplashScreen: appleSplashScreenNames,
     }),
-    transparent: generatePwaImageType('PwaTransparentImage', transparentNames),
-    maskable: generatePwaImageType('PwaMaskableImage', maskableNames),
-    favicon: generatePwaImageType('PwaFaviconImage', faviconNames),
-    apple: generatePwaImageType('PwaAppleImage', appleNames),
-    appleSplashScreen: generatePwaImageType('PwaAppleSplashScreenImage', appleSplashScreenNames),
+    transparent: generatePwaImageType('PwaTransparentImage', ctx.nuxt4, transparentNames),
+    maskable: generatePwaImageType('PwaMaskableImage', ctx.nuxt4, maskableNames),
+    favicon: generatePwaImageType('PwaFaviconImage', ctx.nuxt4, faviconNames),
+    apple: generatePwaImageType('PwaAppleImage', ctx.nuxt4, appleNames),
+    appleSplashScreen: generatePwaImageType('PwaAppleSplashScreenImage', ctx.nuxt4, appleSplashScreenNames),
   } satisfies DtsInfo
 
   if (nuxt.options.dev && nuxt.options.ssr) {
@@ -82,7 +82,8 @@ export async function preparePWAIconTypes(
   return dts
 }
 
-function resolvePWAAssetsOptions(options: PwaModuleOptions) {
+async function resolvePWAAssetsOptions(ctx: NuxtPWAContext) {
+  const { options, nuxt } = ctx
   if (!options.pwaAssets)
     return
 
@@ -90,7 +91,7 @@ function resolvePWAAssetsOptions(options: PwaModuleOptions) {
     disabled: useDisabled,
     config,
     preset,
-    image = 'public/favicon.svg',
+    image,
     htmlPreset = '2023',
     overrideManifestIcons = false,
     includeHtmlHeadLinks = true,
@@ -98,13 +99,38 @@ function resolvePWAAssetsOptions(options: PwaModuleOptions) {
     integration,
   } = options.pwaAssets ?? {}
 
-  const disabled = useDisabled || (!config && !preset)
+  const disabled = !(useDisabled === true) ? false : (!config && !preset)
+  let useImage: string
+  if (image) {
+    useImage = await tryToResolveImage(ctx, image)
+  }
+  else {
+    useImage = resolve(ctx.publicDirFolder, 'favicon.svg')
+  }
+
+  // pwa plugin will use vite.root, and so, we need to always resolve the image relative to srcDir
+  // - Nuxt 3: srcDir === rootDir
+  // - Nuxt 3 v4 compat mode or Nuxt 4+: srcDir = <rootDir>/app vite.root set to srcDir
+  useImage = relative(nuxt.options.srcDir, useImage)
+
+  // prepare
+  options.pwaAssets = {
+    disabled,
+    config: disabled || !config ? false : config,
+    preset: disabled || config ? false : preset ?? 'minimal-2023',
+    image: useImage,
+    htmlPreset,
+    overrideManifestIcons,
+    includeHtmlHeadLinks,
+    injectThemeColor,
+    integration,
+  }
 
   return <ResolvedPWAAssetsOptions>{
     disabled,
     config: disabled || !config ? false : config,
     preset: disabled || config ? false : preset ?? 'minimal-2023',
-    images: [image],
+    images: [useImage],
     htmlPreset,
     overrideManifestIcons,
     includeHtmlHeadLinks,
@@ -113,7 +139,10 @@ function resolvePWAAssetsOptions(options: PwaModuleOptions) {
   }
 }
 
-async function loadConfiguration(root: string, pwaAssets: ResolvedPWAAssetsOptions) {
+async function loadConfiguration(
+  root: string,
+  pwaAssets: ResolvedPWAAssetsOptions,
+) {
   if (pwaAssets.config === false) {
     return await loadConfig<UserConfig>(root, {
       config: false,
@@ -129,4 +158,33 @@ async function loadConfiguration(root: string, pwaAssets: ResolvedPWAAssetsOptio
       ? root
       : { config: pwaAssets.config },
   )
+}
+
+async function checkFileExists(pathname: string): Promise<boolean> {
+  try {
+    await access(pathname, fs.constants.R_OK)
+  }
+  catch {
+    return false
+  }
+
+  return true
+}
+
+async function tryToResolveImage(
+  ctx: NuxtPWAContext,
+  imageName: string,
+): Promise<string> {
+  for (const image of [
+    // rootDir
+    resolve(ctx.nuxt.options.rootDir, imageName),
+    // srcDir
+    resolve(ctx.nuxt.options.srcDir, imageName),
+    // publicDir
+    resolve(ctx.publicDirFolder, imageName),
+  ]) {
+    if (await checkFileExists(image))
+      return image
+  }
+  throw new Error(`PWA Assets image '${imageName}' cannot be resolved!`)
 }
