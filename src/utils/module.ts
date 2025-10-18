@@ -12,6 +12,7 @@ import {
   createResolver,
   extendWebpackConfig,
   getNuxtVersion,
+  resolveAlias,
 } from '@nuxt/kit'
 import { VitePWA } from 'vite-plugin-pwa'
 import { configurePWAOptions } from './config'
@@ -35,6 +36,7 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
     nuxt4Compat: nuxt4 ? true : ('compatibilityVersion' in future && typeof future.compatibilityVersion === 'number') && future.compatibilityVersion >= 4,
     resolver: createResolver(import.meta.url),
     options,
+    publicDirFolder: resolveAlias('public'),
   }
 
   let vitePwaClientPlugin: Plugin | undefined
@@ -131,7 +133,7 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
   })
 
   nuxt.hook('nitro:init', (nitro) => {
-    configurePWAOptions(nuxt3_8, options, nuxt, nitro.options)
+    configurePWAOptions(ctx, nitro.options)
   })
 
   nuxt.hook('vite:extend', ({ config }) => {

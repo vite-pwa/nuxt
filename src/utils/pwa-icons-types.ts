@@ -12,13 +12,8 @@ export async function registerPwaIconsTypes(
   const pwaAssets = options.pwaAssets && !options.pwaAssets.disabled
   let dts: DtsInfo | undefined
   if (pwaAssets) {
-    try {
-      const { preparePWAIconTypes } = await import('./pwa-icons')
-      dts = await preparePWAIconTypes(ctx)
-    }
-    catch {
-      dts = undefined
-    }
+    const { preparePWAIconTypes } = await import('./pwa-icons')
+    dts = await preparePWAIconTypes(ctx)
   }
 
   nuxt.options.alias['#pwa'] = resolver.resolve(runtimeDir, 'composables/index.js')

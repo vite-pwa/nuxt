@@ -9,4 +9,5 @@ export interface NuxtPWAContext {
   options: PwaModuleOptions
   nuxt: Nuxt
   resolver: Resolver
+  publicDirFolder: string
 }

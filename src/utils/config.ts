@@ -1,17 +1,16 @@
-import type { Nuxt } from '@nuxt/schema'
 import type { NitroConfig } from 'nitropack'
-import type { PwaModuleOptions } from '../types'
+import type { NuxtPWAContext } from '../context'
 import { createHash } from 'node:crypto'
 import { createReadStream } from 'node:fs'
 import { lstat } from 'node:fs/promises'
-import { isAbsolute, resolve } from 'pathe'
+import { resolveAlias } from '@nuxt/kit'
+import { resolve } from 'pathe'
 
 export function configurePWAOptions(
-  nuxt3_8: boolean,
-  options: PwaModuleOptions,
-  nuxt: Nuxt,
+  ctx: NuxtPWAContext,
   nitroConfig: NitroConfig,
 ) {
+  const { nuxt3_8, options, nuxt } = ctx
   if (!options.outDir) {
     const publicDir = nitroConfig.output?.publicDir ?? nuxt.options.nitro?.output?.publicDir
     options.outDir = publicDir ? resolve(publicDir) : resolve(nuxt.options.buildDir, '../.output/public')
@@ -19,7 +18,7 @@ export function configurePWAOptions(
 
   // generate dev sw in .nuxt folder: we don't need to remove it
   if (options.devOptions?.enabled)
-    options.devOptions.resolveTempFolder = () => resolve(nuxt.options.buildDir, 'dev-sw-dist')
+    options.devOptions.resolveTempFolder = () => resolve(resolveAlias('#build'), 'dev-sw-dist')
 
   let config: Partial<
     import('workbox-build').BasePartial
@@ -111,12 +110,9 @@ export function configurePWAOptions(
     config.manifestTransforms = [createManifestTransform(nuxt.options.app.baseURL ?? '/', options.outDir, appManifestFolder)]
 
   if (options.pwaAssets) {
-    const publicDir = nuxt.options.dir.public
-      ? (isAbsolute(nuxt.options.dir.public) ? nuxt.options.dir.public : resolve(nuxt.options.rootDir, nuxt.options.dir.public))
-      : resolve(nuxt.options.rootDir, 'public')
     options.pwaAssets.integration = {
       baseUrl: nuxt.options.app.baseURL ?? '/',
-      publicDir,
+      publicDir: ctx.publicDirFolder,
       outDir: options.outDir,
     }
   }
