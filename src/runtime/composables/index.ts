@@ -33,7 +33,7 @@ export interface PWAIcon {
   [key: string]: any
 }
 
-type PWAImageType<T> = T extends 'transparent'
+export type PWAImageType<T> = T extends 'transparent'
   ? PwaTransparentImageProps['image'] | (Omit<PWAImage, 'image'> & { image: PwaTransparentImageProps['image'] })
   : T extends 'maskable'
     ? PwaMaskableImageProps['image'] | Omit<PWAImage, 'image'> & { image: PwaMaskableImageProps['image'] }

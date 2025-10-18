@@ -65,9 +65,7 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
   } */
 
   const runtimeDir = resolver.resolve('../runtime')
-
-  if (!nuxt.options.ssr)
-    nuxt.options.build.transpile.push(runtimeDir)
+  nuxt.options.build.transpile.push(runtimeDir)
 
   if (client.registerPlugin) {
     addPlugin({
@@ -80,40 +78,78 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
 
   addPWAIconsPluginTemplate(pwaAssetsEnabled)
 
-  await Promise.all([
-    addComponent({
-      name: 'VitePwaManifest',
-      filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
-    }),
-    addComponent({
-      name: 'NuxtPwaManifest',
-      filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
-    }),
-    addComponent({
-      name: 'NuxtPwaAssets',
-      filePath: resolver.resolve(runtimeDir, 'components/NuxtPwaAssets'),
-    }),
-    addComponent({
-      name: 'PwaAppleImage',
-      filePath: resolver.resolve(runtimeDir, 'components/PwaAppleImage.vue'),
-    }),
-    addComponent({
-      name: 'PwaAppleSplashScreenImage',
-      filePath: resolver.resolve(runtimeDir, 'components/PwaAppleSplashScreenImage.vue'),
-    }),
-    addComponent({
-      name: 'PwaFaviconImage',
-      filePath: resolver.resolve(runtimeDir, 'components/PwaFaviconImage.vue'),
-    }),
-    addComponent({
-      name: 'PwaMaskableImage',
-      filePath: resolver.resolve(runtimeDir, 'components/PwaMaskableImage.vue'),
-    }),
-    addComponent({
-      name: 'PwaTransparentImage',
-      filePath: resolver.resolve(runtimeDir, 'components/PwaTransparentImage.vue'),
-    }),
-  ])
+  if (ctx.nuxt4) {
+    await Promise.all([
+      addComponent({
+        name: 'VitePwaManifest',
+        filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
+      }),
+      addComponent({
+        name: 'NuxtPwaManifest',
+        filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
+      }),
+      addComponent({
+        name: 'NuxtPwaAssets',
+        filePath: resolver.resolve(runtimeDir, 'components/NuxtPwaAssets'),
+      }),
+      addComponent({
+        name: 'PwaAppleImage',
+        filePath: resolver.resolve(runtimeDir, 'components/nuxt4/PwaAppleImage'),
+      }),
+      addComponent({
+        name: 'PwaAppleSplashScreenImage',
+        filePath: resolver.resolve(runtimeDir, 'components/nuxt4/PwaAppleSplashScreenImage'),
+      }),
+      addComponent({
+        name: 'PwaFaviconImage',
+        filePath: resolver.resolve(runtimeDir, 'components/nuxt4/PwaFaviconImage'),
+      }),
+      addComponent({
+        name: 'PwaMaskableImage',
+        filePath: resolver.resolve(runtimeDir, 'components/nuxt4/PwaMaskableImage'),
+      }),
+      addComponent({
+        name: 'PwaTransparentImage',
+        filePath: resolver.resolve(runtimeDir, 'components/nuxt4/PwaTransparentImage'),
+      }),
+    ])
+  }
+  else {
+    await Promise.all([
+      addComponent({
+        name: 'VitePwaManifest',
+        filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
+      }),
+      addComponent({
+        name: 'NuxtPwaManifest',
+        filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
+      }),
+      addComponent({
+        name: 'NuxtPwaAssets',
+        filePath: resolver.resolve(runtimeDir, 'components/NuxtPwaAssets'),
+      }),
+      addComponent({
+        name: 'PwaAppleImage',
+        filePath: resolver.resolve(runtimeDir, 'components/PwaAppleImage.vue'),
+      }),
+      addComponent({
+        name: 'PwaAppleSplashScreenImage',
+        filePath: resolver.resolve(runtimeDir, 'components/PwaAppleSplashScreenImage.vue'),
+      }),
+      addComponent({
+        name: 'PwaFaviconImage',
+        filePath: resolver.resolve(runtimeDir, 'components/PwaFaviconImage.vue'),
+      }),
+      addComponent({
+        name: 'PwaMaskableImage',
+        filePath: resolver.resolve(runtimeDir, 'components/PwaMaskableImage.vue'),
+      }),
+      addComponent({
+        name: 'PwaTransparentImage',
+        filePath: resolver.resolve(runtimeDir, 'components/PwaTransparentImage.vue'),
+      }),
+    ])
+  }
 
   nuxt.hook('prepare:types', ({ references }) => {
     references.push({ path: resolver.resolve(runtimeDir, 'plugins/types') })
