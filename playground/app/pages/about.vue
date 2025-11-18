@@ -4,7 +4,7 @@ const pwa = usePWA()
 
 <template>
   <div>
-    <h1>Nuxt Vite PWA</h1>
+    <h1>Nuxt Vite PWA: /about</h1>
     <ClientOnly>
       PWA Installed: {{ pwa?.isPWAInstalled }}
     </ClientOnly>

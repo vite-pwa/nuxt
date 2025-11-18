@@ -6,6 +6,7 @@ export default defineNuxtConfig({
     typescriptBundlerResolution: true,
   },
   experimental: {
+    viteEnvironmentApi: false,
     payloadExtraction: true,
     watcher: 'parcel',
   },
@@ -29,6 +30,7 @@ export default defineNuxtConfig({
   vite: {
     logLevel: 'info',
   },
+  devtools: { enabled: true },
   pwa: {
     mode: 'development',
     strategies: 'generateSW',

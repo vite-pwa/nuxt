@@ -22,6 +22,7 @@ export async function writeWebManifest(dir: string, path: string, api: VitePlugi
       pwaAssetsGenerator.injectManifestIcons()
   }
   const manifest = api.generateBundle({})?.[path]
+  console.log('writing manifest to:', resolve(dir, path))
   if (manifest && 'source' in manifest)
     await writeFile(resolve(dir, path), manifest.source, 'utf-8')
 }

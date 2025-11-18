@@ -29,7 +29,7 @@ test('The service worker is registered and cache storage is present', async ({ p
 
   expect(Object.keys(cacheContents)[0]).toEqual(key)
 
-  const urls = cacheContents[key].map(url => url.slice('http://localhost:4173/'.length))
+  const urls = cacheContents[key]!.map(url => url.slice('http://localhost:4173/'.length))
 
   /*
     'http://localhost:4173/about?__WB_REVISION__=38251751d310c9b683a1426c22c135a2',

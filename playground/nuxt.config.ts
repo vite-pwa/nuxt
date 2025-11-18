@@ -14,9 +14,11 @@ export default defineNuxtConfig({
     },
   ],
   future: {
+    compatibilityVersion: 5,
     typescriptBundlerResolution: true,
   },
   experimental: {
+    viteEnvironmentApi: true,
     payloadExtraction: true,
     watcher: 'parcel',
   },
@@ -42,7 +44,7 @@ export default defineNuxtConfig({
   },
   pwa: {
     strategies: sw ? 'injectManifest' : 'generateSW',
-    srcDir: sw ? 'service-worker' : undefined,
+    srcDir: sw ? '../service-worker' : undefined,
     filename: sw ? 'sw.ts' : undefined,
     registerType: 'autoUpdate',
     manifest: {
@@ -81,6 +83,7 @@ export default defineNuxtConfig({
       periodicSyncForUpdates: 20,
     },
     experimental: {
+      enableWorkboxPayloadQueryParams: true,
       includeAllowlist: true,
     },
     devOptions: {

@@ -39,7 +39,7 @@ export async function preparePWAIconTypes(
     return
 
   const useImage = Array.isArray(images) ? images[0] : images
-  const imageFile = await tryToResolveImage(ctx, useImage)
+  const imageFile = await tryToResolveImage(ctx, useImage!)
   const publicDir = ctx.publicDirFolder
   const imageName = relative(publicDir, imageFile)
 
