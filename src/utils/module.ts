@@ -20,12 +20,18 @@ import { addPWAIconsPluginTemplate } from './pwa-icons-helper'
 import { registerPwaIconsTypes } from './pwa-icons-types'
 import { regeneratePWA, writeWebManifest } from './utils'
 
+const resolver = createResolver(import.meta.url)
+
 export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
-  const resolver = createResolver(import.meta.url)
   const nuxtVersion = (getNuxtVersion(nuxt) as string).split('.').map(v => Number.parseInt(v))
-  const nuxt3_8 = nuxtVersion.length > 1 && (nuxtVersion[0] > 3 || (nuxtVersion[0] === 3 && nuxtVersion[1] >= 8))
-  const nuxt4 = nuxtVersion.length > 1 && nuxtVersion[0] >= 4
+  const nuxt3_8 = nuxtVersion.length > 1 && (nuxtVersion[0]! > 3 || (nuxtVersion[0] === 3 && nuxtVersion[1]! >= 8))
+  const nuxt4 = nuxtVersion.length > 1 && nuxtVersion[0]! >= 4
+  const nuxt5 = nuxtVersion.length > 1 && nuxtVersion[0]! >= 5
+  const nuxt4_2 = nuxtVersion.length > 1 && (nuxtVersion[0]! > 4 || (nuxtVersion[0] === 4 && nuxtVersion[1]! >= 2))
   const future = nuxt.options.future as any
+  const experimental = nuxt.options.experimental as any
+  const enableEnvironmentApi = nuxt5 || (nuxt4_2 && ('viteEnvironmentApi' in experimental && experimental.viteEnvironmentApi === true))
+  options.enableEnvironmentApi = enableEnvironmentApi
 
   const ctx: NuxtPWAContext = {
     nuxt,
@@ -37,6 +43,7 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
     resolver: createResolver(import.meta.url),
     options,
     publicDirFolder: resolveAlias('public'),
+    enableEnvironmentApi,
   }
 
   let vitePwaClientPlugin: Plugin | undefined
@@ -79,74 +86,74 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
   addPWAIconsPluginTemplate(pwaAssetsEnabled)
 
   if (ctx.nuxt4) {
-    await Promise.all([
-      addComponent({
-        name: 'VitePwaManifest',
-        filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
-      }),
-      addComponent({
-        name: 'NuxtPwaManifest',
-        filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
-      }),
-      addComponent({
-        name: 'NuxtPwaAssets',
-        filePath: resolver.resolve(runtimeDir, 'components/NuxtPwaAssets'),
-      }),
-      addComponent({
-        name: 'PwaAppleImage',
-        filePath: resolver.resolve(runtimeDir, 'components/nuxt4/PwaAppleImage'),
-      }),
-      addComponent({
-        name: 'PwaAppleSplashScreenImage',
-        filePath: resolver.resolve(runtimeDir, 'components/nuxt4/PwaAppleSplashScreenImage'),
-      }),
-      addComponent({
-        name: 'PwaFaviconImage',
-        filePath: resolver.resolve(runtimeDir, 'components/nuxt4/PwaFaviconImage'),
-      }),
-      addComponent({
-        name: 'PwaMaskableImage',
-        filePath: resolver.resolve(runtimeDir, 'components/nuxt4/PwaMaskableImage'),
-      }),
-      addComponent({
-        name: 'PwaTransparentImage',
-        filePath: resolver.resolve(runtimeDir, 'components/nuxt4/PwaTransparentImage'),
-      }),
-    ])
+    addComponent({
+      name: 'VitePwaManifest',
+      filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
+    })
+    addComponent({
+      name: 'NuxtPwaManifest',
+      filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
+    })
+    addComponent({
+      name: 'NuxtPwaAssets',
+      filePath: resolver.resolve(runtimeDir, 'components/NuxtPwaAssets'),
+    })
+    addComponent({
+      name: 'PwaAppleImage',
+      filePath: resolver.resolve(runtimeDir, 'components/PwaAppleImage'),
+    })
+    addComponent({
+      name: 'PwaAppleSplashScreenImage',
+      filePath: resolver.resolve(runtimeDir, 'components/PwaAppleSplashScreenImage'),
+    })
+    addComponent({
+      name: 'PwaFaviconImage',
+      filePath: resolver.resolve(runtimeDir, 'components/PwaFaviconImage'),
+    })
+    addComponent({
+      name: 'PwaMaskableImage',
+      filePath: resolver.resolve(runtimeDir, 'components/PwaMaskableImage'),
+    })
+    addComponent({
+      name: 'PwaTransparentImage',
+      filePath: resolver.resolve(runtimeDir, 'components/PwaTransparentImage'),
+    })
   }
   else {
+    const v3RuntimeDir = resolver.resolve('../v3')
+    nuxt.options.build.transpile.push(v3RuntimeDir)
     await Promise.all([
       addComponent({
         name: 'VitePwaManifest',
-        filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
+        filePath: resolver.resolve(v3RuntimeDir, 'VitePwaManifest'),
       }),
       addComponent({
         name: 'NuxtPwaManifest',
-        filePath: resolver.resolve(runtimeDir, 'components/VitePwaManifest'),
+        filePath: resolver.resolve(v3RuntimeDir, 'VitePwaManifest'),
       }),
       addComponent({
         name: 'NuxtPwaAssets',
-        filePath: resolver.resolve(runtimeDir, 'components/NuxtPwaAssets'),
+        filePath: resolver.resolve(v3RuntimeDir, 'NuxtPwaAssets'),
       }),
       addComponent({
         name: 'PwaAppleImage',
-        filePath: resolver.resolve(runtimeDir, 'components/PwaAppleImage.vue'),
+        filePath: resolver.resolve(v3RuntimeDir, 'PwaAppleImage.vue'),
       }),
       addComponent({
         name: 'PwaAppleSplashScreenImage',
-        filePath: resolver.resolve(runtimeDir, 'components/PwaAppleSplashScreenImage.vue'),
+        filePath: resolver.resolve(v3RuntimeDir, 'PwaAppleSplashScreenImage.vue'),
       }),
       addComponent({
         name: 'PwaFaviconImage',
-        filePath: resolver.resolve(runtimeDir, 'components/PwaFaviconImage.vue'),
+        filePath: resolver.resolve(v3RuntimeDir, 'PwaFaviconImage.vue'),
       }),
       addComponent({
         name: 'PwaMaskableImage',
-        filePath: resolver.resolve(runtimeDir, 'components/PwaMaskableImage.vue'),
+        filePath: resolver.resolve(v3RuntimeDir, 'PwaMaskableImage.vue'),
       }),
       addComponent({
         name: 'PwaTransparentImage',
-        filePath: resolver.resolve(runtimeDir, 'components/PwaTransparentImage.vue'),
+        filePath: resolver.resolve(v3RuntimeDir, 'PwaTransparentImage.vue'),
       }),
     ])
   }
@@ -178,13 +185,16 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
       throw new Error('Remove vite-plugin-pwa plugin from Vite Plugins entry in Nuxt config file!')
   })
 
-  nuxt.hook('vite:extendConfig', async (viteInlineConfig, { isClient }) => {
+  nuxt.hook('vite:extendConfig', async (viteInlineConfig, { isClient, isServer }) => {
+    // @ts-expect-error nuxt 4 using readonly
     viteInlineConfig.plugins = viteInlineConfig.plugins || []
-    const plugin = viteInlineConfig.plugins.find(p => p && typeof p === 'object' && 'name' in p && p.name === 'vite-plugin-pwa')
-    if (plugin)
-      throw new Error('Remove vite-plugin-pwa plugin from Vite Plugins entry in Nuxt config file!')
+    if (!enableEnvironmentApi) {
+      const plugin = viteInlineConfig.plugins.find(p => p && typeof p === 'object' && 'name' in p && p.name === 'vite-plugin-pwa')
+      if (plugin)
+        throw new Error('Remove vite-plugin-pwa plugin from Vite Plugins entry in Nuxt config file!')
+    }
 
-    if (options.manifest && isClient) {
+    if (options.manifest && !options.enableEnvironmentApi && isClient) {
       viteInlineConfig.plugins.push({
         name: 'vite-pwa-nuxt:webmanifest:build',
         apply: 'build',
@@ -202,6 +212,7 @@ export async function doSetup(options: PwaModuleOptions, nuxt: Nuxt) {
     }
 
     if (isClient) {
+      // @ts-expect-error nuxt 4 using readonly
       viteInlineConfig.plugins = viteInlineConfig.plugins || []
       const configuration = 'virtual:nuxt-pwa-configuration'
       const resolvedConfiguration = `\0${configuration}`
@@ -230,9 +241,14 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
       })
     }
 
-    // remove vite plugin pwa build plugin
     const plugins = [...VitePWA(options).filter(p => p.name !== 'vite-plugin-pwa:build')]
-    viteInlineConfig.plugins.push(plugins)
+    if (enableEnvironmentApi) {
+      // we need to destructure the array, otherwise it won't work
+      viteInlineConfig.plugins.push(...plugins)
+    }
+    else {
+      viteInlineConfig.plugins.push(plugins)
+    }
     if (isClient)
       vitePwaClientPlugin = plugins.find(p => p.name === 'vite-plugin-pwa') as Plugin
   })
@@ -250,11 +266,12 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
       next()
     }
     nuxt.hook('vite:serverCreated', (viteServer, { isServer }) => {
-      if (isServer)
+      // nuxt with env.api enabled will use only 1 dev server for both environments
+      if (!enableEnvironmentApi && isServer)
         return
-
       viteServer.middlewares.stack.push({ route: webManifest, handle: emptyHandle })
       viteServer.middlewares.stack.push({ route: devSw, handle: emptyHandle })
+
       if (options.pwaAssets) {
         viteServer.middlewares.stack.push({
           route: '',
@@ -299,7 +316,8 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
 
     if (!options.strategies || options.strategies === 'generateSW') {
       nuxt.hook('vite:serverCreated', (viteServer, { isServer }) => {
-        if (isServer)
+        // nuxt with env.api enabled will use only 1 dev server for both environments
+        if (!enableEnvironmentApi && isServer)
           return
 
         viteServer.middlewares.stack.push({ route: workbox, handle: emptyHandle })
@@ -307,7 +325,8 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
       if (options.devOptions?.suppressWarnings) {
         const suppressWarnings = `${nuxt.options.app.baseURL}suppress-warnings.js`
         nuxt.hook('vite:serverCreated', (viteServer, { isServer }) => {
-          if (isServer)
+          // nuxt with env.api enabled will use only 1 dev server for both environments
+          if (!enableEnvironmentApi && isServer)
             return
 
           viteServer.middlewares.stack.push({ route: suppressWarnings, handle: emptyHandle })
@@ -317,7 +336,7 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
       if (sourcemap) {
         const swMap = `${nuxt.options.app.baseURL}${options.filename ?? 'sw.js'}.map`
         const resolvedSwMapFile = join(nuxt.options.buildDir, 'dev-sw-dist', swMap)
-        const worboxMap = `${nuxt.options.app.baseURL}workbox-`
+        const workboxMap = `${nuxt.options.app.baseURL}workbox-`
         addDevServerHandler({
           route: '',
           handler: await import('h3').then(({ defineLazyEventHandler }) => defineLazyEventHandler(async () => {
@@ -325,7 +344,7 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
             return dev(
               swMap,
               resolvedSwMapFile,
-              worboxMap,
+              workboxMap,
               nuxt.options.buildDir,
               nuxt.options.app.baseURL,
             )
@@ -360,6 +379,7 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
     }
     if (nuxt3_8) {
       nuxt.hook('nitro:build:public-assets', async () => {
+        console.log('nitro:build:public-assets')
         await regeneratePWA(
           options.outDir!,
           pwaAssets,
@@ -370,6 +390,7 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
     else {
       nuxt.hook('nitro:init', (nitro) => {
         nitro.hooks.hook('rollup:before', async () => {
+          console.log('rollup:before:', options.outDir)
           await regeneratePWA(
             options.outDir!,
             pwaAssets,
@@ -379,6 +400,7 @@ export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates ===
       })
       if (nuxt.options.nitro.static || (nuxt.options as any)._generate /* TODO: remove in future */) {
         nuxt.hook('close', async () => {
+          console.log('close:', options.outDir)
           await regeneratePWA(
             options.outDir!,
             pwaAssets,

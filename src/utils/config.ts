@@ -143,8 +143,8 @@ function createManifestTransform(
       }
       else {
         const parts = url.split('/')
-        parts[parts.length - 1] = parts[parts.length - 1].replace(/\.html$/, '')
-        e.url = parts.length > 1 ? parts.slice(0, parts.length - 1).join('/') : parts[0]
+        parts[parts.length - 1] = parts[parts.length - 1]!.replace(/\.html$/, '')
+        e.url = parts.length > 1 ? parts.slice(0, parts.length - 1).join('/') : parts[0]!
       }
     })
 

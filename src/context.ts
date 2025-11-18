@@ -10,4 +10,5 @@ export interface NuxtPWAContext {
   nuxt: Nuxt
   resolver: Resolver
   publicDirFolder: string
+  enableEnvironmentApi: boolean
 }

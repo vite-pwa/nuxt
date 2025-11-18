@@ -5,7 +5,7 @@ import { eventHandler } from 'h3'
 export function dev(
   swMap: string,
   resolvedSwMapFile: string,
-  worboxMap: string,
+  workboxMap: string,
   buildDir: string,
   baseURL: string,
 ) {
@@ -16,7 +16,7 @@ export function dev(
 
     const file = url === swMap
       ? resolvedSwMapFile
-      : url.startsWith(worboxMap) && url.endsWith('.js.map')
+      : url.startsWith(workboxMap) && url.endsWith('.js.map')
         ? join(
             buildDir,
             'dev-sw-dist',
