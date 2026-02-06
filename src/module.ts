@@ -38,7 +38,7 @@ export interface ModuleRuntimeHooks {
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
-    name: 'pwa',
+    name: '@vite-pwa/nuxt',
     configKey: 'pwa',
     compatibility: {
       nuxt: '>=3.6.5',
