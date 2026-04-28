@@ -32,7 +32,14 @@
     "./*": "./*"
   },
   "main": "./dist/module.mjs",
-  "types": "./dist/types.d.ts",
+  "types": "./dist/types.d.mts",
+  "typesVersions": {
+    "*": {
+      "configuration": [
+        "./configuration.d.ts"
+      ]
+    }
+  },
   "files": [
     "*.d.ts",
     "dist"
