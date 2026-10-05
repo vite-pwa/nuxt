@@ -42,16 +42,22 @@ const plugin: Plugin<{
         if ((r && r.installing) || (('connection' in navigator) && !navigator.onLine))
           return
 
-        const resp = await fetch(swUrl, {
-          cache: 'no-store',
-          headers: {
-            'cache': 'no-store',
-            'cache-control': 'no-cache',
-          },
-        })
+        try {
+          const resp = await fetch(swUrl, {
+            cache: 'no-store',
+            headers: {
+              'cache': 'no-store',
+              'cache-control': 'no-cache',
+            },
+          })
 
-        if (resp?.status === 200)
-          await r.update()
+          if (resp?.status === 200)
+            await r.update()
+        }
+        catch {
+          // a failed check (offline, flaky network, a registration without a worker)
+          // is not an app error: the next interval tick checks again
+        }
       }, timeout)
     }
 
