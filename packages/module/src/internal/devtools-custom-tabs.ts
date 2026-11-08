@@ -7,7 +7,7 @@ import {
   INSPECTOR_BASE_PATH_URL,
 } from '@unplugin-pwa/core/constants'
 
-export function devtoolsCustomTabs<
+export function devtoolsCustomTabsHook<
   B extends Bundler,
   UserStrategy extends VitePWAStrategy,
   T extends SWType,

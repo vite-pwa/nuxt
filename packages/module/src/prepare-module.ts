@@ -15,7 +15,7 @@ import { normalizePath } from '@vite-pwa/workbox-build/utils/resolve-sw-names'
 import { isGreaterThanOrEqual } from 'verkit'
 import { buildPwaAssets } from './build-pwa-assets'
 import { buildBeforeHook } from './internal/build-before-hook'
-// import { devtoolsCustomTabsHook } from './internal/devtools-custom-tabs-hook.ts'
+import { devtoolsCustomTabsHook } from './internal/devtools-custom-tabs'
 import { nitroConfigHook } from './internal/nitro-config-hook'
 import { nitroInitHook } from './internal/nitro-init-hook'
 import { prepareTypesHook } from './internal/prepare-types-hook'
@@ -82,7 +82,7 @@ export async function prepareModule<
   // 3) add PWA types and registers composables
   nuxt.hook('prepare:types', prepareTypesHook<B, UserStrategy, T, NPC>(ctx))
   // 4) prepare devtools tab: this hook runs between prepare:types and component:extend, cannot use build:before hook
-  // nuxt.hook('devtools:customTabs', devtoolsCustomTabsHook<B, UserStrategy, T, NPC>(ctx))
+  nuxt.hook('devtools:customTabs', devtoolsCustomTabsHook<B, UserStrategy, T, NPC>(ctx))
   // 5) add PWA components (components:extend)
   for (
     const name of [
