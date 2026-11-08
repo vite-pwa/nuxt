@@ -54,10 +54,11 @@ export async function prepareModule<
     }
   }
 
+  ctx.externalConfigurationLoader = true
+
   ctx.base ??= ctx.consumerOptions.base || '/'
   ctx.consumerOptions.base ??= ctx.base
   ctx.consumerOptions.scope ??= ctx.base
-  ctx.externalConfigurationLoader = true
 
   const runtimeDir = resolver.resolve('./runtime')
   nuxt.options.build.transpile.push(runtimeDir)

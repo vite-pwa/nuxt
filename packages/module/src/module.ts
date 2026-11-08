@@ -22,11 +22,18 @@ export type BeforeBuildServiceWorkerHook<
   T extends SWType = 'classic',
 > = (options: ResolvedVitePWAOptions<S, T>) => HookResult
 
+export interface ServiceWorkerRuntimeHooksOptions {
+  url: string
+  registration?: ServiceWorkerRegistration
+}
+
+export interface ServiceWorkerRegistrationErrorOptions {
+  error?: unknown
+}
+
 export interface PWAModuleRuntimeHooks {
   /**
    * Emitted before service worker registration to allow use `TrustedScriptURL`
-   * @param url The url.
-   * @param swType The current service worker type.
    * @param withTrustedScriptUrl The callback to change the configuration.
    */
   'service-worker:before-register': (
@@ -36,25 +43,17 @@ export interface PWAModuleRuntimeHooks {
    * Emitted when the service worker is registered
    * @param data The url and the optional service worker registration object
    */
-  'service-worker:registered': (data: {
-    url: string
-    registration?: ServiceWorkerRegistration
-  }) => HookResult
+  'service-worker:registered': (data: ServiceWorkerRuntimeHooksOptions) => HookResult
   /**
    * Emitted when the service worker registration fails
    * @param data The optional error object
    */
-  'service-worker:registration-failed': (data: {
-    error?: unknown
-  }) => HookResult
+  'service-worker:registration-failed': (data: ServiceWorkerRegistrationErrorOptions) => HookResult
   /**
    * Emitted when the service worker is activated
    * @param data The url and the service worker registration object
    */
-  'service-worker:activated': (data: {
-    url: string
-    registration: ServiceWorkerRegistration
-  }) => HookResult
+  'service-worker:activated': (data: ServiceWorkerRuntimeHooksOptions) => HookResult
 }
 
 export type ModuleRuntimeHooks = PWAModuleRuntimeHooks

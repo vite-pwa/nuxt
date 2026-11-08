@@ -7,7 +7,6 @@ import { /* addDevServerHandler, */addVitePlugin } from '@nuxt/kit'
 import { DevPlugin } from '@unplugin-pwa/vite/plugins/dev'
 import { DevMiddlewarePlugin } from '@unplugin-pwa/vite/plugins/dev-middleware'
 import { DevAssetsMiddlewarePlugin } from '@unplugin-pwa/vite/plugins/dev-pwa-assets-middleware'
-import { DevtoolsPlugin } from '@unplugin-pwa/vite/plugins/devtools'
 import { InfoPlugin } from '@unplugin-pwa/vite/plugins/info'
 import { InspectorPlugin } from '@unplugin-pwa/vite/plugins/inspector'
 import { MainPlugin } from '@unplugin-pwa/vite/plugins/main'
@@ -112,6 +111,12 @@ export async function prepareNuxtOptions<
     }
   }
 
+  const devOptions = ctx.resolvedOptions.devOptions
+
+  if (devOptions?.enabled && devOptions?.inspector === 'vite-devtools') {
+    devOptions.inspector = 'standalone'
+  }
+
   addVitePlugin([
     MainPlugin(ctx),
     VirtualModulesPlugin(ctx),
@@ -122,8 +127,5 @@ export async function prepareNuxtOptions<
     AssetsPlugin(ctx),
     PwaRuntimeConfiguration(ctx),
     InspectorPlugin(ctx),
-    nuxt.options.dev && ctx.resolvedOptions.devOptions?.inspector === 'vite-devtools'
-      ? DevtoolsPlugin(ctx)
-      : undefined,
-  ].filter(Boolean) as Plugin[])
+  ] as Plugin[])
 }
