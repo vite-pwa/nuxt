@@ -28,7 +28,7 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'cr-tracked') &&
         !startsWith(github.head_ref, 'release/v')
       )
-#    if: ${{ !github.event.pull_request.draft && contains(github.event.pull_request.labels.*.name, 'cr-tracked') }}
+    # if: ${{ !github.event.pull_request.draft && contains(github.event.pull_request.labels.*.name, 'cr-tracked') }}
     runs-on: ubuntu-latest
 
     steps:
