@@ -2,7 +2,7 @@
   "name": "@vite-pwa/nuxt-core",
   "type": "module",
   "version": "1.1.1",
-  "description": "Nuxt PWA types and configuration",
+  "description": "Nuxt PWA types and external configuration",
   "author": "antfu <anthonyfu117@hotmail.com>",
   "license": "MIT",
   "funding": "https://github.com/sponsors/antfu",
@@ -18,12 +18,12 @@
     "pwa",
     "workbox",
     "unplugin-pwa",
-    "agnostic",
     "configuration"
   ],
   "sideEffects": false,
   "exports": {
     ".": "./dist/index.mjs",
+    "./config": "./dist/config.mjs",
     "./context-types": {
       "types": "./dist/context-types.d.mts"
     },
@@ -33,14 +33,10 @@
     "./types": {
       "types": "./dist/types.d.mts"
     },
-    "./configuration": {
-      "types": "./configuration.d.ts"
-    },
     "./package.json": "./package.json"
   },
   "types": "./dist/index.d.mts",
   "files": [
-    "*.d.ts",
     "dist"
   ],
   "scripts": {
@@ -54,5 +50,9 @@
   },
   "devDependencies": {
     "@nuxt/schema": "catalog:utils"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

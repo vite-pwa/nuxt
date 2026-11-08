@@ -29,7 +29,7 @@ export async function prepareResolvedPwaOptions<
   outDir: string,
 ) {
   // prepare manifest
-  normalizeManifest(ctx)
+  normalizeManifest(ctx as any)
 
   let config: undefined | Partial<
     import('@vite-pwa/workbox-build/types').BasePartial
@@ -184,7 +184,7 @@ export async function prepareResolvedPwaOptions<
 
   // add missing defaults at unplugin-pwa, shouldn't add anything
   await preparePWAStrategy(
-    ctx,
+    ctx as any,
     process.cwd(),
     ctx.outDir,
     // this won't be applied, will be set at prepareResolvedPwaOptions

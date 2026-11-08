@@ -4,8 +4,7 @@
     "types": [
       "node",
       "vite/client",
-      "vitest/globals",
-      "./devtools.d.ts"
+      "vitest/globals"
     ]
   },
   "include": ["src/**/*"]

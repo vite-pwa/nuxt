@@ -51,7 +51,7 @@ export async function prepareNitroRoutes<
   // prepare nitro public assets
   if (isDev) {
     if (!swDisabled) {
-      await prepareSwNamesAndGlobDirectory<B, UserStrategy, T>(ctx)
+      await prepareSwNamesAndGlobDirectory(ctx as any)
       swNames = ctx.dev.options!.swNames
       const outDir = ctx.outDir
 

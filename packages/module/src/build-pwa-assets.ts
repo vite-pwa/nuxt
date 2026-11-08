@@ -21,7 +21,7 @@ export async function buildPwaAssets<
   }
 
   if (ctx.resolvedOptions.manifest) {
-    const webManifest = generateWebManifest(ctx)
+    const webManifest = generateWebManifest(ctx as any)
     await fs.writeFile(
       path.resolve(ctx.outDir, ctx.resolvedOptions.manifestFilename || 'manifest.webmanifest'),
       webManifest,

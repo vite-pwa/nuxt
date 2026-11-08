@@ -10,6 +10,7 @@
     "generate": "nuxi generate"
   },
   "devDependencies": {
+    "@nuxt/devtools": "catalog:nuxt3",
     "@vite-pwa/nuxt": "workspace:*",
     "@vite-pwa/nuxt-vite": "workspace:*",
     "nuxt": "catalog:nuxt3"
