@@ -1,3 +1,4 @@
+import type { Nuxt } from '@nuxt/schema'
 import type { VitePWAStrategy } from '@unplugin-pwa/core'
 import type { Bundler } from '@unplugin-pwa/core/context-types'
 import type { NuxtPWAContext } from '@vite-pwa/nuxt-core/context-types'
@@ -13,6 +14,7 @@ export async function buildPwaAssets<
   NPWAC extends NuxtPWAContext<B, UserStrategy, T>,
 >(
   ctx: NPWAC,
+  nuxt: Nuxt,
 ) {
   const pwaAssetsGenerator = await ctx.pwaAssetsGenerator
   if (pwaAssetsGenerator) {
@@ -30,6 +32,7 @@ export async function buildPwaAssets<
   }
 
   if (!ctx.resolvedOptions.disable) {
+    await nuxt.callHook('pwa:beforeBuildServiceWorker', ctx.resolvedOptions as any)
     await ctx.runBuild()
   }
 }

@@ -1,4 +1,4 @@
-import type { Nuxt } from '@nuxt/schema'
+import type { Nuxt, NuxtHooks } from '@nuxt/schema'
 import type { VitePWAStrategy } from '@unplugin-pwa/core'
 import type { Bundler } from '@unplugin-pwa/core/context-types'
 import type { NuxtPWAContext } from '@vite-pwa/nuxt-core/context-types'
@@ -12,14 +12,12 @@ export function nitroConfigHook<
 >(
   ctx: NPC,
   nuxt: Nuxt,
-): import('@nuxt/schema').NuxtHooks['nitro:config'] {
+): NuxtHooks['nitro:config'] {
   return (nitroConfig) => {
     if (nuxt.options.experimental.payloadExtraction) {
-      ctx.nuxt.enableGlobPatterns = nuxt.options.nitro.static || (nuxt.options as any)._generate /* TODO: remove in future */
-        || (
-          !!nitroConfig.prerender?.routes?.length
-          || Object.values(nitroConfig.routeRules ?? {}).some(r => r.prerender)
-        )
+      ctx.nuxt.enableGlobPatterns = !!nuxt.options.nitro.static
+        || !!nitroConfig.prerender?.routes?.length
+        || Object.values(nitroConfig.routeRules ?? {}).some(r => r.prerender)
     }
   }
 }

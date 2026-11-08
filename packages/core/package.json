@@ -49,7 +49,8 @@
     "@vite-pwa/workbox-build": "catalog:pwa"
   },
   "devDependencies": {
-    "@nuxt/schema": "catalog:utils"
+    "@nuxt/schema": "catalog:utils",
+    "rolldown": "catalog:utils"
   },
   "publishConfig": {
     "access": "public",

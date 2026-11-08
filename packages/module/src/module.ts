@@ -9,7 +9,14 @@ import type { Strategy } from '@vite-pwa/workbox-build/config/types'
 import type { SWType } from '@vite-pwa/workbox-build/types'
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 
+export { definePwaConfig } from '@vite-pwa/nuxt-core/config'
+
 export type ModuleOptions = PwaOptions<VitePWAStrategy, SWType>
+
+/**
+ * @deprecated Use `ModuleOptions` instead.
+ */
+export type PwaModuleOptions = ModuleOptions
 
 export interface PwaModuleHooks {
   'pwa:beforeBuildServiceWorker': BeforeBuildServiceWorkerHook
@@ -64,9 +71,6 @@ export default defineNuxtModule<ModuleOptions>({
     configKey: 'pwa',
     compatibility: {
       nuxt: '>=3.9.0',
-      // eslint-disable-next-line ts/ban-ts-comment
-      // @ts-ignore property removed in Nuxt 4
-      bridge: false,
     },
   },
   defaults: nuxt => ({
@@ -74,7 +78,6 @@ export default defineNuxtModule<ModuleOptions>({
     scope: nuxt.options.app.baseURL,
     injectRegister: false,
     includeManifestIcons: false,
-    registerPlugin: true,
     writePlugin: false,
     client: {
       registerPlugin: true,
@@ -83,21 +86,17 @@ export default defineNuxtModule<ModuleOptions>({
     },
   }),
   async setup(options, nuxt) {
-    const [createNuxtPwaContext, prepareModule] = await Promise.all([
-      import('./create-nuxt-pwa-context').then(({
-        createNuxtPwaContext,
-      }) => createNuxtPwaContext),
-      import('./prepare-module').then(({
-        prepareModule,
-      }) => prepareModule),
+    const [{ createNuxtPwaContext }, { prepareModule }] = await Promise.all([
+      import('./create-nuxt-pwa-context.ts'),
+      import('./prepare-module.ts'),
     ])
-    await createNuxtPwaContext(
+    const ctx = await createNuxtPwaContext(
       options,
       nuxt,
       createResolver(import.meta.url),
-    ).then(config => prepareModule(
-      config,
-      nuxt,
-    ))
+    )
+    if (ctx) {
+      await prepareModule(ctx, nuxt)
+    }
   },
 })

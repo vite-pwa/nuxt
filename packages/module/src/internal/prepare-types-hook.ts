@@ -1,7 +1,10 @@
+import type { NuxtHooks } from '@nuxt/schema'
 import type { VitePWAStrategy } from '@unplugin-pwa/core'
 import type { Bundler } from '@unplugin-pwa/core/context-types'
 import type { NuxtPWAContext } from '@vite-pwa/nuxt-core/context-types'
 import type { SWType } from '@vite-pwa/workbox-build/types'
+import { createRequire } from 'node:module'
+import path from 'node:path'
 import { getMajor } from 'verkit'
 
 export function prepareTypesHook<
@@ -11,22 +14,23 @@ export function prepareTypesHook<
   NPWAC extends NuxtPWAContext<B, UserStrategy, T>,
 >(
   ctx: NPWAC,
-): import('@nuxt/schema').NuxtHooks['prepare:types'] {
+): NuxtHooks['prepare:types'] {
   return (context) => {
-    const { references } = context
-    references.push({ types: '@vite-pwa/nuxt/configuration' })
-    references.push({ types: '@unplugin-pwa/core/vue' })
-    references.push({ types: '@unplugin-pwa/core/info' })
-    references.push({ types: '@unplugin-pwa/core/pwa-assets' })
-    // check registerPwaIconsTypes
-    references.push({ path: 'types/pwa-augments.d.ts' })
+    const unpluginPwaCoreDir = path.dirname(
+      createRequire(import.meta.url).resolve('@unplugin-pwa/core/package.json'),
+    )
+    const references = [
+      {
+        path: ctx.nuxt.moduleResolver.resolve('../configuration.d.ts'),
+      },
+      ...['vue.d.ts', 'info.d.ts', 'pwa-assets.d.ts'].map(file => ({
+        path: path.join(unpluginPwaCoreDir, file),
+      })),
+      { path: 'types/pwa-augments.d.ts' },
+    ]
+    context.references.push(...references)
     if (getMajor(ctx.nuxt.nuxtVersion) >= 4) {
-      context.nodeReferences.push({ types: '@vite-pwa/nuxt/configuration' })
-      context.nodeReferences.push({ types: '@unplugin-pwa/core/vue' })
-      context.nodeReferences.push({ types: '@unplugin-pwa/core/info' })
-      context.nodeReferences.push({ types: '@unplugin-pwa/core/pwa-assets' })
-      // check registerPwaIconsTypes
-      context.nodeReferences.push({ path: 'types/pwa-augments.d.ts' })
+      context.nodeReferences.push(...references)
     }
   }
 }

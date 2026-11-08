@@ -9,28 +9,16 @@ export const builder: NuxtPWAContextBuilder = {
     nuxt,
     moduleResolver,
   ) => {
-    const enableEnvApi = getMajor(nuxtVersion) === 4 && nuxt.options.experimental.viteEnvironmentApi
-    if (getMajor(nuxtVersion) >= 5 || enableEnvApi) {
-      return await import('./vite.ts').then(({
-        createViteNuxtPwaContext,
-      }) => createViteNuxtPwaContext(
-        nuxtVersion,
-        buildAssetsDir,
-        options,
-        nuxt,
-        moduleResolver,
-      ) as any)
-    }
-
-    // fallback to legacy
-    return await import('./vite-legacy.ts').then(({
-      createViteLegacyNuxtPwaContext,
-    }) => createViteLegacyNuxtPwaContext(
+    const major = getMajor(nuxtVersion)
+    const envApi = major >= 5 || (major === 4 && !!nuxt.options.experimental.viteEnvironmentApi)
+    const { createViteNuxtPwaContext } = await import('./context.ts')
+    return createViteNuxtPwaContext(
+      envApi,
       nuxtVersion,
       buildAssetsDir,
       options,
       nuxt,
       moduleResolver,
-    ) as any)
+    ) as any
   },
 }

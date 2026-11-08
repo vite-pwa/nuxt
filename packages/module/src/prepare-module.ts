@@ -1,25 +1,25 @@
 import type { Nuxt } from '@nuxt/schema'
 import type { VitePWAStrategy } from '@unplugin-pwa/core'
-import type {
-  Bundler,
-} from '@unplugin-pwa/core/context-types'
+import type { Bundler } from '@unplugin-pwa/core/context-types'
 import type { NuxtPWAContext } from '@vite-pwa/nuxt-core/context-types'
+import type { PwaOptions } from '@vite-pwa/nuxt-core/types'
 import type { SWType } from '@vite-pwa/workbox-build/types'
+import { existsSync } from 'node:fs'
 import {
   addComponent,
   addImports,
   addPlugin,
 } from '@nuxt/kit'
 import { resolveDefaultConfig } from '@unplugin-pwa/core/config'
-import { normalizePath } from '@vite-pwa/workbox-build/utils/resolve-sw-names'
-import { isGreaterThanOrEqual } from 'verkit'
-import { buildPwaAssets } from './build-pwa-assets'
-import { buildBeforeHook } from './internal/build-before-hook'
-import { devtoolsCustomTabsHook } from './internal/devtools-custom-tabs'
-import { nitroConfigHook } from './internal/nitro-config-hook'
-import { nitroInitHook } from './internal/nitro-init-hook'
-import { prepareTypesHook } from './internal/prepare-types-hook'
-import { serverDevHandlerHook } from './internal/server-dev-handler-hook'
+import { normalizePath } from '@unplugin-pwa/core/helpers'
+import { loadPwaConfiguration } from '@vite-pwa/nuxt-core'
+import { buildPwaAssets } from './build-pwa-assets.ts'
+import { buildBeforeHook } from './internal/build-before-hook.ts'
+import { devtoolsCustomTabsHook } from './internal/devtools-custom-tabs.ts'
+import { nitroConfigHook } from './internal/nitro-config-hook.ts'
+import { nitroInitHook } from './internal/nitro-init-hook.ts'
+import { prepareTypesHook } from './internal/prepare-types-hook.ts'
+import { serverDevHandlerHook } from './internal/server-dev-handler-hook.ts'
 
 export async function prepareModule<
   B extends Bundler,
@@ -33,8 +33,7 @@ export async function prepareModule<
   const resolver = ctx.nuxt.moduleResolver
 
   const consumerOptions = ctx.consumerOptions
-  if (consumerOptions?.path) {
-    // resolve nuxt aliases
+  if (consumerOptions.path) {
     consumerOptions.path = await resolver.resolvePath(
       consumerOptions.path,
       {
@@ -44,9 +43,8 @@ export async function prepareModule<
     )
   }
   else {
-    // check first for srcDir, then rootDir
-    for (const path of [nuxt.options.srcDir, nuxt.options.rootDir]) {
-      const resolvedPath = resolveDefaultConfig(path)
+    for (const dir of [nuxt.options.srcDir, nuxt.options.rootDir]) {
+      const resolvedPath = resolveDefaultConfig(dir)
       if (resolvedPath) {
         consumerOptions.path = normalizePath(resolvedPath)
         break
@@ -56,17 +54,25 @@ export async function prepareModule<
 
   ctx.externalConfigurationLoader = true
 
-  ctx.base ??= ctx.consumerOptions.base || '/'
-  ctx.consumerOptions.base ??= ctx.base
-  ctx.consumerOptions.scope ??= ctx.base
+  ctx.base ??= consumerOptions.base || '/'
+  consumerOptions.base ??= ctx.base
+  consumerOptions.scope ??= ctx.base
+
+  const publicDirs = new Set<string>()
+  for (const layer of nuxt.options._layers) {
+    publicDirs.add(normalizePath(resolver.resolve(layer.config.rootDir, layer.config.dir?.public || 'public')))
+  }
+  ctx.nuxt.publicDirs = [...publicDirs].filter(dir => existsSync(dir))
+
+  await loadPwaConfiguration<B, UserStrategy, T, NPC>(ctx, nuxt)
+  if (ctx.resolvedOptions.path) {
+    nuxt.options.watch.push(ctx.resolvedOptions.path)
+    applyExternalNuxtOptions(ctx)
+  }
 
   const runtimeDir = resolver.resolve('./runtime')
   nuxt.options.build.transpile.push(runtimeDir)
-
   nuxt.options.alias['#pwa'] = resolver.resolve(runtimeDir, 'composables')
-  nuxt.options.build.transpile.push('#pwa')
-  // nuxt.options.alias['#pwa-components'] = resolver.resolve(runtimeDir, 'components/index')
-  // nuxt.options.build.transpile.push('#pwa-components')
 
   if (ctx.nuxt.client.registerPlugin) {
     addPlugin({
@@ -75,34 +81,19 @@ export async function prepareModule<
     })
   }
 
-  // hooks will run in this order
-  // 1) configures nitroConfig at ctx.nuxt
   nuxt.hook('nitro:config', nitroConfigHook<B, UserStrategy, T, NPC>(ctx, nuxt))
-  // 2) load configuration and prepare the PWA context: will configure pwa assets icons and runtime stuff
   nuxt.hook('nitro:init', nitroInitHook<B, UserStrategy, T, NPC>(ctx, nuxt))
-  // 3) add PWA types and registers composables
   nuxt.hook('prepare:types', prepareTypesHook<B, UserStrategy, T, NPC>(ctx))
-  // 4) prepare devtools tab: this hook runs between prepare:types and component:extend, cannot use build:before hook
   nuxt.hook('devtools:customTabs', devtoolsCustomTabsHook<B, UserStrategy, T, NPC>(ctx))
-  // 5) add PWA components (components:extend)
-  for (
-    const name of [
-      'NuxtPwaAssets',
-      'NuxtPwaManifest',
-      // 'PwaAppleImage',
-      // 'PwaAppleSplashScreenImage',
-      // 'PwaFaviconImage',
-      // 'PwaMaskableImage',
-      // 'PwaTransparentImage',
-    ]
-  ) {
+
+  for (const name of ['NuxtPwaAssets', 'NuxtPwaManifest']) {
     addComponent({
       name,
       global: !nuxt.options.imports.autoImport,
       filePath: resolver.resolve(runtimeDir, `components/${name}`),
     })
   }
-  // 6) add PWA composables (imports:extend): this will be called twice, but nuxt will dedupe them
+
   addImports([
     'usePWA',
     'useTransparentPwaIcon',
@@ -110,39 +101,39 @@ export async function prepareModule<
     'useFaviconPwaIcon',
     'useApplePwaIcon',
     'useAppleSplashScreenPwaIcon',
-  ].map(key => ({
-    name: key,
-    as: key,
+  ].map(name => ({
+    name,
     from: resolver.resolve(runtimeDir, 'composables'),
   })))
-  // 7) register nuxt hook to call PWA context:ready hook: cannot use build:done since builders hooks not
-  //    being called and nuxt devtools should be ready after server:devHandler; unplugin-pwa devtools plugins
-  //    awaiting at vite devtools setup PWA ready, this hook will call the PWA context:ready hook
+
+  // the PWA inspector waits for `context:ready`, which requires the dev server to be ready
   nuxt.hook('server:devHandler', serverDevHandlerHook<B, UserStrategy, T, NPC>(ctx, nuxt))
-  // 8) add builders stuff: for example, when using vite, will add unplugin-pwa vite plugins and middlewares
   nuxt.hook('build:before', buildBeforeHook<B, UserStrategy, T, NPC>(ctx))
 
-  // build SW when building/generating
   if (!nuxt.options.dev) {
-    if (isGreaterThanOrEqual(ctx.nuxt.nuxtVersion, '3.8.0')) {
-      // nuxt 5 should use nitro 'vite:before:compile' hook and maybe this hook is wrong
-      // nuxt 5 has this new option experimental.nitroViteEnvironment to enable nitro/vite (v3)
-      // maybe we even need a new hook at nitro v3
-      nuxt.hook('nitro:build:public-assets', async () => {
-        await buildPwaAssets<B, UserStrategy, T, NPC>(ctx)
-      })
-    }
-    else {
-      nuxt.hook('nitro:init', (nitro) => {
-        nitro.hooks.hook('rollup:before', async () => {
-          await buildPwaAssets<B, UserStrategy, T, NPC>(ctx)
-        })
-      })
-      if (nuxt.options.nitro.static || (nuxt.options as any)._generate /* TODO: remove in future */) {
-        nuxt.hook('close', async () => {
-          await buildPwaAssets<B, UserStrategy, T, NPC>(ctx)
-        })
-      }
-    }
+    nuxt.hook('nitro:build:public-assets', async () => {
+      await buildPwaAssets<B, UserStrategy, T, NPC>(ctx, nuxt)
+    })
+  }
+}
+
+function applyExternalNuxtOptions(ctx: NuxtPWAContext<any, any, any>) {
+  const {
+    client,
+    experimental,
+    registerWebManifestInRouteRules,
+    writePlugin,
+  } = ctx.resolvedOptions as Partial<PwaOptions<any, any>>
+  if (client) {
+    Object.assign(ctx.nuxt.client, client)
+  }
+  if (experimental) {
+    ctx.nuxt.experimental = experimental
+  }
+  if (registerWebManifestInRouteRules !== undefined) {
+    ctx.nuxt.registerWebManifestInRouteRules = registerWebManifestInRouteRules
+  }
+  if (writePlugin !== undefined) {
+    ctx.nuxt.writePlugin = writePlugin
   }
 }

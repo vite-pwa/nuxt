@@ -7,7 +7,6 @@ import { hash } from 'node:crypto'
 import { promises as fs } from 'node:fs'
 import { lstat } from 'node:fs/promises'
 import path from 'node:path'
-import process from 'node:process'
 import {
   normalizeManifest,
   normalizePath,
@@ -16,7 +15,6 @@ import {
 import {
   extractSwDestNameFromSource,
 } from '@vite-pwa/workbox-build/utils/resolve-sw-names'
-import { isGreaterThanOrEqual } from 'verkit'
 
 export async function prepareResolvedPwaOptions<
   B extends Bundler,
@@ -84,13 +82,11 @@ export async function prepareResolvedPwaOptions<
     // the user may want to disable offline support
     if (!('navigateFallback' in generateSW)) {
       generateSW.navigateFallback = ctx.base
-      // generateSW.navigateFallback = nuxt.options.app.baseURL ?? '/'
     }
 
     config = generateSW
   }
   else if (ctx.strategy === 'inject-manifest') {
-    // todo: review this
     ctx.resolvedOptions.injectManifest ??= {}
     ctx.resolvedOptions.injectManifest!.swSrc = await ctx.nuxt.moduleResolver.resolvePath(
       ctx.resolvedOptions.injectManifest!.swSrc as string,
@@ -118,16 +114,8 @@ export async function prepareResolvedPwaOptions<
     config.globPatterns = ['**/*.{js,css,html}']
   }
 
-  let buildAssetsDir = nuxt.options.app.buildAssetsDir ?? '_nuxt/'
-  if (buildAssetsDir[0] === '/') {
-    buildAssetsDir = buildAssetsDir.slice(1)
-  }
-  if (buildAssetsDir[buildAssetsDir.length - 1] !== '/') {
-    buildAssetsDir += '/'
-  }
+  const buildAssetsDir = ctx.nuxt.buildAssetsDir
 
-  // Vite 5 support: allow override dontCacheBustURLsMatching
-  // remove './' prefix from assetsDir
   if (!('dontCacheBustURLsMatching' in config)) {
     config.dontCacheBustURLsMatching = new RegExp(`^${buildAssetsDir.replace(/^\.*\//, '')}`)
   }
@@ -169,7 +157,7 @@ export async function prepareResolvedPwaOptions<
 
   // handle Nuxt App Manifest
   let appManifestFolder: string | undefined
-  if (isGreaterThanOrEqual(ctx.nuxt.nuxtVersion, '3.8.0') && nuxt.options.experimental.appManifest) {
+  if (nuxt.options.experimental.appManifest) {
     config.globPatterns = config.globPatterns ?? []
     appManifestFolder = `${buildAssetsDir}builds/`
     config.globPatterns.push(`${appManifestFolder}**/*.json`)
@@ -182,13 +170,11 @@ export async function prepareResolvedPwaOptions<
     ]
   }
 
-  // add missing defaults at unplugin-pwa, shouldn't add anything
   await preparePWAStrategy(
     ctx as any,
-    process.cwd(),
+    nuxt.options.rootDir,
     ctx.outDir,
-    // this won't be applied, will be set at prepareResolvedPwaOptions
-    nuxt.options.app.buildAssetsDir ?? '_nuxt/',
+    buildAssetsDir,
   )
 }
 

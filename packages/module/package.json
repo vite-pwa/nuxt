@@ -17,7 +17,7 @@
     "nuxt",
     "pwa",
     "workbox",
-    "vite-plugin-pwa",
+    "unplugin-pwa",
     "nuxt-module"
   ],
   "exports": {
@@ -42,7 +42,6 @@
     "test:typecheck": "vue-tsc --noEmit"
   },
   "peerDependencies": {
-    "@nuxt/kit": "^3.9.0 || ^4.0.0",
     "@vite-pwa/assets-generator": "^1.0.0 || ^2.0.0",
     "magicast": "^0.5.0",
     "rolldown": "^1.0.0-0"
@@ -59,19 +58,19 @@
     }
   },
   "dependencies": {
+    "@nuxt/kit": "catalog:utils",
     "@unplugin-pwa/core": "catalog:pwa",
-    "@unplugin-pwa/inspector": "catalog:pwa",
     "@vite-pwa/nuxt-core": "workspace:*",
     "@vite-pwa/nuxt-vite": "workspace:*",
     "@vite-pwa/workbox-build": "catalog:pwa",
-    "@vite-pwa/workbox-swkit": "catalog:pwa",
-    "@vite-pwa/workbox-window": "catalog:pwa",
+    "defu": "catalog:utils",
     "verkit": "catalog:utils"
   },
   "devDependencies": {
     "@nuxt/devtools": "catalog:utils",
-    "@nuxt/kit": "catalog:utils",
-    "@nuxt/schema": "catalog:utils"
+    "@nuxt/schema": "catalog:utils",
+    "@vite-pwa/assets-generator": "catalog:pwa",
+    "nuxt": "catalog:utils"
   },
   "build": {
     "externals": [

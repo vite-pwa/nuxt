@@ -1,13 +1,19 @@
-import type { ClientOptions } from './types.ts'
+import type { ClientOptions, PwaOptions } from './types.ts'
 
 export interface NitroPWAOptions {
-  publicAssets: {
-    baseURL?: string
-    fallthrough?: boolean
-    maxAge: number
-    dir: string
-  }[]
   routeRules: Record<string, Record<string, any>>
+}
+
+/**
+ * Module path resolver, compatible with the one returned by `createResolver` from `@nuxt/kit`.
+ */
+export interface NuxtPWAModuleResolver {
+  resolve: (...path: string[]) => string
+  resolvePath: (path: string, options?: {
+    cwd?: string
+    alias?: Record<string, string>
+    extensions?: string[]
+  }) => Promise<string>
 }
 
 export interface PWAPluginContextOptions {
@@ -23,24 +29,14 @@ export interface PWAPluginContextOptions {
    */
   preparePwaConfiguration?: () => Promise<void> | void
   /**
-   * Configure builder specific options, called at `build:done` hook.
+   * Configure builder specific options, called at `build:before` hook.
    */
   prepareNuxtOptions: () => Promise<void> | void
   /**
    * The resolver using the module path.
    */
-  moduleResolver: ReturnType<typeof import('@nuxt/kit')['createResolver']>
-  experimental?: {
-    /**
-     * @deprecated use `enableGenerateSWPayloadQueryParams` instead.
-     */
-    enableWorkboxPayloadQueryParams?: true
-    /**
-     * When using `generateSW/generate-sw` strategy, enabling this option will add a runtime caching
-     * when using `nitro.options.static` or `generate` nuxt command for payload.json files.
-     */
-    enableGenerateSWPayloadQueryParams?: true
-  }
+  moduleResolver: NuxtPWAModuleResolver
+  experimental?: PwaOptions<any, any>['experimental']
   /**
    * Should add nitro route rules for the web manifest?.
    */

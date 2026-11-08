@@ -1,9 +1,9 @@
 import type { Nuxt } from '@nuxt/schema'
 import type { VitePWAStrategy } from '@unplugin-pwa/core'
 import type { SWType } from '@vite-pwa/workbox-build/types'
-import type { Plugin } from 'vite'
+import type { Connect, Plugin } from 'vite'
 import type { ViteLegacyNuxtPWAContext, ViteNuxtPWAContext } from './internal-types.ts'
-import { /* addDevServerHandler, */addVitePlugin } from '@nuxt/kit'
+import { addVitePlugin } from '@nuxt/kit'
 import { DevPlugin } from '@unplugin-pwa/vite/plugins/dev'
 import { DevMiddlewarePlugin } from '@unplugin-pwa/vite/plugins/dev-middleware'
 import { DevAssetsMiddlewarePlugin } from '@unplugin-pwa/vite/plugins/dev-pwa-assets-middleware'
@@ -21,18 +21,12 @@ export async function prepareNuxtOptions<
   ctx: ViteNuxtPWAContext<UserStrategy, T> | ViteLegacyNuxtPWAContext<UserStrategy, T>,
   nuxt: Nuxt,
 ) {
-  if (nuxt.options.dev && ctx.resolvedOptions.devOptions!.enabled) {
+  const devOptions = ctx.resolvedOptions.devOptions
+
+  if (nuxt.options.dev && devOptions?.enabled) {
     const prefix = `${ctx.base}__skip_vite/`
-    let buildAssetsDir = nuxt.options.app.buildAssetsDir ?? '_nuxt/'
-    if (buildAssetsDir[0] === '/') {
-      buildAssetsDir = buildAssetsDir.slice(1)
-    }
-    if (buildAssetsDir[buildAssetsDir.length - 1] === '/') {
-      buildAssetsDir = buildAssetsDir.slice(0, buildAssetsDir.length - 1)
-    }
-    buildAssetsDir = `${ctx.base}${buildAssetsDir}`
-    // we don't know sw deps names, only sw names
-    // unplugin-pwa dev middleware receiving /_nuxt/workbox-classic-xxxx.js.map
+    const buildAssetsDir = `${ctx.base}${ctx.nuxt.buildAssetsDir.slice(0, -1)}`
+    // the dev middleware receives service worker sourcemap requests for workbox chunks under the build assets dir
     ctx.dev.options.mapSWSourcemapFile = (url) => {
       if (!url.startsWith(buildAssetsDir)) {
         return undefined
@@ -68,52 +62,25 @@ export async function prepareNuxtOptions<
 
     const swNames = ctx.dev.options.swNames
     if (swNames.hasNames) {
-      nuxt.hook('vite:serverCreated', async (viteServer, { isServer }) => {
+      const swRoutes = ctx.resolvedOptions.swType === 'classic-and-module'
+        ? [swNames.classic, swNames.module]
+        : [swNames.name]
+      // Nuxt only forwards dev requests to Vite when a Vite middleware is registered for the route
+      nuxt.hook('vite:serverCreated', (viteServer, { isServer }) => {
         if (isServer) {
           return
         }
 
-        // @ts-expect-error just ignore
-        const emptyHandle = (_req, _res, next) => {
-          next()
-        }
-
-        if (ctx.resolvedOptions.swType === 'classic-and-module') {
-          viteServer.middlewares.stack.push({
-            route: `${ctx.base}${swNames.classic}`,
-            handle: emptyHandle,
-          })
-          viteServer.middlewares.stack.push({
-            route: `${ctx.base}${swNames.classic}.map`,
-            handle: emptyHandle,
-          })
-          viteServer.middlewares.stack.push({
-            route: `${ctx.base}${swNames.module}`,
-            handle: emptyHandle,
-          })
-          viteServer.middlewares.stack.push({
-            route: `${ctx.base}${swNames.module}.map`,
-            handle: emptyHandle,
-          })
-          // }
-        }
-        else {
-          viteServer.middlewares.stack.push({
-            route: `${ctx.base}${swNames.name}`,
-            handle: emptyHandle,
-          })
-          viteServer.middlewares.stack.push({
-            route: `${ctx.base}${swNames.name}.map`,
-            handle: emptyHandle,
-          })
+        const next: Connect.NextHandleFunction = (_req, _res, next) => next()
+        for (const route of swRoutes) {
+          viteServer.middlewares.use(`${ctx.base}${route}`, next)
+          viteServer.middlewares.use(`${ctx.base}${route}.map`, next)
         }
       })
     }
   }
 
-  const devOptions = ctx.resolvedOptions.devOptions
-
-  if (devOptions?.enabled && devOptions?.inspector === 'vite-devtools') {
+  if (devOptions?.enabled && devOptions.inspector === 'vite-devtools') {
     devOptions.inspector = 'standalone'
   }
 

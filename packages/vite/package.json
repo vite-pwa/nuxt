@@ -35,7 +35,6 @@
     "test:typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@nuxt/kit": "^3.9.0 || ^4.0.0",
     "@vite-pwa/assets-generator": "^1.0.0 || ^2.0.0",
     "magicast": "^0.5.0",
     "rolldown": "^1.0.0-0"
@@ -52,17 +51,15 @@
     }
   },
   "dependencies": {
+    "@nuxt/kit": "catalog:utils",
+    "@rolldown/pluginutils": "catalog:utils",
     "@unplugin-pwa/core": "catalog:pwa",
-    "@unplugin-pwa/inspector": "catalog:pwa",
     "@unplugin-pwa/vite": "catalog:pwa",
     "@vite-pwa/nuxt-core": "workspace:*",
     "@vite-pwa/workbox-build": "catalog:pwa",
-    "@vite-pwa/workbox-swkit": "catalog:pwa",
-    "@vite-pwa/workbox-window": "catalog:pwa",
     "verkit": "catalog:utils"
   },
   "devDependencies": {
-    "@nuxt/kit": "catalog:utils",
     "@nuxt/schema": "catalog:utils"
   },
   "publishConfig": {

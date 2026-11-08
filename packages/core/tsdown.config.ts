@@ -44,7 +44,6 @@ export default defineConfig({
   publint: true,
   deps: {
     neverBundle: [
-      '@nuxt/kit',
       '@nuxt/schema',
       'vite',
       'rolldown',

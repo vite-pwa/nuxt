@@ -3,6 +3,7 @@ import type { VitePWAOptions, VitePWAStrategy } from '@unplugin-pwa/core'
 import type { Bundler } from '@unplugin-pwa/core/context-types'
 import type { SWType } from '@vite-pwa/workbox-build/types'
 import type { NuxtPWAContext } from './context-types.ts'
+import type { NuxtPWAModuleResolver } from './shared-types.ts'
 
 export interface NuxtPWAContextBuilder {
   build: <
@@ -15,7 +16,7 @@ export interface NuxtPWAContextBuilder {
     buildAssetsDir: string,
     options: PwaOptions<UserStrategy, T>,
     nuxt: Nuxt,
-    moduleResolver: ReturnType<typeof import('@nuxt/kit')['createResolver']>,
+    moduleResolver: NuxtPWAModuleResolver,
   ) => Promise<PWAContext>
 }
 
@@ -54,7 +55,7 @@ export interface PwaOptions<
    */
   experimental?: {
     /**
-     * NOTE: this option will be ignored if using `build-sw` or inject-manifest` strategies or when Nuxt experimental payload
+     * NOTE: this option will be ignored if using `build-sw` or `inject-manifest` strategies or when Nuxt experimental payload
      * extraction is disabled.
      *
      * Enable custom runtime caching to resolve the payload.json requests with query parameters when offline:

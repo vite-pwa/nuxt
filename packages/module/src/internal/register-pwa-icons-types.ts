@@ -5,10 +5,10 @@ import type { NuxtPWAContext } from '@vite-pwa/nuxt-core/context-types'
 import type { SWType } from '@vite-pwa/workbox-build/types'
 import type { DtsInfo } from './pwa-icons-helper.ts'
 import path from 'node:path'
-import { addTemplate } from '@nuxt/kit'
+import { addTemplate, useLogger } from '@nuxt/kit'
 import { normalizePath } from '@unplugin-pwa/core/helpers'
 import { getMajor } from 'verkit'
-import { addPWAIconsPluginTemplate, addPwaTemplate, pwaIcons } from './pwa-icons-helper'
+import { addPWAIconsPluginTemplate, addPwaTemplate, pwaIcons } from './pwa-icons-helper.ts'
 
 export async function registerPwaIconsTypes<
   B extends Bundler,
@@ -25,10 +25,11 @@ export async function registerPwaIconsTypes<
   let dts: DtsInfo | undefined
   if (pwaAssets) {
     try {
-      const { preparePWAIcons } = await import('./prepare-pwa-icons')
+      const { preparePWAIcons } = await import('./prepare-pwa-icons.ts')
       dts = await preparePWAIcons<B, UserStrategy, T, NPWAC>(nuxt, ctx)
     }
-    catch {
+    catch (error) {
+      useLogger('@vite-pwa/nuxt').warn('Unable to generate PWA icons types.', error)
       dts = undefined
     }
   }

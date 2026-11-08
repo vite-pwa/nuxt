@@ -1,12 +1,11 @@
 import type { VitePWAStrategy } from '@unplugin-pwa/core'
-import type { ExternalPWAOptions } from '@unplugin-pwa/vite/config/types'
 import type { SWType } from '@vite-pwa/workbox-build/types'
 import type { PwaOptions } from './types.ts'
 
 export type NuxtExternalPWAOptions<
   UserStrategy extends VitePWAStrategy,
   T extends SWType,
-> = ExternalPWAOptions<UserStrategy, T, PwaOptions<UserStrategy, T>>
+> = Omit<PwaOptions<UserStrategy, T>, 'cwd' | 'path' | 'mergeOptions' | 'builder'>
 
 export function definePwaConfig<
   UserStrategy extends VitePWAStrategy,

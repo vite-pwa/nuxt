@@ -6,8 +6,9 @@ export default defineNuxtConfig({
   modules: [
     '@vite-pwa/nuxt',
     (_, nuxt) => {
-      nuxt.hook('pwa:beforeBuildServiceWorker', (options) => {
-        console.log('pwa:beforeBuildServiceWorker: ', options.base)
+      nuxt.hook('pwa:beforeBuildServiceWorker', async (options) => {
+        await new Promise(resolve => setTimeout(resolve, 10))
+        options.generateSW?.globPatterns?.push('robots.txt')
       })
     },
   ],

@@ -2,7 +2,7 @@ import type { VitePWAStrategy } from '@unplugin-pwa/core'
 import type { SWType } from '@vite-pwa/workbox-build/types'
 import type { Plugin } from 'vite'
 import type { ViteLegacyNuxtPWAContext, ViteNuxtPWAContext } from '../internal-types.ts'
-import { prefixRegex } from 'rolldown/filter'
+import { exactRegex } from '@rolldown/pluginutils'
 
 export function PwaRuntimeConfiguration<
   UserStrategy extends VitePWAStrategy,
@@ -21,9 +21,7 @@ export function PwaRuntimeConfiguration<
     },
     resolveId: {
       filter: {
-        id: [
-          prefixRegex(configuration),
-        ],
+        id: exactRegex(configuration),
       },
       handler(id) {
         if (id === configuration) {
@@ -33,9 +31,7 @@ export function PwaRuntimeConfiguration<
     },
     load: {
       filter: {
-        id: [
-          prefixRegex(resolvedConfiguration),
-        ],
+        id: exactRegex(resolvedConfiguration),
       },
       handler(id) {
         if (id !== resolvedConfiguration) {
@@ -58,16 +54,13 @@ export function PwaRuntimeConfiguration<
             functions.length = 0
             functions.push(`export function initializeDev() { registerDevSW() }`)
             functions.push(`export function activateSWSwitcherDev() { setDevPWASwitcherReady() }`)
-            const internalDevOptions = ctx.dev.options!
-            if (internalDevOptions.swNames.hasNames) {
+            if (ctx.dev.options!.swNames.hasNames) {
               callBeforeRegisterHook = true
             }
           }
         }
-        else {
-          if (!ctx.resolvedOptions.disable) {
-            callBeforeRegisterHook = true
-          }
+        else if (!ctx.resolvedOptions.disable) {
+          callBeforeRegisterHook = true
         }
 
         const display = typeof ctx.resolvedOptions.manifest !== 'boolean'
@@ -82,7 +75,7 @@ export function PwaRuntimeConfiguration<
         const exports: string[] = [
           `export const callBeforeRegisterHook = ${callBeforeRegisterHook}`,
           `export const enabled = ${client.registerPlugin}`,
-          `export const display = '${display}'`,
+          `export const display = ${JSON.stringify(display)}`,
           `export const installPrompt = ${JSON.stringify(installPrompt)}`,
           `export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates === 'number'
             ? client.periodicSyncForUpdates

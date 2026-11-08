@@ -18,9 +18,9 @@ const plugin: Plugin<{
   pwa?: UnwrapNestedRefs<PwaInjection>
 }> = defineNuxtPlugin({
   name: 'vite-pwa:nuxt:client:plugin',
-  enforce: 'pre',
+  enforce: 'post',
   parallel: true,
-  setup(nuxtApp) {
+  async setup(nuxtApp) {
     if (import.meta.dev) {
       initializeDev()
     }
@@ -137,7 +137,7 @@ const plugin: Plugin<{
     }
 
     if (callBeforeRegisterHook) {
-      hooks.callHook(
+      await hooks.callHook(
         'service-worker:before-register',
         (trustedScriptUrl) => {
           options.trustedScriptUrl = trustedScriptUrl

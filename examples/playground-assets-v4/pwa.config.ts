@@ -1,4 +1,4 @@
-import { definePwaConfig } from '@vite-pwa/nuxt-core/config'
+import { definePwaConfig } from '@vite-pwa/nuxt'
 
 export default definePwaConfig({
   strategies: 'generateSW',

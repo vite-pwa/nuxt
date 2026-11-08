@@ -47,11 +47,62 @@ Nuxt PWA Ecosystem
 - 💥 **PWA Assets Generator**: generate all the PWA assets from a single command and a single source image
 - 🚀 **PWA Assets Integration**: serving, generating and injecting PWA Assets on the fly in your application
 
+## 📦 Install
+
+> `@vite-pwa/nuxt` requires Nuxt 3.9.0+ with the Vite builder.
+
+```bash
+npx nuxt module add @vite-pwa/nuxt
+```
+
+## 🦄 Usage
+
+Add `@vite-pwa/nuxt` module to `nuxt.config.ts` and configure it:
+
+```ts
+// nuxt.config.ts
+export default defineNuxtConfig({
+  modules: ['@vite-pwa/nuxt'],
+  pwa: {
+    /* PWA options */
+  },
+})
+```
+
+The PWA options can also live in a `pwa.config.ts` file in your project root (or `srcDir`), which is loaded automatically:
+
+```ts
+// pwa.config.ts
+import { definePwaConfig } from '@vite-pwa/nuxt'
+
+export default definePwaConfig({
+  registerType: 'autoUpdate',
+  manifest: {
+    name: 'My App',
+  },
+})
+```
+
+Use `pwa.path` in `nuxt.config.ts` to load the configuration from another file.
+
+Read the [📖 documentation](https://unplugin-pwa.netlify.app/frameworks/nuxt) for a complete guide on how to configure and use this module.
+
+## ⬆️ Migrating from v1
+
+- `@vite-pwa/nuxt` now uses [`unplugin-pwa`](https://github.com/vite-pwa/unplugin-pwa) and `@vite-pwa/workbox-*` instead of `vite-plugin-pwa` and `workbox-*`. If you import Workbox modules in a custom service worker, replace `workbox-*` imports with their `@vite-pwa/workbox-swkit/*` counterparts.
+- The `workbox` option is now `generateSW` (`workbox` still works but logs a deprecation warning).
+- The `injectManifest` strategy only injects the precache manifest into an existing service worker in the `public` folder. Service workers written in TypeScript or living outside `public` must use the `buildSW` strategy (`strategies: 'buildSW'` and the `buildSW` option).
+- The `PwaModuleOptions` type is now `ModuleOptions` (`PwaModuleOptions` is kept as a deprecated alias).
+- `$pwa.isInstalled` has been removed: use `$pwa.isPWAInstalled` instead.
+- `$pwa.getSWRegistration()` has been removed: use the `service-worker:registered` or `service-worker:activated` runtime hooks to access the service worker registration.
+- The `PwaAppleImage`, `PwaAppleSplashScreenImage`, `PwaFaviconImage`, `PwaMaskableImage` and `PwaTransparentImage` components are only registered when `pwaAssets` is enabled.
+- Deep imports from `@vite-pwa/nuxt/*` are no longer available.
+
 ## ⚡️ Examples
 
-You need to stop the dev server once started and then to see the PWA in action run:
-- `nr dev:preview:build`: Nuxt build command + start server
-- `nr dev:preview:generate`: Nuxt generate command + start server
+Run `pnpm dev` to start the Nuxt v4 example in development mode. To see the PWA in action, build or generate the Nuxt v3 example and serve it:
+- `pnpm dev:build && pnpm test:build:serve`: Nuxt build command + start server
+- `pnpm dev:generate && pnpm test:generate:serve`: Nuxt generate command + start server
 
 <table>
 <thead>

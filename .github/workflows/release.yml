@@ -42,7 +42,7 @@ jobs:
           pr-notes: |
             ## ⚡ Try the latest `{base}@${{ steps.sha.outputs.short }}` build with **pkg-pr-new**:
 
-            <details><summary><b>@vite-pwa/-nuxtcore</b></summary><p>
+            <details><summary><b>@vite-pwa/nuxt-core</b></summary><p>
 
               ```
               pnpm add https://pkg.pr.new/@vite-pwa/nuxt-core@${{ steps.sha.outputs.short }}

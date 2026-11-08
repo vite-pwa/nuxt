@@ -1,8 +1,9 @@
 import type { Nuxt } from '@nuxt/schema'
 import type { VitePWAStrategy } from '@unplugin-pwa/core'
+import type { NuxtPWAModuleResolver } from '@vite-pwa/nuxt-core/shared-types'
 import type { PwaOptions } from '@vite-pwa/nuxt-core/types'
 import type { SWType } from '@vite-pwa/workbox-build/types'
-import type { ViteNuxtPWAContext } from './internal-types.ts'
+import type { ViteLegacyNuxtPWAContext, ViteNuxtPWAContext } from './internal-types.ts'
 import { createCustomVitePWAContext } from '@unplugin-pwa/vite/vite-context'
 import { prepareNuxtOptions } from './prepare-nuxt-options.ts'
 
@@ -10,38 +11,26 @@ export function createViteNuxtPwaContext<
   UserStrategy extends VitePWAStrategy,
   T extends SWType,
 >(
+  envApi: boolean,
   nuxtVersion: string,
   buildAssetsDir: string,
   options: PwaOptions<UserStrategy, T>,
   nuxt: Nuxt,
-  moduleResolver: ReturnType<typeof import('@nuxt/kit')['createResolver']>,
-): ViteNuxtPWAContext<UserStrategy, T> {
+  moduleResolver: NuxtPWAModuleResolver,
+): ViteNuxtPWAContext<UserStrategy, T> | ViteLegacyNuxtPWAContext<UserStrategy, T> {
   const {
+    builder: _builder,
     experimental,
     registerWebManifestInRouteRules,
-    writePlugin,
+    writePlugin = false,
     client = {},
     ...pwaOptions
   } = options
 
-  const useClient = Object.assign(
-    {},
-    {
-      registerPlugin: true,
-      installPrompt: false,
-      periodicSyncForUpdates: 0,
-    },
-    client,
-  )
-
   const ctx = Object.assign(
-    createCustomVitePWAContext<
-      UserStrategy,
-      T,
-      'vite'
-    >(
-      'vite',
-      true,
+    createCustomVitePWAContext<UserStrategy, T, 'vite' | 'vite-legacy'>(
+      envApi ? 'vite' : 'vite-legacy',
+      envApi,
       pwaOptions,
     ),
     {
@@ -49,11 +38,15 @@ export function createViteNuxtPwaContext<
         prepareNuxtOptions: () => prepareNuxtOptions(ctx, nuxt),
         nuxtVersion,
         nitroPWAOptions: {
-          publicAssets: [],
           routeRules: {},
         },
         buildAssetsDir,
-        client: useClient,
+        client: {
+          registerPlugin: true,
+          installPrompt: false,
+          periodicSyncForUpdates: 0,
+          ...client,
+        },
         experimental,
         registerWebManifestInRouteRules,
         writePlugin,
@@ -61,7 +54,7 @@ export function createViteNuxtPwaContext<
         moduleResolver,
       },
     },
-  ) as ViteNuxtPWAContext<UserStrategy, T>
+  ) as ViteNuxtPWAContext<UserStrategy, T> | ViteLegacyNuxtPWAContext<UserStrategy, T>
 
   return ctx
 }

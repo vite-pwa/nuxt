@@ -4,6 +4,8 @@ env:
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
     types: [opened, synchronize, labeled, ready_for_review]
@@ -13,7 +15,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.number }}
+  group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
   cancel-in-progress: true
 
 jobs:
@@ -28,7 +30,6 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'cr-tracked') &&
         !startsWith(github.head_ref, 'release/v')
       )
-    # if: ${{ !github.event.pull_request.draft && contains(github.event.pull_request.labels.*.name, 'cr-tracked') }}
     runs-on: ubuntu-latest
 
     steps:
@@ -49,7 +50,7 @@ jobs:
           cache: pnpm
 
       - name: Install
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm build

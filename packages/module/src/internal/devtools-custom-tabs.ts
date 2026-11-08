@@ -16,18 +16,11 @@ export function devtoolsCustomTabsHook<
   ctx: NPWAC,
 ): import('@nuxt/schema').NuxtHooks['devtools:customTabs'] {
   return (tabs) => {
-    // register the inspector only when using standalone
-    // adding pwa inspector to nuxt devtools will require some changes
-    // we remove the entry at nuxt devtools, pwa inspector is present at vite devtools
-    if (ctx.resolvedOptions.devOptions?.inspector !== undefined) {
+    if (ctx.resolvedOptions.devOptions?.inspector) {
       tabs.push({
         title: 'Unplugin PWA Inspector',
         name: 'vite-pwa:nuxt:inspector',
         icon: `${INSPECTOR_BASE_PATH}/icon_gray.svg`,
-        // icon: {
-        //   light: `${INSPECTOR_BASE_PATH}/icon_light.svg`,
-        //   dark: `${INSPECTOR_BASE_PATH}/icon_dark.svg`,
-        // },
         view: {
           type: 'iframe',
           src: INSPECTOR_BASE_PATH_URL,

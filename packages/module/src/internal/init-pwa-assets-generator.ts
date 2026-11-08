@@ -62,9 +62,7 @@ function* preparePaths(
   }
 
   // nitro public dirs: consumer can unshift folders => elk.zone is an example
-  // @ts-expect-error TS2339: Property publicAssets does not exist on type ResolveNuxtNitroConfig<NitroConfigFallback>
   if (nuxt.options.nitro.publicAssets) {
-    // @ts-expect-error TS2339: Property publicAssets does not exist on type ResolveNuxtNitroConfig<NitroConfigFallback>
     for (const publicAsset of nuxt.options.nitro.publicAssets) {
       if (publicAsset?.dir) {
         yield path.resolve(publicAsset.dir, imageName)

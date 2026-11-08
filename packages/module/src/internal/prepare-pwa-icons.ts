@@ -6,7 +6,7 @@ import type { SWType } from '@vite-pwa/workbox-build/types'
 import type { DtsInfo } from './pwa-icons-helper.ts'
 import { addComponent, addTemplate } from '@nuxt/kit'
 import { normalizePath } from '@vite-pwa/workbox-build/utils/resolve-sw-names'
-import { generatePwaImageType, pwaIcons } from './pwa-icons-helper'
+import { generatePwaImageType, pwaIcons } from './pwa-icons-helper.ts'
 
 export async function preparePWAIcons<
   B extends Bundler,

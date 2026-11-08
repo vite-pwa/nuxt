@@ -8,7 +8,7 @@ import path from 'node:path'
 import {
   prepareSwNamesAndGlobDirectory,
 } from '@unplugin-pwa/core/dev/prepare-sw-names-and-glob-directory'
-import { prepareBuildSwNames } from './prepare-sw-names'
+import { prepareBuildSwNames } from './prepare-sw-names.ts'
 
 export async function prepareNitroRoutes<
   B extends Bundler,
@@ -48,27 +48,11 @@ export async function prepareNitroRoutes<
   const webManifest = ctx.resolvedOptions.manifest
   let swNames: SWNames | undefined
 
-  // prepare nitro public assets
   if (isDev) {
     if (!swDisabled) {
       await prepareSwNamesAndGlobDirectory(ctx as any)
       swNames = ctx.dev.options!.swNames
-      const outDir = ctx.outDir
-
-      await fs.mkdir(outDir, { recursive: true })
-      ctx.nuxt.nitroPWAOptions.publicAssets.push({
-        dir: outDir,
-        fallthrough: true,
-        baseURL: ctx.base,
-        maxAge: 0,
-      })
-      // nitroConfig.publicAssets = nitroConfig.publicAssets || []
-      // nitroConfig.publicAssets.push({
-      //   dir: outDir,
-      //   fallthrough: true,
-      //   baseURL: ctx.base,
-      //   maxAge: 0,
-      // })
+      await fs.mkdir(ctx.outDir, { recursive: true })
     }
   }
   else {
