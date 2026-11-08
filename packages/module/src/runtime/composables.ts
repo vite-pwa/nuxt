@@ -62,7 +62,9 @@ function usePWAIcon(
   const pwaIcons = useNuxtApp().$pwaIcons
   const icon = computed(() => {
     const pwaIcon = toValue(pwaImage)
-    const iconName = typeof pwaIcon === 'object' ? pwaIcon.image : pwaIcon
+    const iconName = typeof pwaIcon === 'object'
+      ? pwaIcon.image
+      : pwaIcon
     const image = pwaIcons?.[type]?.[iconName]?.asImage
     if (!image)
       return

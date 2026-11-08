@@ -53,8 +53,7 @@ catalogs:
   nuxt5:
     # https://nuxt.com/modules/devtools#nuxt-5
     '@nuxt/devtools-onboard': ^4.1.0
-    '@nuxt/kit': npm:@nuxt-nightly@5x
-    '@nuxt/nitro-server/nitro': npm:@nuxt-nightly@5x
+    nitro: 3.0.261103-rc
     nuxt: npm:nuxt-nightly@5x
   pwa:
     '@unplugin-pwa/core': ^0.0.4
