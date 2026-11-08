@@ -1,3 +1,7 @@
 typescript.includeWorkspace=false
-typescript.tsConfig.exclude[]=../../examples/playground-v3
 typescript.tsConfig.exclude[]=../../examples/playground-assets-v3
+typescript.tsConfig.exclude[]=../../examples/playground-assets-v4
+typescript.tsConfig.exclude[]=../../examples/playground-assets-v5
+typescript.tsConfig.exclude[]=../../examples/playground-v3
+typescript.tsConfig.exclude[]=../../examples/playground-v4
+typescript.tsConfig.exclude[]=../../examples/playground-v5

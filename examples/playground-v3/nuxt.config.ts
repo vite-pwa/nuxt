@@ -19,11 +19,6 @@ export default defineNuxtConfig({
     watcher: 'parcel',
   },
   nitro: {
-    esbuild: {
-      options: {
-        target: 'esnext',
-      },
-    },
     prerender: {
       routes: ['/', '/about'],
     },
