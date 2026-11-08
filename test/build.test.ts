@@ -8,11 +8,11 @@ const nuxt3_13 = process.env.NUXT_ECOSYSTEM_CI === 'true'
 describe(`test-${build ? 'build' : 'generate'}`, () => {
   it('service worker is generated: ', () => {
     const swName = build
-      ? './playground/.output/public/sw.js'
-      : './playground/dist/sw.js'
+      ? './examples/playground/.output/public/sw.js'
+      : './examples/playground/dist/sw.js'
     const webManifest = build
-      ? './playground/.output/public/manifest.webmanifest'
-      : './playground/dist/manifest.webmanifest'
+      ? './examples/playground/.output/public/manifest.webmanifest'
+      : './examples/playground/dist/manifest.webmanifest'
     expect(existsSync(swName), `${swName} doesn't exist`).toBeTruthy()
     expect(existsSync(webManifest), `${webManifest} doesn't exist`).toBeTruthy()
     const swContent = readFileSync(swName, 'utf-8')
@@ -25,7 +25,7 @@ describe(`test-${build ? 'build' : 'generate'}`, () => {
     else {
       match = swContent.match(/define\(\["\.\/(workbox-\w+)"/)
       expect(match && match.length === 2, `workbox-***.js entry not found in ${swName}`).toBeTruthy()
-      const workboxName = `./playground/${build ? '.output/public' : 'dist'}/${match?.[1]}.js`
+      const workboxName = `./examples/playground/${build ? '.output/public' : 'dist'}/${match?.[1]}.js`
       expect(existsSync(workboxName), `${workboxName} doesn't exist`).toBeTruthy()
     }
     match = swContent.match(/url:\s*"manifest\.webmanifest"/)

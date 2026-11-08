@@ -1,0 +1,3 @@
+typescript.includeWorkspace=true
+typescript.tsConfig.exclude[]=../../examples/playground-v3
+typescript.tsConfig.exclude[]=../../examples/playground-assets-v3
