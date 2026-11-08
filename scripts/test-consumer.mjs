@@ -35,6 +35,14 @@ try {
     const tarball = readdirSync(tarballs).find(file => !before.has(file))
     packages[name] = `file:${path.join(tarballs, tarball).replaceAll('\\', '/')}`
   }
+  if (process.env.EXTRA_TARBALLS) {
+    const dir = path.resolve(process.env.EXTRA_TARBALLS)
+    for (const file of readdirSync(dir).filter(file => file.endsWith('.tgz'))) {
+      const tarball = path.join(dir, file)
+      const { name } = JSON.parse(execFileSync('tar', ['-xOzf', tarball, 'package/package.json'], { encoding: 'utf-8' }))
+      packages[name] = `file:${tarball.replaceAll('\\', '/')}`
+    }
+  }
 
   write(path.join(app, 'package.json'), `${JSON.stringify({
     name: 'vite-pwa-nuxt-consumer',
