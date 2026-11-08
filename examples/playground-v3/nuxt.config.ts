@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   /* ssr: false, */
   // typescript,
   modules: [
-    '@vite-pwa/nuxt-module',
+    '@vite-pwa/nuxt',
     (_, nuxt) => {
       nuxt.hook('pwa:beforeBuildServiceWorker', (options) => {
         console.log('pwa:beforeBuildServiceWorker: ', options.base)

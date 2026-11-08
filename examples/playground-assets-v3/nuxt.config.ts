@@ -1,7 +1,7 @@
 export default defineNuxtConfig({
   /* ssr: false, */
   // typescript,
-  modules: ['@vite-pwa/nuxt-module'],
+  modules: ['@vite-pwa/nuxt'],
   future: {
     typescriptBundlerResolution: true,
   },
