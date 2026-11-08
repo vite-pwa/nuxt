@@ -47,9 +47,10 @@ export default definePwaConfig({
   // },
   devOptions: {
     enabled: true,
+    inspector: 'vite-devtools',
     suppressWarnings: true,
     navigateFallback: '/',
     navigateFallbackAllowlist: [/^\/$/],
-    type: 'module',
+    type: 'classic',
   },
 })
