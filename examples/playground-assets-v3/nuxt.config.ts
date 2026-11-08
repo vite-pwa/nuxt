@@ -1,6 +1,8 @@
 export default defineNuxtConfig({
   /* ssr: false, */
   // typescript,
+  compatibilityDate: '2025-07-15',
+  devtools: { enabled: true },
   modules: ['@vite-pwa/nuxt'],
   future: {
     typescriptBundlerResolution: true,
@@ -30,30 +32,6 @@ export default defineNuxtConfig({
     logLevel: 'info',
   },
   pwa: {
-    mode: 'development',
-    strategies: 'generateSW',
-    registerType: 'autoUpdate',
-    manifest: {
-      name: 'Nuxt Vite PWA',
-      short_name: 'NuxtVitePWA',
-      theme_color: '#ffffff',
-    },
-    pwaAssets: {
-      config: true,
-      // config: false,
-      // image: 'favicon.svg',
-    },
-    workbox: {
-      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
-    },
-    client: {
-      installPrompt: true,
-    },
-    devOptions: {
-      enabled: true,
-      suppressWarnings: true,
-      navigateFallback: '/',
-      navigateFallbackAllowlist: [/^\/$/],
-    },
+    path: '~/pwa.config.ts',
   },
 })
