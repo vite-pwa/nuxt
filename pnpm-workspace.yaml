@@ -56,13 +56,13 @@ catalogs:
     nitro: 3.0.261103-rc
     nuxt: npm:nuxt-nightly@5x
   pwa:
-    '@unplugin-pwa/core': ^0.0.4
-    '@unplugin-pwa/inspector': ^0.0.4
-    '@unplugin-pwa/vite': ^0.0.4
+    '@unplugin-pwa/core': ^0.0.5
+    '@unplugin-pwa/inspector': ^0.0.5
+    '@unplugin-pwa/vite': ^0.0.5
     '@vite-pwa/assets-generator': ^2.0.0
-    '@vite-pwa/workbox-build': ^8.0.14
-    '@vite-pwa/workbox-swkit': ^8.0.14
-    '@vite-pwa/workbox-window': ^8.0.14
+    '@vite-pwa/workbox-build': ^8.0.15
+    '@vite-pwa/workbox-swkit': ^8.0.15
+    '@vite-pwa/workbox-window': ^8.0.15
   types:
     '@types/debug': ^4.1.13
     '@types/node': 24.19.2
