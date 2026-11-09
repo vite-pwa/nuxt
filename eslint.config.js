@@ -7,6 +7,7 @@ export default await antfu(
       '**/dist/**',
       '**/dev-dist/**',
       '**/node_modules/**',
+      'packages/module/config/**',
       'pnpm-workspace.yaml',
     ],
   },

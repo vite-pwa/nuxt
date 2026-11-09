@@ -25,6 +25,7 @@
       "types": "./dist/types.d.mts",
       "default": "./dist/module.mjs"
     },
+    "./config": "./config/index.mjs",
     "./configuration": {
       "types": "./configuration.d.ts"
     },
@@ -34,6 +35,7 @@
   "types": "./dist/types.d.mts",
   "files": [
     "*.d.ts",
+    "config",
     "dist"
   ],
   "scripts": {

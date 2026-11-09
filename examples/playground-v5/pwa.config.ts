@@ -1,11 +1,12 @@
 import process from 'node:process'
-import { definePwaConfig } from '@vite-pwa/nuxt'
+import { definePwaConfig } from '@vite-pwa/nuxt/config'
 
 const sw = process.env.SW === 'true'
 
 export default definePwaConfig({
   strategies: sw ? 'buildSW' : 'generateSW',
   registerType: 'autoUpdate',
+  swType: 'classic-and-module',
   manifest: {
     name: 'Nuxt Vite PWA',
     short_name: 'NuxtVitePWA',

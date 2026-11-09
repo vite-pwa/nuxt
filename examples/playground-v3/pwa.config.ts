@@ -1,5 +1,5 @@
 import process from 'node:process'
-import { definePwaConfig } from '@vite-pwa/nuxt'
+import { definePwaConfig } from '@vite-pwa/nuxt/config'
 
 const sw = process.env.SW === 'true'
 
