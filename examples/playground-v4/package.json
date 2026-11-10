@@ -3,11 +3,14 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "dev:no-tui": "nuxt dev --no-tui",
+    "dev-sw:no-tui": "SW=true nuxt dev --no-tui",
     "dev": "nuxt dev",
     "dev-sw": "SW=true nuxt dev",
     "build": "nuxt build",
     "build-sw": "SW=true nuxt build",
-    "generate": "nuxt generate"
+    "generate": "nuxt generate",
+    "generate-sw": "SW=true nuxt generate"
   },
   "devDependencies": {
     "@nuxt/devtools": "catalog:utils",

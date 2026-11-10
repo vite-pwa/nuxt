@@ -4,9 +4,13 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
+import { getMajor } from 'verkit'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
 const nuxtVersion = process.env.NUXT_VERSION || '^4.0.0'
+const addRolldown = getMajor(nuxtVersion.startsWith('^')
+  ? nuxtVersion.slice(1)
+  : nuxtVersion) < 4
 const fixture = mkdtempSync(path.join(tmpdir(), 'vite-pwa-nuxt-consumer-'))
 const tarballs = path.join(fixture, 'tarballs')
 const app = path.join(fixture, 'app')
@@ -44,14 +48,20 @@ try {
     }
   }
 
+  const dependencies = {
+    '@vite-pwa/nuxt': packages['@vite-pwa/nuxt'],
+    'nuxt': nuxtVersion,
+  }
+
+  if (addRolldown) {
+    dependencies.rolldown = '1.2.18'
+  }
+
   write(path.join(app, 'package.json'), `${JSON.stringify({
     name: 'vite-pwa-nuxt-consumer',
     type: 'module',
     private: true,
-    dependencies: {
-      '@vite-pwa/nuxt': packages['@vite-pwa/nuxt'],
-      'nuxt': nuxtVersion,
-    },
+    dependencies,
     devDependencies: {
       'typescript': '^5.9.0',
       'vue-tsc': '^3.0.0',

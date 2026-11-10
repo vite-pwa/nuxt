@@ -11,7 +11,6 @@
     "@nuxt/devtools": "catalog:nuxt3",
     "@vite-pwa/assets-generator": "catalog:pwa",
     "@vite-pwa/nuxt": "workspace:*",
-    "@vite-pwa/nuxt-vite": "workspace:*",
     "nuxt": "catalog:nuxt3"
   }
 }

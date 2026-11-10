@@ -16,6 +16,8 @@ export default defineNuxtConfig({
   },
   experimental: {
     payloadExtraction: true,
+    // add env variable to enable also vite env. api
+    // viteEnvironmentApi: true,
   },
   nitro: {
     prerender: {

@@ -28,6 +28,9 @@
     "test:build": "pnpm run dev:build && TEST_BUILD=true vitest run && TEST_BUILD=true playwright test",
     "test:generate": "pnpm run dev:generate && vitest run && playwright test",
     "test:consumer": "node scripts/test-consumer.mjs",
+    "test:consumer:v3": "NUXT_VERSION=^3.21.0 node scripts/test-consumer.mjs",
+    "test:consumer:v4": "NUXT_VERSION=^4.0.0 node scripts/test-consumer.mjs",
+    "test:consumer:v3:keep": "KEEP_FIXTURE=true NUXT_VERSION=^3.21.0 node scripts/test-consumer.mjs",
     "test": "pnpm run test:build && pnpm run test:generate"
   },
   "devDependencies": {
