@@ -38,6 +38,12 @@ export interface ServiceWorkerRegistrationErrorOptions {
   error?: unknown
 }
 
+export interface ServiceWorkerPeriodicSyncUpdateError {
+  url: string
+  error?: unknown
+  registration: ServiceWorkerRegistration
+}
+
 export interface PWAModuleRuntimeHooks {
   /**
    * Emitted before service worker registration to allow use `TrustedScriptURL`
@@ -61,6 +67,11 @@ export interface PWAModuleRuntimeHooks {
    * @param data The url and the service worker registration object
    */
   'service-worker:activated': (data: ServiceWorkerRuntimeHooksOptions) => HookResult
+  /**
+   * Emitted when the service worker fails to update.
+   * @param data The url, the error and the service worker registration object.
+   */
+  'service-worker:periodic-sync-update-failed': (data: ServiceWorkerPeriodicSyncUpdateError) => HookResult
 }
 
 export type ModuleRuntimeHooks = PWAModuleRuntimeHooks

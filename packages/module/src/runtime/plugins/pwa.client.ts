@@ -61,19 +61,30 @@ const plugin: Plugin<{
           return
         }
 
-        const resp = await fetch(
-          swUrl,
-          {
-            cache: 'no-store',
-            headers: {
-              'cache': 'no-store',
-              'cache-control': 'no-cache',
+        try {
+          const resp = await fetch(
+            swUrl,
+            {
+              cache: 'no-store',
+              headers: {
+                'cache': 'no-store',
+                'cache-control': 'no-cache',
+              },
             },
-          },
-        )
-
-        if (resp?.status === 200) {
-          await r.update()
+          )
+          if (resp?.status === 200) {
+            await r.update()
+          }
+        }
+        catch (error) {
+          await nuxtApp.hooks.callHook(
+            'service-worker:periodic-sync-update-failed',
+            {
+              url: swUrl,
+              error,
+              registration: r,
+            },
+          )
         }
       }, timeout)
     }
