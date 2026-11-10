@@ -9,7 +9,7 @@
     "generate": "nuxt generate"
   },
   "devDependencies": {
-    "@nuxt/devtools-onboard": "catalog:nuxt5",
+    "@nuxt/devtools": "catalog:utils",
     "@vite-pwa/assets-generator": "catalog:pwa",
     "@vite-pwa/nuxt": "workspace:*",
     "@vite-pwa/nuxt-vite": "workspace:*",
