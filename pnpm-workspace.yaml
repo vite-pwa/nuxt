@@ -42,7 +42,7 @@ allowBuilds:
 catalogs:
   build:
     '@nuxt/module-builder': ^1.0.3
-    tsdown: ^0.23.2
+    tsdown: ^0.23.7
   eslint:
     '@antfu/eslint-config': ^10.0.0
     eslint: ^10.13.0
