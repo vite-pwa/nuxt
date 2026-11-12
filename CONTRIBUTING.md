@@ -32,3 +32,5 @@ Before running tests, you'll need to install [Playwright](https://playwright.dev
 Run `pnpm build && pnpm test` in `@vite-pwa/nuxt`'s root folder.
 
 To check the packages outside the workspace, run `pnpm build && pnpm test:consumer`: it packs the packages and builds a fresh Nuxt app with them. Set `NUXT_VERSION` to change the Nuxt version, `EXTRA_TARBALLS` to a directory of packed dependencies to override (for example unreleased `@unplugin-pwa/*` fixes), and `KEEP_FIXTURE=1` to keep the generated app.
+
+You can run also `pnpm build && pnpm test:consumer:v3` and `pnpm build && pnpm test:consumer:v4` to run previous test using Nuxt 3.21 and latest Nuxt 4 respectively.

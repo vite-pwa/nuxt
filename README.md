@@ -152,4 +152,4 @@ Check the following links for more details.
 
 ## 📄 License
 
-[MIT](./LICENSE) License &copy; 2023-PRESENT [Anthony Fu](https://github.com/antfu)
+[MIT](https://github.com/vite-pwa/nuxt/blob/main/LICENSE) License &copy; 2023-PRESENT [Anthony Fu](https://github.com/antfu)
