@@ -11,9 +11,12 @@ on:
   workflow_dispatch: null
 permissions: {}
 
+# we need the vite package build before module, pack uses alphabetic order
 env:
   PACKAGES: |
-    packages/*
+    packages/core
+    packages/vite
+    packages/module
 
 jobs:
   pr:
