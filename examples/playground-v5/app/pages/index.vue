@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import manifest from '#app-manifest'
+</script>
+
 <template>
   <div>
     <h1>Nuxt Vite PWA</h1>
@@ -7,5 +11,6 @@
     <NuxtLink to="/about">
       About
     </NuxtLink>
+    <pre>{{ JSON.stringify(manifest) }}</pre>
   </div>
 </template>

@@ -3,10 +3,10 @@ import type { VitePWAStrategy } from '@unplugin-pwa/core'
 import type { SWType } from '@vite-pwa/workbox-build/types'
 import type { Connect, Plugin } from 'vite'
 import type { ViteLegacyNuxtPWAContext, ViteNuxtPWAContext } from './internal-types.ts'
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
-import { addVitePlugin, resolveAlias } from '@nuxt/kit'
-import { exactRegex } from '@rolldown/pluginutils'
+// import { readFileSync } from 'node:fs'
+// import path from 'node:path'
+import { addVitePlugin/* , resolveAlias */ } from '@nuxt/kit'
+// import { exactRegex } from '@rolldown/pluginutils'
 import { DevPlugin } from '@unplugin-pwa/vite/plugins/dev'
 import { DevMiddlewarePlugin } from '@unplugin-pwa/vite/plugins/dev-middleware'
 import { DevAssetsMiddlewarePlugin } from '@unplugin-pwa/vite/plugins/dev-pwa-assets-middleware'
@@ -15,7 +15,7 @@ import { InspectorPlugin } from '@unplugin-pwa/vite/plugins/inspector'
 import { MainPlugin } from '@unplugin-pwa/vite/plugins/main'
 import { AssetsPlugin } from '@unplugin-pwa/vite/plugins/pwa-assets'
 import { VirtualModulesPlugin } from '@unplugin-pwa/vite/plugins/virtual-modules'
-import { getMajor } from 'verkit'
+// import { getMajor } from 'verkit'
 import { PwaRuntimeConfiguration } from './plugins/pwa-runtime-configuration.ts'
 
 export async function prepareNuxtOptions<
@@ -88,6 +88,7 @@ export async function prepareNuxtOptions<
     devOptions.inspector = 'standalone'
   }
 
+  /* TODO: this doesn't work
   const major = getMajor(ctx.nuxt.nuxtVersion)
 
   if (major > 3 && nuxt.options.experimental.appManifest) {
@@ -127,8 +128,8 @@ export async function prepareNuxtOptions<
                 path.resolve(path.dirname(latestPath), `meta/${latest.id}.json`),
                 'utf-8',
               ))
-              manifest.id = latest.id
-              if (!manifest.preprendered) {
+              // TODO: removes this hack once Nuxt 5 or Nitro fixes this issue
+              if (major > 4 && !manifest.preprendered) {
                 const useRoutes = new Set<string>()
                 const routes = nuxt.options.prerender?.routes
                 if (routes) {
@@ -150,7 +151,7 @@ export async function prepareNuxtOptions<
       }
     }
   }
-
+*/
   addVitePlugin([
     MainPlugin(ctx),
     VirtualModulesPlugin(ctx),

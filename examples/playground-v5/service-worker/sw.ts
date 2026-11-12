@@ -3,12 +3,12 @@
 import { clientsClaim } from '@vite-pwa/workbox-swkit/core'
 import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from '@vite-pwa/workbox-swkit/precaching'
 import { NavigationRoute, registerRoute } from '@vite-pwa/workbox-swkit/routing'
-import appManifest from '#app-manifest'
+// import appManifest from '#app-manifest'
 
 declare let self: ServiceWorkerGlobalScope
 
-// eslint-disable-next-line no-console
-console.log('Nuxt manifest', appManifest)
+// xeslint-disable-next-line no-console
+// console.log('Nuxt manifest', appManifest)
 
 // self.__WB_MANIFEST is default injection point
 precacheAndRoute(self.__WB_MANIFEST)
