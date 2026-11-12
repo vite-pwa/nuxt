@@ -1,18 +1,15 @@
 import type { RegisterSWOptions } from '@unplugin-pwa/core/types'
 import type { UnwrapNestedRefs } from 'vue'
 import type { Plugin } from '#app'
-import type { BeforeInstallPromptEvent, PwaInjection, UserChoice } from './types'
+import type { PwaInjection } from './types'
 import {
   activateSWSwitcherDev,
   callBeforeRegisterHook,
-  display,
   initializeDev,
-  installPrompt,
   periodicSyncForUpdates,
 } from 'virtual:nuxt-pwa-configuration'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
-import { nextTick, reactive, ref } from 'vue'
-import { defineNuxtPlugin } from '#imports'
+import { defineNuxtPlugin, reactive, ref } from '#imports'
 
 const plugin: Plugin<{
   pwa?: UnwrapNestedRefs<PwaInjection>
@@ -26,29 +23,6 @@ const plugin: Plugin<{
     }
     const registrationError = ref(false)
     const swActivated = ref(false)
-    const showInstallPrompt = ref(false)
-    const hideInstall = ref(
-      !installPrompt
-        ? true
-        : localStorage.getItem(installPrompt) === 'true',
-    )
-
-    // https://thomashunter.name/posts/2021-12-11-detecting-if-pwa-twa-is-installed
-    const ua = navigator.userAgent
-    const ios = ua.match(/iPhone|iPad|iPod/)
-    const useDisplay = display === 'standalone' || display === 'minimal-ui'
-      ? `${display}`
-      : 'standalone'
-    const standalone = window.matchMedia(`(display-mode: ${useDisplay})`).matches
-    const isInstalled = ref(!!(standalone || (ios && !ua.match(/Safari/))))
-    const isPWAInstalled = ref(isInstalled.value)
-
-    window.matchMedia(`(display-mode: ${useDisplay})`).addEventListener('change', (e) => {
-      // PWA on fullscreen mode will not match standalone nor minimal-ui
-      if (!isPWAInstalled.value && e.matches) {
-        isPWAInstalled.value = true
-      }
-    })
 
     function registerPeriodicSync(
       swUrl: string,
@@ -167,44 +141,12 @@ const plugin: Plugin<{
       needRefresh.value = false
     }
 
-    let install: () => Promise<UserChoice | undefined> = () => Promise.resolve(undefined)
-    let cancelInstall: () => void = () => {
-    }
-
-    if (!hideInstall.value) {
-      let deferredPrompt: BeforeInstallPromptEvent | undefined
-
-      const beforeInstallPrompt = (e: Event) => {
-        e.preventDefault()
-        deferredPrompt = e as BeforeInstallPromptEvent
-        showInstallPrompt.value = true
-      }
-      window.addEventListener('beforeinstallprompt', beforeInstallPrompt)
-      window.addEventListener('appinstalled', () => {
-        deferredPrompt = undefined
-        showInstallPrompt.value = false
-      })
-
-      cancelInstall = () => {
-        deferredPrompt = undefined
-        showInstallPrompt.value = false
-        window.removeEventListener('beforeinstallprompt', beforeInstallPrompt)
-        hideInstall.value = true
-        localStorage.setItem(installPrompt!, 'true')
-      }
-
-      install = async () => {
-        if (!showInstallPrompt.value || !deferredPrompt) {
-          showInstallPrompt.value = false
-          return undefined
-        }
-
-        showInstallPrompt.value = false
-        await nextTick()
-        deferredPrompt.prompt()
-        return await deferredPrompt.userChoice
-      }
-    }
+    const {
+      isPWAInstalled,
+      showInstallPrompt,
+      cancelInstall,
+      install,
+    } = nuxtApp.$pwaInstallPrompt
 
     return {
       provide: {

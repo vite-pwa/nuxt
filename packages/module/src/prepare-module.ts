@@ -79,6 +79,10 @@ export async function prepareModule<
       src: resolver.resolve(runtimeDir, 'plugins/pwa.client'),
       mode: 'client',
     })
+    addPlugin({
+      src: resolver.resolve(runtimeDir, 'plugins/pwa-install.client'),
+      mode: 'client',
+    })
   }
 
   nuxt.hook('nitro:config', nitroConfigHook<B, UserStrategy, T, NPC>(ctx, nuxt))

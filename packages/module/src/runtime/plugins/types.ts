@@ -33,9 +33,9 @@ export type BeforeInstallPromptEvent = Event & {
 }
 
 /**
- * Reactive PWA state and helpers injected into Nuxt as `$pwa`.
+ * Reactive PWA Install Prompt state and helpers injected into Nuxt as `$pwaInstall`.
  */
-export interface PwaInjection {
+export interface PwaInstallPromptInjection {
   /**
    * Whether the app is currently installed as a PWA.
    * This value updates as installation state changes (e.g. display-mode changes).
@@ -57,6 +57,12 @@ export interface PwaInjection {
    * Returns `undefined` when the prompt is not available or not currently shown.
    */
   install: () => Promise<UserChoice | undefined>
+}
+
+/**
+ * Reactive PWA state and helpers injected into Nuxt as `$pwa`.
+ */
+export interface PwaInjection extends PwaInstallPromptInjection {
   /**
    * Whether the service worker has reached the `activated` state.
    */
@@ -81,7 +87,7 @@ export interface PwaInjection {
    */
   updateServiceWorker: (reloadPage?: boolean | undefined) => Promise<void>
   /**
-   * Dismisses update/install notifications by resetting `offlineReady` and
+   * Dismisses service worker update/installed notifications by resetting `offlineReady` and
    * `needRefresh` to `false`.
    */
   cancelPrompt: () => Promise<void>
