@@ -11,11 +11,17 @@ export default defineNuxtConfig({
       })
     },
   ],
+  typescript: {
+    appTsConfig: {
+      exclude: ['../service-worker'],
+    },
+  },
   future: {
     typescriptBundlerResolution: true,
   },
   experimental: {
     payloadExtraction: true,
+    appManifest: true,
     // add env variable to enable also vite env. api
     // viteEnvironmentApi: true,
   },

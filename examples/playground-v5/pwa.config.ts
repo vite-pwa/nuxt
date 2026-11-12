@@ -34,7 +34,7 @@ export default definePwaConfig({
     globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
   },
   buildSW: {
-    swSrc: '~/service-worker/sw.ts',
+    swSrc: '~~/service-worker/sw.ts',
     globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
   },
   client: {

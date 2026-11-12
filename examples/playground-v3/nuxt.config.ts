@@ -12,6 +12,11 @@ export default defineNuxtConfig({
       })
     },
   ],
+  typescript: {
+    tsConfig: {
+      exclude: ['../service-worker'],
+    },
+  },
   future: {
     typescriptBundlerResolution: true,
   },
