@@ -53,17 +53,17 @@ PWA for Nuxt Module
 - 💥 **PWA Assets Generator**: generate all the PWA assets from a single command and a single source image
 - 🚀 **PWA Assets Integration**: serving, generating and injecting PWA Assets on the fly in your application
 
-🔌 What is `@vite-pwa/nuxt`?
+## 🔌 What is `@vite-pwa/nuxt`?
 
 `@vite-pwa/nuxt` is the new for Nuxt PWA module, powered by [`unplugin-pwa`](https://github.com/vite-pwa/unplugin-pwa).
 
-📦 Install
+## 📦 Install
 
 ```bash
 npx nuxt module add @vite-pwa/nuxt
 ```
 
-🦄 Usage
+## 🦄 Usage
 
 ```ts
 // nuxt.config.ts
