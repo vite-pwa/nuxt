@@ -1,3 +1,4 @@
+import process from 'node:process'
 import { expect, test } from '@playwright/test'
 
 test('The service worker is registered and cache storage is present', async ({ page }) => {
@@ -44,4 +45,21 @@ test('The service worker is registered and cache storage is present', async ({ p
   expect(urls.some(url => url.startsWith('_nuxt/') && url.endsWith('.js'))).toEqual(true)
   expect(urls.some(url => url.includes('_payload.json?__WB_REVISION__='))).toEqual(true)
   expect(urls.some(url => url.startsWith('_nuxt/builds/') && url.includes('.json'))).toEqual(true)
+})
+
+test('The install prompt is handled using the client options from pwa.config.ts', async ({ page }) => {
+  await page.goto('/')
+  await page.evaluate(() => navigator.serviceWorker.ready)
+  const prevented = await page.evaluate(() => {
+    const event = new Event('beforeinstallprompt', { cancelable: true })
+    window.dispatchEvent(event)
+    return event.defaultPrevented
+  })
+  expect(prevented).toBe(true)
+})
+
+test('The service worker route rules are applied', async ({ request }) => {
+  test.skip(process.env.TEST_BUILD !== 'true', 'route rules are only applied by the Nitro server')
+  const response = await request.get('/sw.js')
+  expect(response.headers()['cache-control']).toBe('public, max-age=0, must-revalidate')
 })

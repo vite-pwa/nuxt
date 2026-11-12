@@ -1,0 +1,16 @@
+{
+  "name": "playground-assets-v3",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "generate": "nuxt generate"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "catalog:nuxt3",
+    "@vite-pwa/assets-generator": "catalog:pwa",
+    "@vite-pwa/nuxt": "workspace:*",
+    "nuxt": "catalog:nuxt3"
+  }
+}

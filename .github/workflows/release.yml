@@ -1,15 +1,117 @@
-name: Release
-
+name: release
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+  workflow_dispatch: null
+permissions: {}
+
+env:
+  PACKAGES: |
+    packages/*
 
 jobs:
-  release:
-    uses: sxzz/workflows/.github/workflows/release.yml@v1
-    with:
-      publish: true
+  pr:
+    if: |
+      github.repository_owner == 'vite-pwa'
+      && (
+        (github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
+        || (github.event_name == 'workflow_dispatch' && !startsWith(github.ref, 'refs/tags/'))
+      )
+    runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
+    steps:
+      - name: Resolve preview SHA
+        id: sha
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "short=${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
+
+      - uses: danielroe/uppt/pr@6c1a9b480b0f02a3f535dedaf1a113f590aa56f2 # v0.6.12
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          packages: ${{ env.PACKAGES }}
+          pr-notes: |
+            ## ⚡ Try the latest `{base}@${{ steps.sha.outputs.short }}` build with **pkg-pr-new**:
+
+            <details><summary><b>@vite-pwa/nuxt-core</b></summary><p>
+
+              ```
+              pnpm add https://pkg.pr.new/@vite-pwa/nuxt-core@${{ steps.sha.outputs.short }}
+              ```
+
+            </p></details>
+
+            <details><summary><b>@vite-pwa/nuxt</b></summary><p>
+
+              ```
+              pnpm add https://pkg.pr.new/@vite-pwa/nuxt@${{ steps.sha.outputs.short }}
+              ```
+
+            </p></details>
+
+            <details><summary><b>@vite-pwa/nuxt-vite</b></summary><p>
+
+              ```
+              pnpm add https://pkg.pr.new/@vite-pwa/nuxt-vite@${{ steps.sha.outputs.short }}
+              ```
+
+            </p></details>
+  release:
+    if: |
+      github.event_name == 'pull_request'
+      && github.event.pull_request.merged == true
+      && startsWith(github.event.pull_request.head.ref, 'release/v')
+      && github.event.pull_request.head.repo.full_name == github.repository
+      && github.repository_owner == 'vite-pwa'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: release-${{ github.event.pull_request.number }}
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: danielroe/uppt/release@6c1a9b480b0f02a3f535dedaf1a113f590aa56f2 # v0.6.12
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          packages: ${{ env.PACKAGES }}
+  pack:
+    if: github.event_name == 'workflow_dispatch' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pack-${{ github.ref }}
+      cancel-in-progress: false
+    permissions: {}
+    outputs:
+      files: ${{ steps.pack.outputs.files }}
+    steps:
+      - id: pack
+        uses: danielroe/uppt/pack@6c1a9b480b0f02a3f535dedaf1a113f590aa56f2 # v0.6.12
+        with:
+          packages: ${{ env.PACKAGES }}
+  publish:
+    if: |
+      github.event_name == 'workflow_dispatch'
+      && startsWith(github.ref, 'refs/tags/v')
+      && needs.pack.outputs.files != '[]'
+    needs: pack
+    runs-on: ubuntu-latest
+    concurrency:
+      group: publish-${{ github.ref }}
+      cancel-in-progress: false
+    permissions:
       id-token: write
+    steps:
+      - uses: danielroe/uppt/publish@6c1a9b480b0f02a3f535dedaf1a113f590aa56f2 # v0.6.12
+        with:
+          files: ${{ needs.pack.outputs.files }}
+    environment: npm

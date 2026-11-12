@@ -1,0 +1,100 @@
+{
+  "name": "@vite-pwa/nuxt",
+  "type": "module",
+  "version": "1.1.1",
+  "description": "Zero-config PWA for Nuxt",
+  "author": "antfu <anthonyfu117@hotmail.com>",
+  "license": "MIT",
+  "funding": "https://github.com/sponsors/antfu",
+  "homepage": "https://github.com/vite-pwa/nuxt#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vite-pwa/nuxt.git",
+    "directory": "packages/module"
+  },
+  "bugs": "https://github.com/vite-pwa/nuxt/issues",
+  "keywords": [
+    "nuxt",
+    "pwa",
+    "workbox",
+    "unplugin-pwa",
+    "nuxt-module"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/types.d.mts",
+      "default": "./dist/module.mjs"
+    },
+    "./config": "./config/index.mjs",
+    "./configuration": {
+      "types": "./configuration.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/module.mjs",
+  "types": "./dist/types.d.mts",
+  "files": [
+    "*.d.ts",
+    "config",
+    "dist"
+  ],
+  "scripts": {
+    "build": "nuxt-module-build prepare && nuxt-module-build build",
+    "prepack": "pnpm run build",
+    "test:typecheck": "vue-tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@vite-pwa/assets-generator": "^1.0.0 || ^2.0.0",
+    "magicast": "^0.5.0",
+    "rolldown": "^1.0.0-0"
+  },
+  "peerDependenciesMeta": {
+    "@vite-pwa/assets-generator": {
+      "optional": true
+    },
+    "magicast": {
+      "optional": true
+    },
+    "rolldown": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@nuxt/kit": "catalog:utils",
+    "@unplugin-pwa/core": "catalog:pwa",
+    "@vite-pwa/nuxt-core": "workspace:*",
+    "@vite-pwa/nuxt-vite": "workspace:*",
+    "@vite-pwa/workbox-build": "catalog:pwa",
+    "defu": "catalog:utils",
+    "verkit": "catalog:utils"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "catalog:utils",
+    "@nuxt/schema": "catalog:utils",
+    "@vite-pwa/assets-generator": "catalog:pwa",
+    "nuxt": "catalog:utils"
+  },
+  "build": {
+    "externals": [
+      "node:child_process",
+      "node:fs",
+      "consola",
+      "esbuild",
+      "h3",
+      "pathe",
+      "rollup",
+      "rolldown",
+      "ufo",
+      "vite",
+      "@unplugin-pwa/core",
+      "@unplugin-pwa/vite",
+      "@vite-pwa/workbox-build",
+      "@vite-pwa/workbox-swkit",
+      "@vite-pwa/workbox-window"
+    ]
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

@@ -1,8 +1,116 @@
+autoInstallPeers: true
+
+blockExoticSubdeps: false
+
+catalogMode: prefer
+
+dedupePeers: true
+
+ignoreWorkspaceRootCheck: true
+
+linkWorkspacePackages: true
+
+verifyDepsBeforeRun: install
+
+preferWorkspacePackages: true
+
+shamefullyHoist: true
+
+shellEmulator: true
+
+strictPeerDependencies: false
+
+trustPolicy: no-downgrade
+
 packages:
-  - playground/
-  - playground-assets/
-ignoredBuiltDependencies:
-  - esbuild
-  - vue-demi
-onlyBuiltDependencies:
-  - sharp
+  - packages/**
+  - examples/**
+
+overrides:
+  '@types/node': 'catalog:types'
+  chokidar: ^5.0.0
+  sharp: ^0.35.5
+  semver: ^7.8.5
+  why-is-node-running: 'catalog:utils'
+
+allowBuilds:
+  '@parcel/watcher': false
+  core-js: false
+  esbuild: false
+  sharp: true
+
+catalogs:
+  build:
+    '@nuxt/module-builder': ^1.0.3
+    tsdown: ^0.23.7
+  eslint:
+    '@antfu/eslint-config': ^10.0.0
+    eslint: ^10.13.0
+    eslint-plugin-antfu: ^3.3.1
+  nuxt3:
+    '@nuxt/devtools': npm:@nuxt/devtools@3.4.2
+    '@nuxt/kit': npm:@nuxt/kit@3.21.11
+    nuxt: npm:nuxt@3.21.11
+    vite: npm:vite@7.3.6
+  nuxt5:
+    # https://nuxt.com/modules/devtools#nuxt-5
+    '@nuxt/devtools-onboard': ^4.1.0
+    nitro: 3.0.261103-rc
+    nuxt: npm:nuxt-nightly@5x
+  pwa:
+    '@unplugin-pwa/core': ^0.0.6
+    '@unplugin-pwa/inspector': ^0.0.6
+    '@unplugin-pwa/vite': ^0.0.6
+    '@vite-pwa/assets-generator': ^2.0.0
+    '@vite-pwa/workbox-build': ^8.0.15
+    '@vite-pwa/workbox-swkit': ^8.0.15
+    '@vite-pwa/workbox-window': ^8.0.15
+  types:
+    '@types/debug': ^4.1.13
+    '@types/node': 24.19.2
+  typescript:
+    typescript: ~6.0.3
+  utils:
+    '@arethetypeswrong/core': ^0.18.5
+    '@nuxt/devtools': ^4.1.0
+    '@nuxt/kit': ^4.6.4
+    '@nuxt/schema': ^4.6.4
+    '@playwright/test': 1.64.1
+    '@rolldown/pluginutils': ^1.0.1
+    '@vitejs/devtools': ^0.7.6
+    defu: ^6.1.7
+    https-localhost: 4.7.2
+    magicast: ^0.5.5
+    nuxt: ^4.6.4
+    playwright-core: 1.64.1
+    publint: ^0.3.25
+    rolldown: ~1.2.18
+    serve: ^14.2.5
+    taze: 21.1.0
+    verkit: ^0.5.0
+    vite: ^8.3.7
+    vitest: ^5.1.0
+    vite-plugin-inspect: ^12.1.0
+    vue-tsc: ^3.3.14
+    why-is-node-running: 3.2.3
+
+minimumReleaseAgeExclude:
+  - uppt
+  - vite
+  - '@unplugin-pwa/core'
+  - '@unplugin-pwa/inspector'
+  - '@unplugin-pwa/vite'
+  - '@vite-pwa/workbox-build'
+  - '@vite-pwa/workbox-swkit'
+  - '@vite-pwa/workbox-window'
+  - '@nuxt/kit@4.6.4'
+  - '@nuxt/schema@4.6.4'
+
+supportedArchitectures:
+  os:
+    - win32
+    - darwin
+    - current
+  cpu:
+    - x64
+    - arm64

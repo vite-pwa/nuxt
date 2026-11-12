@@ -1,0 +1,22 @@
+{
+  "name": "playground-v5",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt dev",
+    "dev:no-tui": "nuxt dev --no-tui",
+    "dev-sw": "SW=true nuxt dev",
+    "build": "nuxt build",
+    "build-sw": "SW=true nuxt build",
+    "generate": "nuxt generate"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "catalog:utils",
+    "@vite-pwa/assets-generator": "catalog:pwa",
+    "@vite-pwa/nuxt": "workspace:*",
+    "@vite-pwa/nuxt-vite": "workspace:*",
+    "nitro": "catalog:nuxt5",
+    "nuxt": "catalog:nuxt5",
+    "vite": "catalog:utils"
+  }
+}

@@ -1,0 +1,22 @@
+name: Semantic Pull Request
+
+on:
+  # zizmor: ignore[dangerous-triggers] false positive: only validates PR title string
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+jobs:
+  main:
+    if: github.repository == 'vite-pwa/nuxt' && github.actor != 'github-actions[bot]' && !startsWith(github.head_ref, 'release/')
+    permissions:
+      pull-requests: read
+    runs-on: ubuntu-latest
+    name: Semantic Pull Request
+    steps:
+      - name: Validate PR title
+        uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

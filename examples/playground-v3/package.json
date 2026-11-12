@@ -1,0 +1,17 @@
+{
+  "name": "playground-v3",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt dev",
+    "dev-sw": "SW=true nuxt dev",
+    "build": "nuxt build",
+    "build-sw": "SW=true nuxt build",
+    "generate": "nuxt generate"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "catalog:nuxt3",
+    "@vite-pwa/nuxt": "workspace:*",
+    "nuxt": "catalog:nuxt3"
+  }
+}

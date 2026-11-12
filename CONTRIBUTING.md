@@ -12,21 +12,25 @@ To develop and test the `@vite-pwa/nuxt` package:
 
 1. Fork the `@vite-pwa/nuxt` repository to your own GitHub account and then clone it to your local device.
 
-2. `@vite-pwa/nuxt` uses pnpm v8. If you are working on multiple projects with different versions of pnpm, it's recommend to enable [Corepack](https://github.com/nodejs/corepack) by running `corepack enable`.
+2. `@vite-pwa/nuxt` uses the pnpm version pinned in the root `package.json` (`packageManager` field). If you are working on multiple projects with different versions of pnpm, it's recommended to enable [Corepack](https://github.com/nodejs/corepack) by running `corepack enable`.
 
 3. Check out a branch where you can work and commit your changes:
 ```shell
 git checkout -b my-new-branch
 ```
 
-5. Run `pnpm install` in `@vite-pwa/nuxt`'s root folder
+4. Run `pnpm install` in `@vite-pwa/nuxt`'s root folder
 
-6. Run `nr dev:prepare` in `@vite-pwa/nuxt`'s root folder.
+5. Run `pnpm build` in `@vite-pwa/nuxt`'s root folder.
 
-7. Run `nr dev` in `@vite-pwa/nuxt`'s root folder.
+6. Run `pnpm dev` in `@vite-pwa/nuxt`'s root folder.
 
 ## Running tests
 
 Before running tests, you'll need to install [Playwright](https://playwright.dev/) Chromium browser: `pnpm playwright install chromium`.
 
-Run `nr test:local` in `@vite-pwa/nuxt`'s root folder.
+Run `pnpm build && pnpm test` in `@vite-pwa/nuxt`'s root folder.
+
+To check the packages outside the workspace, run `pnpm build && pnpm test:consumer`: it packs the packages and builds a fresh Nuxt app with them. Set `NUXT_VERSION` to change the Nuxt version, `EXTRA_TARBALLS` to a directory of packed dependencies to override (for example unreleased `@unplugin-pwa/*` fixes), and `KEEP_FIXTURE=1` to keep the generated app.
+
+You can run also `pnpm build && pnpm test:consumer:v3` and `pnpm build && pnpm test:consumer:v4` to run previous test using Nuxt 3.21 and latest Nuxt 4 respectively.

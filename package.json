@@ -1,9 +1,10 @@
 {
-  "name": "@vite-pwa/nuxt",
+  "name": "vite-pwa-nuxt-monorepo",
   "type": "module",
   "version": "1.1.1",
-  "packageManager": "pnpm@10.18.2",
-  "description": "Zero-config PWA for Nuxt 3",
+  "private": true,
+  "packageManager": "pnpm@12.18.0",
+  "description": "Nuxt PWA Ecosystem",
   "author": "antfu <anthonyfu117@hotmail.com>",
   "license": "MIT",
   "funding": "https://github.com/sponsors/antfu",
@@ -13,115 +14,37 @@
     "url": "git+https://github.com/vite-pwa/nuxt.git"
   },
   "bugs": "https://github.com/vite-pwa/nuxt/issues",
-  "keywords": [
-    "nuxt",
-    "pwa",
-    "workbox",
-    "vite-plugin-pwa",
-    "nuxt-module"
-  ],
-  "exports": {
-    ".": {
-      "types": "./dist/types.d.mts",
-      "default": "./dist/module.mjs"
-    },
-    "./configuration": {
-      "types": "./configuration.d.ts"
-    },
-    "./package.json": "./package.json",
-    "./*": "./*"
-  },
-  "main": "./dist/module.mjs",
-  "types": "./dist/types.d.mts",
-  "typesVersions": {
-    "*": {
-      "configuration": [
-        "./configuration.d.ts"
-      ]
-    }
-  },
-  "files": [
-    "*.d.ts",
-    "dist"
-  ],
   "scripts": {
-    "prepack": "nuxt-module-build prepare && nuxt-module-build build",
-    "dev": "nuxi dev playground",
-    "dev:generate": "nuxi generate playground",
-    "dev:generate:netlify": "NITRO_PRESET=netlify nuxi generate playground",
-    "dev:generate:vercel": "NITRO_PRESET=vercel nuxi generate playground",
-    "dev:build": "nuxi build playground",
-    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
-    "dev:preview:build": "nr dev:build && node playground/.output/server/index.mjs",
-    "dev:preview:generate": "nr dev:generate && serve playground/dist",
-    "dev:assets:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground-assets",
-    "dev:assets": "nr dev:assets:prepare && nuxi dev playground-assets",
-    "dev:assets:generate": "nr dev:assets:prepare && nuxi generate playground-assets",
-    "dev:assets:build": "nr dev:assets:prepare && nuxi build playground-assets",
-    "release": "bumpp",
+    "build": "pnpm -r --filter=\"./packages/**/\" run build",
+    "pack:all": "pnpm -r --filter=\"./packages/**/\" pack",
     "lint": "eslint .",
-    "lint:fix": "nr lint --fix",
-    "test:build:serve": "PORT=4173 node playground/.output/server/index.mjs",
-    "test:generate:serve": "PORT=4173 serve playground/dist",
-    "test:build": "nr dev:build && NUXT_ECOSYSTEM_CI=true TEST_BUILD=true vitest run && TEST_BUILD=true playwright test",
-    "test:generate": "nr dev:generate && NUXT_ECOSYSTEM_CI=true vitest run && playwright test",
-    "test:build:local": "nr dev:build && TEST_BUILD=true vitest run && TEST_BUILD=true playwright test",
-    "test:generate:local": "nr dev:generate && vitest run && playwright test",
-    "test:local": "nr test:build:local && nr test:generate:local",
-    "test": "nr test:build && nr test:generate",
-    "test:with-build": "nr dev:prepare && nr prepack && nr test"
-  },
-  "peerDependencies": {
-    "@vite-pwa/assets-generator": "^1.0.0"
-  },
-  "peerDependenciesMeta": {
-    "@vite-pwa/assets-generator": {
-      "optional": true
-    }
-  },
-  "dependencies": {
-    "@nuxt/kit": "^3.9.0",
-    "pathe": "^1.1.1",
-    "ufo": "^1.3.2",
-    "vite-plugin-pwa": "^1.2.0"
+    "lint:fix": "eslint . --fix",
+    "test:typecheck": "pnpm -r --filter=\"./packages/**/\" run test:typecheck",
+    "dev": "pnpm -C examples/playground-v4 run dev",
+    "dev:build": "pnpm -C examples/playground-v3 run build",
+    "dev:generate": "pnpm -C examples/playground-v3 run generate",
+    "test:build:serve": "PORT=4173 node examples/playground-v3/.output/server/index.mjs",
+    "test:generate:serve": "serve -l 4173 examples/playground-v3/.output/public",
+    "test:build": "pnpm run dev:build && TEST_BUILD=true vitest run && TEST_BUILD=true playwright test",
+    "test:generate": "pnpm run dev:generate && vitest run && playwright test",
+    "test:consumer": "node scripts/test-consumer.mjs",
+    "test:consumer:v3": "NUXT_VERSION=^3.21.0 node scripts/test-consumer.mjs",
+    "test:consumer:v4": "NUXT_VERSION=^4.0.0 node scripts/test-consumer.mjs",
+    "test": "pnpm run test:build && pnpm run test:generate"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^4.11.0",
-    "@antfu/ni": "^0.21.10",
-    "@nuxt/module-builder": "^1.0.2",
-    "@nuxt/schema": "^3.10.1",
-    "@nuxt/test-utils": "^3.11.0",
-    "@playwright/test": "^1.40.1",
-    "@types/node": "^18",
-    "bumpp": "^9.2.0",
-    "eslint": "^9.23.0",
-    "node-fetch-native": "^1.4.1",
-    "nuxt": "^3.10.1",
-    "publint": "^0.2.5",
-    "rimraf": "^5.0.5",
-    "serve": "^14.2.1",
-    "typescript": "^5.9.3",
-    "vitest": "^1.1.0",
-    "vue-tsc": "^3.2.7"
-  },
-  "resolutions": {
-    "@nuxt/kit": "^3.10.1"
-  },
-  "build": {
-    "externals": [
-      "node:child_process",
-      "node:fs",
-      "consola",
-      "esbuild",
-      "h3",
-      "pathe",
-      "rollup",
-      "ufo",
-      "vite",
-      "vite-plugin-pwa"
-    ]
-  },
-  "stackblitz": {
-    "startCommand": "nr prepack && nr dev:prepare && nr dev"
+    "@antfu/eslint-config": "catalog:eslint",
+    "@arethetypeswrong/core": "catalog:utils",
+    "@nuxt/module-builder": "catalog:build",
+    "@playwright/test": "catalog:utils",
+    "@types/node": "catalog:types",
+    "eslint": "catalog:eslint",
+    "publint": "catalog:utils",
+    "serve": "catalog:utils",
+    "taze": "catalog:utils",
+    "tsdown": "catalog:build",
+    "typescript": "catalog:typescript",
+    "vitest": "catalog:utils",
+    "vue-tsc": "catalog:utils"
   }
 }
