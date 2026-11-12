@@ -23,10 +23,14 @@ export default defineNuxtConfig({
     payloadExtraction: true,
     appManifest: true,
   },
-  nitro: {
-    prerender: {
-      routes: ['/', '/about'],
-    },
+  // nitro: {
+  //   prerender: {
+  //     routes: ['/', '/about'],
+  //   },
+  // },
+  routeRules: {
+    '/': { prerender: true },
+    '/about': { prerender: true },
   },
   imports: {
     autoImport: true,

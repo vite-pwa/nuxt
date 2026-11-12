@@ -3,7 +3,10 @@ import type { VitePWAStrategy } from '@unplugin-pwa/core'
 import type { SWType } from '@vite-pwa/workbox-build/types'
 import type { Connect, Plugin } from 'vite'
 import type { ViteLegacyNuxtPWAContext, ViteNuxtPWAContext } from './internal-types.ts'
-import { addVitePlugin } from '@nuxt/kit'
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
+import { addVitePlugin, resolveAlias } from '@nuxt/kit'
+import { exactRegex } from '@rolldown/pluginutils'
 import { DevPlugin } from '@unplugin-pwa/vite/plugins/dev'
 import { DevMiddlewarePlugin } from '@unplugin-pwa/vite/plugins/dev-middleware'
 import { DevAssetsMiddlewarePlugin } from '@unplugin-pwa/vite/plugins/dev-pwa-assets-middleware'
@@ -12,6 +15,7 @@ import { InspectorPlugin } from '@unplugin-pwa/vite/plugins/inspector'
 import { MainPlugin } from '@unplugin-pwa/vite/plugins/main'
 import { AssetsPlugin } from '@unplugin-pwa/vite/plugins/pwa-assets'
 import { VirtualModulesPlugin } from '@unplugin-pwa/vite/plugins/virtual-modules'
+import { getMajor } from 'verkit'
 import { PwaRuntimeConfiguration } from './plugins/pwa-runtime-configuration.ts'
 
 export async function prepareNuxtOptions<
@@ -82,6 +86,69 @@ export async function prepareNuxtOptions<
 
   if (devOptions?.enabled && devOptions.inspector === 'vite-devtools') {
     devOptions.inspector = 'standalone'
+  }
+
+  const major = getMajor(ctx.nuxt.nuxtVersion)
+
+  if (major > 3 && nuxt.options.experimental.appManifest) {
+    if (ctx.resolvedOptions.strategy === 'build-sw') {
+      const consumerPlugins = ctx.resolvedOptions.buildSW?.plugins
+      ctx.resolvedOptions.buildSW!.plugins = (swType) => {
+        const plugins = consumerPlugins?.(swType) ?? []
+        plugins.unshift({
+          name: 'vite-pwa:nuxt:app-manifest',
+          enforce: 'pre',
+          resolveId: {
+            filter: {
+              id: exactRegex('#app-manifest'),
+            },
+            handler(id) {
+              return id === '#app-manifest'
+                ? id
+                : undefined
+            },
+          },
+          load: {
+            filter: {
+              id: exactRegex('#app-manifest'),
+            },
+            async handler(id) {
+              if (id !== '#app-manifest') {
+                return undefined
+              }
+              const latestPath = resolveAlias(
+                '~~/.nuxt/manifest/latest.json',
+                nuxt.options.alias,
+              )
+              const latest: {
+                id: string
+              } = JSON.parse(readFileSync(latestPath, 'utf-8'))
+              const manifest = JSON.parse(readFileSync(
+                path.resolve(path.dirname(latestPath), `meta/${latest.id}.json`),
+                'utf-8',
+              ))
+              manifest.id = latest.id
+              if (!manifest.preprendered) {
+                const useRoutes = new Set<string>()
+                const routes = nuxt.options.prerender?.routes
+                if (routes) {
+                  routes.forEach(route => useRoutes.add(route))
+                }
+                const routeRules = Array.from(Object.entries(
+                  nuxt.options.routeRules ?? {},
+                )).filter(([_, rule]) => rule.prerender && (rule.isr === false || typeof rule.isr === 'undefined'))
+                if (routeRules.length) {
+                  routeRules.forEach(([route]) => useRoutes.add(route))
+                }
+                manifest.preprendered = Array.from(useRoutes)
+              }
+              return `export default ${JSON.stringify(manifest)}`
+            },
+          },
+        })
+        return plugins
+      }
+    }
   }
 
   addVitePlugin([
