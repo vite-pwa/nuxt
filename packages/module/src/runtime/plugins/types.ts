@@ -33,7 +33,7 @@ export type BeforeInstallPromptEvent = Event & {
 }
 
 /**
- * Reactive PWA Install Prompt state and helpers injected into Nuxt as `$pwaInstall`.
+ * PWA Install Prompt state and helpers injected into Nuxt as `$pwaInstallPrompt`.
  */
 export interface PwaInstallPromptInjection {
   /**
