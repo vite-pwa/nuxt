@@ -62,4 +62,7 @@ test('The service worker route rules are applied', async ({ request }) => {
   test.skip(process.env.TEST_BUILD !== 'true', 'route rules are only applied by the Nitro server')
   const response = await request.get('/sw.js')
   expect(response.headers()['cache-control']).toBe('public, max-age=0, must-revalidate')
+  // the playground enables `experimental.inlineRouteRules`, whose rebuild of the route rules must keep the module's rules
+  const about = await request.get('/about')
+  expect(about.headers()['x-inline-route-rule']).toBe('true')
 })
