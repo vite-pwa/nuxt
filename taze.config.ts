@@ -15,6 +15,10 @@ export default defineConfig({
     'vite@7',
     '@nuxt/devtools/nuxt@3',
     '@nuxt/kit/nuxt@3',
+    // unpin rolldown once Vite 8.4 released
+    // we need both, Vite and Rolldown:
+    // using Vite 8.3 with Rolldown 1.3 can cause Vite apps to generated wrong builds
+    'rolldown',
   ],
   githubActions: {
     style: 'sha',
