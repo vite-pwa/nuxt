@@ -29,6 +29,7 @@ packages:
 overrides:
   '@types/node': 'catalog:types'
   chokidar: ^5.0.0
+  rolldown: 'catalog:utils'
   sharp: ^0.35.5
   semver: ^7.8.6
   why-is-node-running: 'catalog:utils'
@@ -58,9 +59,9 @@ catalogs:
     nitro: 3.0.261103-rc
     nuxt: npm:nuxt-nightly@5x
   pwa:
-    '@unplugin-pwa/core': ^0.0.6
-    '@unplugin-pwa/inspector': ^0.0.6
-    '@unplugin-pwa/vite': ^0.0.6
+    '@unplugin-pwa/core': ^0.0.7
+    '@unplugin-pwa/inspector': ^0.0.7
+    '@unplugin-pwa/vite': ^0.0.7
     '@vite-pwa/assets-generator': ^2.0.0
     '@vite-pwa/workbox-build': ^8.0.15
     '@vite-pwa/workbox-swkit': ^8.0.15

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+defineRouteRules({
+  headers: { 'x-inline-route-rule': 'true' },
+})
 const pwa = usePWA()
 </script>
 

@@ -23,6 +23,7 @@ export default defineNuxtConfig({
   experimental: {
     payloadExtraction: true,
     watcher: 'parcel',
+    inlineRouteRules: true,
   },
   nitro: {
     prerender: {
