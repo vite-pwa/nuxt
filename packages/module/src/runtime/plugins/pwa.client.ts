@@ -1,7 +1,7 @@
 import type { RegisterSWOptions } from '@unplugin-pwa/core/types'
 import type { UnwrapNestedRefs } from 'vue'
 import type { Plugin } from '#app'
-import type { PwaInjection } from './types'
+import type { PwaInjection } from './types.ts'
 import {
   activateSWSwitcherDev,
   callBeforeRegisterHook,

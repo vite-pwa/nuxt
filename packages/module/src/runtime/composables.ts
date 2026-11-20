@@ -4,7 +4,7 @@ import type { PwaAppleSplashScreenImageProps } from '#build/pwa-icons/PwaAppleSp
 import type { PwaFaviconImageProps } from '#build/pwa-icons/PwaFaviconImageProps'
 import type { PwaMaskableImageProps } from '#build/pwa-icons/PwaMaskableImageProps'
 import type { PwaTransparentImageProps } from '#build/pwa-icons/PwaTransparentImageProps'
-import type { PwaInjection } from './plugins/types'
+import type { PwaInjection } from './plugins/types.ts'
 import { computed, toValue } from 'vue'
 import { useNuxtApp } from '#imports'
 

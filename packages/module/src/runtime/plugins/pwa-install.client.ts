@@ -1,5 +1,5 @@
 import type { Plugin } from '#app'
-import type { BeforeInstallPromptEvent, PwaInstallPromptInjection, UserChoice } from './types'
+import type { BeforeInstallPromptEvent, PwaInstallPromptInjection, UserChoice } from './types.ts'
 import {
   display,
   installPrompt,

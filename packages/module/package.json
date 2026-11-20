@@ -39,9 +39,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "nuxt module-build prepare && nuxt module-build build",
+    "build": "tsdown",
+    "prepare:module": "nuxt module-build prepare && nuxt module-build build",
     "prepack": "pnpm run build",
-    "test:typecheck": "vue-tsc --noEmit"
+    "test:typecheck": "vue-tsc -b --noEmit"
   },
   "peerDependencies": {
     "@vite-pwa/assets-generator": "^1.0.0 || ^2.0.0",
@@ -73,25 +74,6 @@
     "@nuxt/schema": "catalog:utils",
     "@vite-pwa/assets-generator": "catalog:pwa",
     "nuxt": "catalog:utils"
-  },
-  "build": {
-    "externals": [
-      "node:child_process",
-      "node:fs",
-      "consola",
-      "esbuild",
-      "h3",
-      "pathe",
-      "rollup",
-      "rolldown",
-      "ufo",
-      "vite",
-      "@unplugin-pwa/core",
-      "@unplugin-pwa/vite",
-      "@vite-pwa/workbox-build",
-      "@vite-pwa/workbox-swkit",
-      "@vite-pwa/workbox-window"
-    ]
   },
   "publishConfig": {
     "access": "public",
