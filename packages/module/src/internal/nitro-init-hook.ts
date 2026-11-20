@@ -51,8 +51,14 @@ export function nitroInitHook<
 
     const routeRules = ctx.nuxt.nitroPWAOptions.routeRules
     if (Object.keys(routeRules).length > 0) {
+      // Nuxt's inline route rules rebuild `nitro.options.routeRules` from `_config` through `nitro.updateConfig`, which would drop rules added only to the resolved options
+      const config = (nitro.options as { _config?: { routeRules?: Record<string, any> } })._config
       for (const [route, rules] of Object.entries(routeRules)) {
         nitro.options.routeRules[route] = defu(nitro.options.routeRules[route], rules)
+        if (config) {
+          config.routeRules ??= {}
+          config.routeRules[route] = defu(config.routeRules[route], rules)
+        }
       }
       // Nitro 3 compiles route rules into its router, which has to be rebuilt after changes
       ;(nitro as { routing?: { sync: () => void } }).routing?.sync()
