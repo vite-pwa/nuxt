@@ -74,6 +74,7 @@ catalogs:
   utils:
     '@arethetypeswrong/core': ^0.18.5
     '@nuxt/devtools': ^4.1.0
+    '@nuxt/devtools-kit': ^4.1.0
     '@nuxt/kit': ^4.6.4
     '@nuxt/schema': ^4.6.4
     '@playwright/test': 1.65.0

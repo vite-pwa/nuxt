@@ -70,7 +70,7 @@
     "verkit": "catalog:utils"
   },
   "devDependencies": {
-    "@nuxt/devtools": "catalog:utils",
+    "@nuxt/devtools-kit": "catalog:utils",
     "@nuxt/schema": "catalog:utils",
     "@vite-pwa/assets-generator": "catalog:pwa",
     "nuxt": "catalog:utils"
