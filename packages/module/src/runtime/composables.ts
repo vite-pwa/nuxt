@@ -70,12 +70,12 @@ function usePWAIcon(
       return
 
     if (typeof pwaIcon === 'string') {
-      return <PWAIcon>{
+      return {
         width: image.width,
         height: image.height,
         key: image.key,
         src: image.src,
-      }
+      } satisfies PWAIcon
     }
 
     const {
@@ -85,13 +85,13 @@ function usePWAIcon(
       ...rest
     } = pwaIcon
 
-    return <PWAIcon>{
+    return {
       width: width ?? image.width,
       height: height ?? image.height,
       ...rest,
       key: image.key,
       src: image.src,
-    }
+    } satisfies PWAIcon
   })
 
   return { icon }
