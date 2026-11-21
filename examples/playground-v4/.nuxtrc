@@ -1,1 +1,1 @@
-typescript.tsConfig.exclude[]=../../packages/module/src/runtime
+typescript.tsConfig.exclude[]=../../../packages/module/src/runtime
