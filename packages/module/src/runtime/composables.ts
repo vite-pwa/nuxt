@@ -4,7 +4,7 @@ import type { PwaAppleSplashScreenImageProps } from '#build/pwa-icons/PwaAppleSp
 import type { PwaFaviconImageProps } from '#build/pwa-icons/PwaFaviconImageProps'
 import type { PwaMaskableImageProps } from '#build/pwa-icons/PwaMaskableImageProps'
 import type { PwaTransparentImageProps } from '#build/pwa-icons/PwaTransparentImageProps'
-import type { PwaInjection } from './plugins/types'
+import type { PwaInjection } from './plugins/types.ts'
 import { computed, toValue } from 'vue'
 import { useNuxtApp } from '#imports'
 
@@ -70,12 +70,12 @@ function usePWAIcon(
       return
 
     if (typeof pwaIcon === 'string') {
-      return <PWAIcon>{
+      return {
         width: image.width,
         height: image.height,
         key: image.key,
         src: image.src,
-      }
+      } satisfies PWAIcon
     }
 
     const {
@@ -85,13 +85,13 @@ function usePWAIcon(
       ...rest
     } = pwaIcon
 
-    return <PWAIcon>{
+    return {
       width: width ?? image.width,
       height: height ?? image.height,
       ...rest,
       key: image.key,
       src: image.src,
-    }
+    } satisfies PWAIcon
   })
 
   return { icon }

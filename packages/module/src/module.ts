@@ -1,4 +1,4 @@
-import type { HookResult } from '@nuxt/schema'
+import type { HookResult, NuxtModule } from '@nuxt/schema'
 import type {
   ResolvedVitePWAOptions,
   VitePWAStrategy,
@@ -76,7 +76,7 @@ export interface PWAModuleRuntimeHooks {
 
 export type ModuleRuntimeHooks = PWAModuleRuntimeHooks
 
-export default defineNuxtModule<ModuleOptions>({
+const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
   meta: {
     name: '@vite-pwa/nuxt',
     configKey: 'pwa',
@@ -111,3 +111,5 @@ export default defineNuxtModule<ModuleOptions>({
     }
   },
 })
+
+export default module
