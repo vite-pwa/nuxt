@@ -1,9 +1,9 @@
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'tsdown'
 
-const cwd = fileURLToPath(new URL('.', import.meta.url))
+const cwd: string = fileURLToPath(new URL('.', import.meta.url))
 
-async function cleanupDistFiles(patterns: string | string[]) {
+async function cleanupDistFiles(patterns: string | string[]): Promise<void> {
   const [fs, path] = await Promise.all([
     import('node:fs/promises'),
     import('node:path'),
@@ -18,7 +18,7 @@ async function cleanupDistFiles(patterns: string | string[]) {
   }
 }
 
-async function cleanupJSTypes() {
+async function cleanupJSTypes(): Promise<void> {
   await Promise.all([
     cleanupDistFiles(['**/types.{js,mjs}']),
     cleanupDistFiles(['**/shared-types.{js,mjs}']),
@@ -26,7 +26,7 @@ async function cleanupJSTypes() {
   ])
 }
 
-export default defineConfig({
+const config: ReturnType<typeof defineConfig> = defineConfig({
   entry: [
     'src/config.ts',
     'src/index.ts',
@@ -53,8 +53,10 @@ export default defineConfig({
     ],
   },
   hooks: {
-    'build:done': async () => {
+    'build:done': async (): Promise<void> => {
       await cleanupJSTypes()
     },
   },
 })
+
+export default config

@@ -22,17 +22,20 @@
     "vite builder"
   ],
   "exports": {
-    ".": "./dist/index.mjs",
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
     "./package.json": "./package.json"
   },
-  "types": "./dist/index.d.mts",
+  "types": "./src/index.ts",
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "tsdown",
     "prepack": "pnpm run build",
-    "test:typecheck": "tsc --noEmit"
+    "test:typecheck": "vue-tsc --noEmit"
   },
   "peerDependencies": {
     "@vite-pwa/assets-generator": "^1.0.0 || ^2.0.0",
@@ -64,6 +67,11 @@
   },
   "publishConfig": {
     "access": "public",
-    "provenance": true
+    "provenance": true,
+    "exports": {
+      ".": "./dist/index.mjs",
+      "./package.json": "./package.json"
+    },
+    "types": "./dist/index.d.mts"
   }
 }

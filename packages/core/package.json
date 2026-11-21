@@ -22,27 +22,33 @@
   ],
   "sideEffects": false,
   "exports": {
-    ".": "./dist/index.mjs",
-    "./config": "./dist/config.mjs",
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./config": {
+      "types": "./src/config.ts",
+      "default": "./src/config.ts"
+    },
     "./context-types": {
-      "types": "./dist/context-types.d.mts"
+      "types": "./src/context-types.ts"
     },
     "./shared-types": {
-      "types": "./dist/shared-types.d.mts"
+      "types": "./src/shared-types.ts"
     },
     "./types": {
-      "types": "./dist/types.d.mts"
+      "types": "./src/types.ts"
     },
     "./package.json": "./package.json"
   },
-  "types": "./dist/index.d.mts",
+  "types": "./src/index.ts",
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "tsdown",
     "prepack": "pnpm run build",
-    "test:typecheck": "tsc --noEmit"
+    "test:typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@unplugin-pwa/core": "catalog:pwa",
@@ -54,6 +60,21 @@
   },
   "publishConfig": {
     "access": "public",
-    "provenance": true
+    "provenance": true,
+    "exports": {
+      ".": "./dist/index.mjs",
+      "./config": "./dist/config.mjs",
+      "./context-types": {
+        "types": "./dist/context-types.d.mts"
+      },
+      "./shared-types": {
+        "types": "./dist/shared-types.d.mts"
+      },
+      "./types": {
+        "types": "./dist/types.d.mts"
+      },
+      "./package.json": "./package.json"
+    },
+    "types": "./dist/index.d.mts"
   }
 }
