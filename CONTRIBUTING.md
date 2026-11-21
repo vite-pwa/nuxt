@@ -37,6 +37,7 @@ You can run also `pnpm build && pnpm test:consumer:v3` and `pnpm build && pnpm t
 
 ## Running Nuxt 5 examples on Windows
 
-Use the `dev:no-tui` until we fix the `tracingChannel` [issue](https://github.com/nuxt/nuxt/issues/37206) on Windows at Nuxt.
+Use the `dev:no-tui` scripts from the examples until we fix the `tracingChannel` [issue](https://github.com/nuxt/nuxt/issues/37206) on Windows at Nuxt.
 
-Running any Nuxt 5 playground breaks the service worker build (and maybe also Nuxt 4 playgrounds with `experimental.viteEnvironmentApi` enabled).
+Running any Nuxt 5 playground in dev breaks the service worker build (and maybe also Nuxt 4 playgrounds with `experimental.viteEnvironmentApi` enabled).
+
