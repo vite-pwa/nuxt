@@ -1,11 +1,12 @@
 import type { MetaObject } from '@nuxt/schema'
+import type { DefineComponent } from 'vue'
 import { pwaAssetsHead } from 'virtual:pwa-assets/head'
 import { pwaInfo } from 'virtual:pwa-info'
 import { defineComponent, ref } from 'vue'
 import { useHead } from '#imports'
 
-export default defineComponent({
-  setup() {
+const component: DefineComponent = defineComponent({
+  setup(): () => null {
     const meta = ref<MetaObject>({ link: [] })
     useHead(meta)
     if (pwaAssetsHead.themeColor) {
@@ -39,6 +40,8 @@ export default defineComponent({
       }
     }
 
-    return () => null
+    return (): null => null
   },
 })
+
+export default component

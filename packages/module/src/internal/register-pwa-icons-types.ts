@@ -18,7 +18,7 @@ export async function registerPwaIconsTypes<
 >(
   ctx: NPWAC,
   nuxt: Nuxt,
-) {
+): Promise<void> {
   const options = ctx.resolvedOptions
   // we need to resolve first the PWA assets options: the resolved options set at pwa-icons::resolvePWAAssetsOptions
   const pwaAssets = options.pwaAssets && !options.pwaAssets.disabled

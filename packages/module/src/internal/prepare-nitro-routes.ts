@@ -15,7 +15,7 @@ export async function prepareNitroRoutes<
   UserStrategy extends VitePWAStrategy,
   T extends SWType,
   NPWAC extends NuxtPWAContext<B, UserStrategy, T>,
->(ctx: NPWAC, nuxt: Nuxt) {
+>(ctx: NPWAC, nuxt: Nuxt): Promise<void> {
   const isDev = nuxt.options.dev
   let swDisabled = false
   if (isDev) {

@@ -15,7 +15,7 @@ export async function buildPwaAssets<
 >(
   ctx: NPWAC,
   nuxt: Nuxt,
-) {
+): Promise<void> {
   const pwaAssetsGenerator = await ctx.pwaAssetsGenerator
   if (pwaAssetsGenerator) {
     await pwaAssetsGenerator.generate()

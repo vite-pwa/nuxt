@@ -20,7 +20,7 @@ export function prepareBuildSwNames<
 >(
   ctx: NuxtPWAContext<B, UserStrategy, T>,
   nitroPublicDir: string,
-) {
+): void {
   let swSrc: string | undefined
   let options: (GlobPartial & RequiredSWDestPartial) | undefined
   switch (ctx.strategy) {
