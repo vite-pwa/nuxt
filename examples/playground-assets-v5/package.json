@@ -13,8 +13,10 @@
     "@vite-pwa/assets-generator": "catalog:pwa",
     "@vite-pwa/nuxt": "workspace:*",
     "@vite-pwa/nuxt-vite": "workspace:*",
+    "@vitejs/devtools": "catalog:utils",
     "nitro": "catalog:nuxt5",
     "nuxt": "catalog:nuxt5",
-    "vite": "catalog:utils"
+    "vite": "catalog:utils",
+    "vue-router": "catalog:utils"
   }
 }

@@ -22,17 +22,15 @@
   ],
   "exports": {
     ".": {
-      "types": "./dist/types.d.mts",
-      "default": "./dist/module.mjs"
+      "types": "./.nuxt/module-builder/types.d.mts",
+      "default": "./src/module.ts"
     },
     "./config": "./config/index.mjs",
     "./configuration": {
       "types": "./configuration.d.ts"
-    },
-    "./package.json": "./package.json"
+    }
   },
-  "main": "./dist/module.mjs",
-  "types": "./dist/types.d.mts",
+  "main": "./src/module.ts",
   "files": [
     "*.d.ts",
     "config",
@@ -40,7 +38,7 @@
   ],
   "scripts": {
     "build": "tsdown",
-    "prepare:module": "nuxt module-build prepare && nuxt module-build build",
+    "prepare:module": "nuxt module-build prepare",
     "prepack": "pnpm run build",
     "test:typecheck": "vue-tsc -b --noEmit"
   },
@@ -77,6 +75,18 @@
   },
   "publishConfig": {
     "access": "public",
-    "provenance": true
+    "provenance": true,
+    "exports": {
+      ".": {
+        "types": "./dist/types.d.mts",
+        "default": "./dist/module.mjs"
+      },
+      "./config": "./config/index.mjs",
+      "./configuration": {
+        "types": "./configuration.d.ts"
+      },
+      "./package.json": "./package.json"
+    },
+    "main": "./dist/module.mjs"
   }
 }
