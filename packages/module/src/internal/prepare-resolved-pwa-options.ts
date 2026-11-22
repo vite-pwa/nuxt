@@ -208,25 +208,37 @@ function createManifestTransform(
       // this shouldn't be necessary, since we are using dontCacheBustURLsMatching
       // eslint-disable-next-line regexp/no-unused-capturing-group,regexp/no-useless-assertions
       const regExp = /(\/)?[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}\.json$/i
-      // we need to remove the revision from the sw prechaing manifest, UUID is enough:
-      // we don't use dontCacheBustURLsMatching, single regex
-      entries.filter(e => e.url.startsWith(appManifestFolder) && regExp.test(e.url)).forEach((e) => {
-        e.revision = null
+      const latest = `${appManifestFolder}latest.json`
+      const seenUuids = new Set<string>()
+      // duplicates cleanup: elk-zone for example uses i18n with json files adding them to globPatterns
+      entries = entries.filter((e) => {
+        // remove latest.json, will be added later if it exists
+        if (e.url === latest) {
+          return false
+        }
+
+        // cleanup _nuxt/builds/<uuid>.json entries
+        if (e.url.startsWith(appManifestFolder) && regExp.test(e.url)) {
+          if (seenUuids.has(e.url)) {
+            return false
+          }
+          seenUuids.add(e.url)
+          // cleanup revision
+          e.revision = null
+        }
+
+        return true
       })
       // add revision to latest.json file: we are excluding `_nuxt/` assets from dontCacheBustURLsMatching
-      const latest = `${appManifestFolder}latest.json`
       const latestJson = path.resolve(publicFolder, latest)
       const data = await lstat(latestJson).catch(() => undefined)
+      // add latest.json back entries with the revision if it exists
       if (data?.isFile()) {
-        const revision = hash('md5', await fs.readFile(latestJson, 'utf-8'), 'hex')
-        const latestEntry = entries.find(e => e.url === latest)
-        if (latestEntry)
-          latestEntry.revision = revision
-        else
-          entries.push({ url: latest, revision, size: data.size })
-      }
-      else {
-        entries = entries.filter(e => e.url !== latest)
+        entries.push({
+          url: latest,
+          revision: hash('md5', await fs.readFile(latestJson, 'utf-8'), 'hex'),
+          size: data.size,
+        })
       }
     }
 
