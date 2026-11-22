@@ -1,1 +1,3 @@
 typescript.tsConfig.exclude[]=../../../packages/module/src/runtime
+typescript.nodeTsConfig.include[]=../pwa.config.ts
+typescript.nodeTsConfig.include[]=../pwa-assets.config.ts
