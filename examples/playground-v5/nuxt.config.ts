@@ -11,6 +11,9 @@ export default defineNuxtConfig({
       })
     },
   ],
+  // tracingChannel: {
+  //   nuxt: false,
+  // },
   typescript: {
     appTsConfig: {
       exclude: ['../service-worker'],

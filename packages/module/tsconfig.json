@@ -1,5 +1,11 @@
 {
-  "extends": "./.nuxt/tsconfig.json",
+  "references": [
+    { "path": "./tsconfig.module.json" },
+    { "path": "./.nuxt/tsconfig.app.json" },
+    { "path": "./.nuxt/tsconfig.server.json" },
+    { "path": "./.nuxt/tsconfig.shared.json" }
+  ],
+  "files": [],
   "exclude": [
     "dist",
     "node_modules"

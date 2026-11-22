@@ -97,7 +97,7 @@ export function addPWAIconsPluginTemplate<
   nuxt: Nuxt,
   nuxt4: boolean,
   pwaAssetsEnabled: boolean,
-) {
+): void {
   const buildDir = ctx.nuxt.moduleResolver.resolve(nuxt.options.buildDir, 'pwa-icons')
   const resolvePluginJsPath: (name: string) => string = name => ctx.nuxt.moduleResolver.resolve(
     buildDir,

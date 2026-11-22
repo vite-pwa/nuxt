@@ -25,7 +25,7 @@ export async function prepareResolvedPwaOptions<
   ctx: NPWAC,
   nuxt: Nuxt,
   outDir: string,
-) {
+): Promise<void> {
   // prepare manifest
   normalizeManifest(ctx as any)
 

@@ -24,7 +24,7 @@ export async function prepareNuxtOptions<
 >(
   ctx: ViteNuxtPWAContext<UserStrategy, T> | ViteLegacyNuxtPWAContext<UserStrategy, T>,
   nuxt: Nuxt,
-) {
+): Promise<void> {
   const devOptions = ctx.resolvedOptions.devOptions
 
   if (nuxt.options.dev && devOptions?.enabled) {
@@ -71,7 +71,7 @@ export async function prepareNuxtOptions<
         : [swNames.name]
       // Nuxt only forwards dev requests to Vite when a Vite middleware is registered for the route
       nuxt.hook('vite:serverCreated', (viteServer, { isServer }) => {
-        if (isServer) {
+        if (/*! ctx.envApi && */isServer) {
           return
         }
 

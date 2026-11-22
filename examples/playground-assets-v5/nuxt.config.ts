@@ -4,6 +4,9 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   modules: ['@vite-pwa/nuxt'],
+  // tracingChannel: {
+  //   nuxt: false,
+  // },
   future: {
     typescriptBundlerResolution: true,
   },

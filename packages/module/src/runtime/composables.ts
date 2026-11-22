@@ -1,10 +1,10 @@
-import type { ImgHTMLAttributes, MaybeRef, UnwrapNestedRefs } from 'vue'
+import type { ComputedRef, ImgHTMLAttributes, MaybeRef, UnwrapNestedRefs } from 'vue'
 import type { PwaAppleImageProps } from '#build/pwa-icons/PwaAppleImageProps'
 import type { PwaAppleSplashScreenImageProps } from '#build/pwa-icons/PwaAppleSplashScreenImageProps'
 import type { PwaFaviconImageProps } from '#build/pwa-icons/PwaFaviconImageProps'
 import type { PwaMaskableImageProps } from '#build/pwa-icons/PwaMaskableImageProps'
 import type { PwaTransparentImageProps } from '#build/pwa-icons/PwaTransparentImageProps'
-import type { PwaInjection } from './plugins/types'
+import type { PwaInjection } from './plugins/types.ts'
 import { computed, toValue } from 'vue'
 import { useNuxtApp } from '#imports'
 
@@ -35,20 +35,23 @@ export type MaskableImageType = MaybeRef<PWAImageType<'maskable'>>
 export type FaviconImageType = MaybeRef<PWAImageType<'favicon'>>
 export type AppleImageType = MaybeRef<PWAImageType<'apple'>>
 export type AppleSplashScreenImageType = MaybeRef<PWAImageType<'appleSplashScreen'>>
+export interface UsePwaIcon {
+  icon: ComputedRef<PWAIcon | undefined>
+}
 
-export function useTransparentPwaIcon(image: TransparentImageType) {
+export function useTransparentPwaIcon(image: TransparentImageType): UsePwaIcon {
   return usePWAIcon('transparent', image)
 }
-export function useMaskablePwaIcon(image: MaskableImageType) {
+export function useMaskablePwaIcon(image: MaskableImageType): UsePwaIcon {
   return usePWAIcon('maskable', image)
 }
-export function useFaviconPwaIcon(image: FaviconImageType) {
+export function useFaviconPwaIcon(image: FaviconImageType): UsePwaIcon {
   return usePWAIcon('favicon', image)
 }
-export function useApplePwaIcon(image: AppleImageType) {
+export function useApplePwaIcon(image: AppleImageType): UsePwaIcon {
   return usePWAIcon('apple', image)
 }
-export function useAppleSplashScreenPwaIcon(image: AppleSplashScreenImageType) {
+export function useAppleSplashScreenPwaIcon(image: AppleSplashScreenImageType): UsePwaIcon {
   return usePWAIcon('appleSplashScreen', image)
 }
 export function usePWA(): UnwrapNestedRefs<PwaInjection> | undefined {
@@ -58,7 +61,7 @@ export function usePWA(): UnwrapNestedRefs<PwaInjection> | undefined {
 function usePWAIcon(
   type: 'transparent' | 'maskable' | 'favicon' | 'apple' | 'appleSplashScreen',
   pwaImage: MaybeRef<string | PWAImage>,
-) {
+): UsePwaIcon {
   const pwaIcons = useNuxtApp().$pwaIcons
   const icon = computed(() => {
     const pwaIcon = toValue(pwaImage)
@@ -70,12 +73,12 @@ function usePWAIcon(
       return
 
     if (typeof pwaIcon === 'string') {
-      return <PWAIcon>{
+      return {
         width: image.width,
         height: image.height,
         key: image.key,
         src: image.src,
-      }
+      } satisfies PWAIcon
     }
 
     const {
@@ -85,13 +88,13 @@ function usePWAIcon(
       ...rest
     } = pwaIcon
 
-    return <PWAIcon>{
+    return {
       width: width ?? image.width,
       height: height ?? image.height,
       ...rest,
       key: image.key,
       src: image.src,
-    }
+    } satisfies PWAIcon
   })
 
   return { icon }

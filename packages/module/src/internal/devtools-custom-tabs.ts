@@ -1,3 +1,4 @@
+/// <reference types="@nuxt/devtools-kit" />
 import type { VitePWAStrategy } from '@unplugin-pwa/core'
 import type { Bundler } from '@unplugin-pwa/core/context-types'
 import type { NuxtPWAContext } from '@vite-pwa/nuxt-core/context-types'

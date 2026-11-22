@@ -9,10 +9,14 @@
       "vitest/globals"
     ],
     "allowImportingTsExtensions": true,
+    "allowJs": false,
     "strict": true,
     "strictNullChecks": true,
+    "declaration": true,
     "noEmit": true,
     "esModuleInterop": true,
+    "isolatedDeclarations": true,
+    "erasableSyntaxOnly": true,
     "skipDefaultLibCheck": true,
     "skipLibCheck": true
   },

@@ -1,10 +1,11 @@
 import type { MetaObject } from '@nuxt/schema'
+import type { DefineComponent } from 'vue'
 import { pwaInfo } from 'virtual:pwa-info'
 import { defineComponent, ref } from 'vue'
 import { useHead } from '#imports'
 
-export default defineComponent({
-  setup() {
+const component: DefineComponent = defineComponent({
+  setup(): () => null {
     if (pwaInfo) {
       const meta = ref<MetaObject>({ link: [] })
       useHead(meta)
@@ -28,6 +29,8 @@ export default defineComponent({
       }
     }
 
-    return () => null
+    return (): null => null
   },
 })
+
+export default component

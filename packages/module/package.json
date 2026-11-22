@@ -22,26 +22,25 @@
   ],
   "exports": {
     ".": {
-      "types": "./dist/types.d.mts",
-      "default": "./dist/module.mjs"
+      "types": "./.nuxt/module-builder/types.d.mts",
+      "default": "./src/module.ts"
     },
     "./config": "./config/index.mjs",
     "./configuration": {
       "types": "./configuration.d.ts"
-    },
-    "./package.json": "./package.json"
+    }
   },
-  "main": "./dist/module.mjs",
-  "types": "./dist/types.d.mts",
+  "main": "./src/module.ts",
   "files": [
     "*.d.ts",
     "config",
     "dist"
   ],
   "scripts": {
-    "build": "nuxt-module-build prepare && nuxt-module-build build",
+    "build": "tsdown",
+    "prepare:module": "nuxt module-build prepare",
     "prepack": "pnpm run build",
-    "test:typecheck": "vue-tsc --noEmit"
+    "test:typecheck": "vue-tsc -b --noEmit"
   },
   "peerDependencies": {
     "@vite-pwa/assets-generator": "^1.0.0 || ^2.0.0",
@@ -69,32 +68,25 @@
     "verkit": "catalog:utils"
   },
   "devDependencies": {
-    "@nuxt/devtools": "catalog:utils",
+    "@nuxt/devtools-kit": "catalog:utils",
     "@nuxt/schema": "catalog:utils",
     "@vite-pwa/assets-generator": "catalog:pwa",
     "nuxt": "catalog:utils"
   },
-  "build": {
-    "externals": [
-      "node:child_process",
-      "node:fs",
-      "consola",
-      "esbuild",
-      "h3",
-      "pathe",
-      "rollup",
-      "rolldown",
-      "ufo",
-      "vite",
-      "@unplugin-pwa/core",
-      "@unplugin-pwa/vite",
-      "@vite-pwa/workbox-build",
-      "@vite-pwa/workbox-swkit",
-      "@vite-pwa/workbox-window"
-    ]
-  },
   "publishConfig": {
     "access": "public",
-    "provenance": true
+    "provenance": true,
+    "exports": {
+      ".": {
+        "types": "./dist/types.d.mts",
+        "default": "./dist/module.mjs"
+      },
+      "./config": "./config/index.mjs",
+      "./configuration": {
+        "types": "./configuration.d.ts"
+      },
+      "./package.json": "./package.json"
+    },
+    "main": "./dist/module.mjs"
   }
 }

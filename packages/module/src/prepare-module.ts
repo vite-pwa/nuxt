@@ -29,7 +29,7 @@ export async function prepareModule<
 >(
   ctx: NPC,
   nuxt: Nuxt,
-) {
+): Promise<void> {
   const resolver = ctx.nuxt.moduleResolver
 
   const consumerOptions = ctx.consumerOptions
@@ -121,7 +121,7 @@ export async function prepareModule<
   }
 }
 
-function applyExternalNuxtOptions(ctx: NuxtPWAContext<any, any, any>) {
+function applyExternalNuxtOptions(ctx: NuxtPWAContext<any, any, any>): void {
   const {
     client,
     experimental,
