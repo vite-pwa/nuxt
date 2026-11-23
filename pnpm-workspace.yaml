@@ -42,11 +42,11 @@ allowBuilds:
 
 catalogs:
   build:
-    '@nuxt/module-builder': ^1.0.3
+    '@nuxt/module-builder': ^1.0.4
     tsdown: ^0.23.7
   eslint:
     '@antfu/eslint-config': ^10.0.0
-    eslint: ^10.14.0
+    eslint: ^10.15.0
     eslint-plugin-antfu: ^3.3.1
   nuxt3:
     '@nuxt/devtools': npm:@nuxt/devtools@3.4.4
@@ -55,7 +55,7 @@ catalogs:
     vite: npm:vite@7.3.6
   nuxt5:
     # https://nuxt.com/modules/devtools#nuxt-5
-    '@nuxt/devtools-onboard': ^4.1.0
+    '@nuxt/devtools-onboard': ^4.2.0
     nitro: 3.0.261103-rc
     nuxt: npm:nuxt-nightly@5x
   pwa:
@@ -73,20 +73,20 @@ catalogs:
     typescript: ~6.0.3
   utils:
     '@arethetypeswrong/core': ^0.18.5
-    '@nuxt/devtools': ^4.1.0
+    '@nuxt/devtools': ^4.2.0
     '@nuxt/kit': ^4.6.4
     '@nuxt/schema': ^4.6.4
-    '@playwright/test': 1.65.0
-    '@rolldown/pluginutils': ^1.1.0
+    '@playwright/test': 1.65.1
+    '@rolldown/pluginutils': ^1.1.1
     '@vitejs/devtools': ^0.7.6
     defu: ^6.1.7
     https-localhost: 4.7.2
     magicast: ^0.5.5
     nuxt: ^4.6.4
-    playwright-core: 1.65.0
+    playwright-core: 1.65.1
     publint: ^0.3.25
     rolldown: 1.2.19
-    serve: ^14.2.7
+    serve: ^14.2.8
     taze: 21.1.0
     verkit: ^0.5.0
     vite: ^8.3.8
