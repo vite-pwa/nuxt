@@ -37,6 +37,7 @@ export default definePwaConfig({
     globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
   },
   client: {
+    registerPlugin: process.env.PWA_REGISTER_PLUGIN !== 'false',
     installPrompt: true,
     // you don't need to include this: only for testing purposes
     // if enabling periodic sync for update use 1 hour or so (periodicSyncForUpdates: 3600)

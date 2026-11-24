@@ -74,7 +74,6 @@ export function PwaRuntimeConfiguration<
 
         const exports: string[] = [
           `export const callBeforeRegisterHook = ${callBeforeRegisterHook}`,
-          `export const enabled = ${client.registerPlugin}`,
           `export const display = ${JSON.stringify(display)}`,
           `export const installPrompt = ${JSON.stringify(installPrompt)}`,
           `export const periodicSyncForUpdates = ${typeof client.periodicSyncForUpdates === 'number'

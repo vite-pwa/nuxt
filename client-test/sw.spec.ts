@@ -1,6 +1,134 @@
 import process from 'node:process'
 import { expect, test } from '@playwright/test'
 
+test('PWA state is available during SSR and after hydration', async ({ page, request }) => {
+  const response = await request.get('/')
+  const html = await response.text()
+  expect(html).toContain('PWA Installed:')
+  expect(html).toContain('SW: false false false false false')
+  if (!process.env.TEST_DEV)
+    expect(html).not.toContain('__vitePwaInstallPrompt')
+
+  const hydrationErrors: string[] = []
+  page.on('console', (message) => {
+    if (/hydration/i.test(message.text()))
+      hydrationErrors.push(message.text())
+  })
+  await page.addInitScript(() => {
+    const original = window.matchMedia.bind(window)
+    window.matchMedia = query => query === '(display-mode: standalone)'
+      ? Object.assign(new EventTarget(), { matches: true, media: query }) as MediaQueryList
+      : original(query)
+  })
+  await page.goto('/')
+  await expect(page.getByTestId('pwa-installed')).toHaveText('PWA Installed: true')
+  expect(hydrationErrors).toEqual([])
+})
+
+test('PWA state stays stable during hydration and preserves writes', async ({ page }) => {
+  test.skip(!!process.env.TEST_DEV, 'requires production chunks')
+  let releaseLayout!: () => void
+  const layoutReady = new Promise<void>(resolve => releaseLayout = resolve)
+  await page.route(/\/_nuxt\/.*\.js(?:\?.*)?$/, async (route) => {
+    const response = await route.fetch()
+    if ((await response.text()).includes('Install PWA'))
+      await layoutReady
+    await route.fulfill({ response })
+  })
+  await page.goto('/', { waitUntil: 'commit' })
+  await page.waitForFunction(() => !!(document.querySelector('#__nuxt') as any)?.__vue_app__?.config.globalProperties.$pwa)
+  const state = await page.evaluate(() => {
+    const { $nuxt, $pwa } = (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties
+    $pwa.swActivated = true
+    $pwa.registrationError = true
+    $pwa.offlineReady = true
+    $pwa.needRefresh = true
+    const event = new Event('beforeinstallprompt', { cancelable: true })
+    window.dispatchEvent(event)
+    return {
+      hydrating: $nuxt.isHydrating,
+      installed: $pwa.isPWAInstalled,
+      flags: [
+        $pwa.swActivated,
+        $pwa.registrationError,
+        $pwa.offlineReady,
+        $pwa.needRefresh,
+        $pwa.showInstallPrompt,
+      ],
+      prevented: event.defaultPrevented,
+    }
+  })
+  expect(state).toEqual({
+    hydrating: true,
+    installed: undefined,
+    flags: [false, false, false, false, false],
+    prevented: true,
+  })
+  releaseLayout()
+  await page.waitForLoadState('load')
+  await expect(page.getByTestId('pwa-state')).toHaveText('SW: true true true true true')
+  await page.evaluate(() => (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties.$pwa.cancelPrompt())
+  await expect(page.getByTestId('pwa-state')).toHaveText('SW: true true false false true')
+})
+
+test('Development captures early install prompts', async ({ page }) => {
+  test.skip(!process.env.TEST_DEV, 'development-only head listener')
+  let releaseScripts!: () => void
+  const scriptsReady = new Promise<void>(resolve => releaseScripts = resolve)
+  await page.route(/\/_nuxt\/.*\.(?:js|ts)(?:\?.*)?$/, async (route) => {
+    await scriptsReady
+    await route.continue()
+  })
+  await page.goto('/', { waitUntil: 'commit' })
+  await page.waitForFunction(() => '__vitePwaInstallPrompt' in window)
+  const prevented = await page.evaluate(() => {
+    const event = Object.assign(new Event('beforeinstallprompt', { cancelable: true }), {
+      prompt: () => {},
+      userChoice: Promise.resolve({ outcome: 'accepted', platform: 'web' }),
+    })
+    window.dispatchEvent(event)
+    return event.defaultPrevented
+  })
+  expect(prevented).toBe(true)
+  releaseScripts()
+  await page.waitForLoadState('load')
+  await expect.poll(() => page.evaluate(() => (document.querySelector('#__nuxt') as any)?.__vue_app__?.config.globalProperties.$pwa.showInstallPrompt)).toBe(true)
+  const choice = await page.evaluate(() => (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties.$pwa.install())
+  expect(choice).toEqual({ outcome: 'accepted', platform: 'web' })
+  expect(await page.evaluate(() => '__vitePwaInstallPrompt' in window)).toBe(false)
+})
+
+test('Disabled registration still provides inert PWA state', async ({ page, request }) => {
+  test.skip(!process.env.TEST_DISABLED, 'requires registration disabled in the playground')
+  const html = await (await request.get('/')).text()
+  expect(html).toContain('SW: false false false false false')
+  expect(html).not.toContain('__vitePwaInstallPrompt')
+  await page.goto('/')
+  const state = await page.evaluate(async () => {
+    const pwa = (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties.$pwa
+    const event = new Event('beforeinstallprompt', { cancelable: true })
+    window.dispatchEvent(event)
+    return {
+      installed: pwa.isPWAInstalled,
+      flags: [
+        pwa.swActivated,
+        pwa.registrationError,
+        pwa.offlineReady,
+        pwa.needRefresh,
+        pwa.showInstallPrompt,
+      ],
+      choice: await pwa.install(),
+      prevented: event.defaultPrevented,
+    }
+  })
+  expect(state).toEqual({
+    installed: undefined,
+    flags: [false, false, false, false, false],
+    choice: undefined,
+    prevented: false,
+  })
+})
+
 test('The service worker is registered and cache storage is present', async ({ page }) => {
   await page.goto('/')
 
@@ -56,6 +184,13 @@ test('The install prompt is handled using the client options from pwa.config.ts'
     return event.defaultPrevented
   })
   expect(prevented).toBe(true)
+  await page.evaluate(() => (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties.$pwa.cancelInstall())
+  expect(await page.evaluate(() => localStorage.getItem('vite-pwa:hide-install'))).toBe('true')
+  expect(await page.evaluate(() => {
+    const event = new Event('beforeinstallprompt', { cancelable: true })
+    window.dispatchEvent(event)
+    return event.defaultPrevented
+  })).toBe(false)
 })
 
 test('The service worker route rules are applied', async ({ request }) => {

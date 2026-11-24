@@ -51,7 +51,7 @@ export function useApplePwaIcon(image: AppleImageType) {
 export function useAppleSplashScreenPwaIcon(image: AppleSplashScreenImageType) {
   return usePWAIcon('appleSplashScreen', image)
 }
-export function usePWA(): UnwrapNestedRefs<PwaInjection> | undefined {
+export function usePWA(): UnwrapNestedRefs<PwaInjection> {
   return useNuxtApp().$pwa
 }
 
