@@ -199,6 +199,57 @@ for (const state of ['installed', 'not-installed', 'change-during-hydration'] as
   })
 }
 
+for (const clear of [false, true]) {
+  test(`Service worker state is SSR safe${clear ? ' when cleared during hydration' : ''}`, async ({ page }) => {
+    const hydrationErrors: string[] = []
+    page.on('console', (message) => {
+      if (/hydration/i.test(message.text())) {
+        hydrationErrors.push(message.text())
+      }
+    })
+    let releaseLayout!: () => void
+    const layoutReady = new Promise<void>(resolve => releaseLayout = resolve)
+    await page.route(/\/_nuxt\/.*\.js(?:\?.*)?$/, async (route) => {
+      const response = await route.fetch()
+      if ((await response.text()).includes('Install PWA')) {
+        await layoutReady
+      }
+      await route.fulfill({ response })
+    })
+    await page.goto('/', { waitUntil: 'commit' })
+    await expect(page.getByTestId('pwa-sw-state')).toHaveText('SW: false false false false false')
+    await page.waitForFunction(() => !!(document.querySelector('#__nuxt') as any)?.__vue_app__?.config.globalProperties.$pwa)
+    const state = await page.evaluate(async (clear) => {
+      const { $nuxt, $pwa } = (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties
+      $pwa.swActivated = true
+      $pwa.registrationError = true
+      $pwa.offlineReady = true
+      $pwa.needRefresh = true
+      if (clear) {
+        await $pwa.cancelPrompt()
+      }
+      return {
+        hydrating: $nuxt.isHydrating,
+        flags: [
+          $pwa.swActivated,
+          $pwa.registrationError,
+          $pwa.offlineReady,
+          $pwa.needRefresh,
+        ],
+      }
+    }, clear)
+    expect(state).toEqual({
+      hydrating: true,
+      flags: [false, false, false, false],
+    })
+    releaseLayout()
+    await page.waitForLoadState('load')
+    await expect(page.getByTestId('pwa-sw-state')).toHaveText(`SW: true true ${!clear} ${!clear} false`)
+    await expect(page.getByText('App ready to work offline')).toHaveCount(clear ? 0 : 1)
+    expect(hydrationErrors).toEqual([])
+  })
+}
+
 test('The install prompt opt-out is respected before and after the client loads', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('vite-pwa:hide-install', 'true'))
   let releaseScripts!: () => void

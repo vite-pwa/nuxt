@@ -7,6 +7,9 @@
     <p v-if="$pwa?.isPWAInstalled" data-testid="pwa-installed-message">
       PWA is installed
     </p>
+    <p v-if="$pwa" data-testid="pwa-sw-state">
+      SW: {{ $pwa.swActivated }} {{ $pwa.registrationError }} {{ $pwa.offlineReady }} {{ $pwa.needRefresh }} {{ $pwa.showInstallPrompt }}
+    </p>
     <NuxtLink to="/about">
       About
     </NuxtLink>

@@ -7,31 +7,29 @@ const date = useAppConfig().buildDate
   <main>
     <slot />
     <footer>Built Date: {{ date }}</footer>
-    <ClientOnly>
-      <div
-        v-if="$pwa?.offlineReady || $pwa?.needRefresh"
-        class="pwa-toast"
-        role="alert"
-      >
-        <div class="message">
-          <span v-if="$pwa.offlineReady">
-            App ready to work offline
-          </span>
-          <span v-else>
-            New content available, click on reload button to update.
-          </span>
-        </div>
-        <button
-          v-if="$pwa.needRefresh"
-          @click="$pwa.updateServiceWorker()"
-        >
-          Reload
-        </button>
-        <button @click="$pwa.cancelPrompt()">
-          Close
-        </button>
+    <div
+      v-if="$pwa?.offlineReady || $pwa?.needRefresh"
+      class="pwa-toast"
+      role="alert"
+    >
+      <div class="message">
+        <span v-if="$pwa.offlineReady">
+          App ready to work offline
+        </span>
+        <span v-else>
+          New content available, click on reload button to update.
+        </span>
       </div>
-    </ClientOnly>
+      <button
+        v-if="$pwa.needRefresh"
+        @click="$pwa.updateServiceWorker()"
+      >
+        Reload
+      </button>
+      <button @click="$pwa.cancelPrompt()">
+        Close
+      </button>
+    </div>
     <div
       v-if="$pwa?.showInstallPrompt && !$pwa?.offlineReady && !$pwa?.needRefresh"
       class="pwa-toast"

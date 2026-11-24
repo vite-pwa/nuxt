@@ -1,5 +1,5 @@
 import type { RegisterSWOptions } from '@unplugin-pwa/core/types'
-import type { UnwrapNestedRefs } from 'vue'
+import type { Ref, UnwrapNestedRefs } from 'vue'
 import type { Plugin } from '#app'
 import type { PwaInjection } from './types'
 import {
@@ -9,7 +9,7 @@ import {
   periodicSyncForUpdates,
 } from 'virtual:nuxt-pwa-configuration'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
-import { defineNuxtPlugin, reactive, ref } from '#imports'
+import { computed, defineNuxtPlugin, reactive, ref } from '#imports'
 
 const plugin: Plugin<{
   pwa?: UnwrapNestedRefs<PwaInjection>
@@ -23,6 +23,19 @@ const plugin: Plugin<{
     }
     const registrationError = ref(false)
     const swActivated = ref(false)
+    const hydrated = ref(!nuxtApp.isHydrating)
+    if (nuxtApp.isHydrating) {
+      nuxtApp.hooks.hookOnce('app:suspense:resolve', () => {
+        hydrated.value = true
+      })
+    }
+
+    function afterHydration(value: Ref<boolean>) {
+      return computed({
+        get: () => hydrated.value && value.value,
+        set: (newValue: boolean) => { value.value = newValue },
+      })
+    }
 
     function registerPeriodicSync(
       swUrl: string,
@@ -155,10 +168,10 @@ const plugin: Plugin<{
           showInstallPrompt,
           cancelInstall,
           install,
-          swActivated,
-          registrationError,
-          offlineReady,
-          needRefresh,
+          swActivated: afterHydration(swActivated),
+          registrationError: afterHydration(registrationError),
+          offlineReady: afterHydration(offlineReady),
+          needRefresh: afterHydration(needRefresh),
           updateServiceWorker,
           cancelPrompt,
         }) satisfies UnwrapNestedRefs<PwaInjection>,
