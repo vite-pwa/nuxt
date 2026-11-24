@@ -66,6 +66,12 @@ test('The install prompt is handled using the client options from pwa.config.ts'
 })
 
 test('An install prompt captured before the client loads remains available', async ({ page }) => {
+  const hydrationErrors: string[] = []
+  page.on('console', (message) => {
+    if (/hydration/i.test(message.text())) {
+      hydrationErrors.push(message.text())
+    }
+  })
   let releaseScripts!: () => void
   const scriptsReady = new Promise<void>(resolve => releaseScripts = resolve)
   await page.route(/\/_nuxt\/.*\.js(?:\?.*)?$/, async (route) => {
@@ -89,15 +95,53 @@ test('An install prompt captured before the client loads remains available', asy
     return event.defaultPrevented
   })
   expect(prevented).toBe(true)
+  await expect(page.getByText('Install PWA')).toHaveCount(0)
   releaseScripts()
   await page.waitForLoadState('load')
   await expect.poll(() => page.evaluate(() => (document.querySelector('#__nuxt') as any)?.__vue_app__?.config.globalProperties.$pwa?.showInstallPrompt)).toBe(true)
+  await page.evaluate(() => (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties.$pwa.cancelPrompt())
+  await expect(page.getByText('Install PWA')).toBeVisible()
+  expect(hydrationErrors).toEqual([])
 
   const choice = await page.evaluate(() => (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties.$pwa.install())
   expect(choice).toEqual({ outcome: 'accepted', platform: 'web' })
   expect(await page.evaluate(() => (window as any).installPromptCalled)).toBe(true)
   expect(await page.evaluate(() => (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties.$pwa.showInstallPrompt)).toBe(false)
 })
+
+for (const clear of ['none', 'appinstalled', 'cancel'] as const) {
+  test(`Install prompt during hydration: ${clear}`, async ({ page }) => {
+    let releaseLayout!: () => void
+    const layoutReady = new Promise<void>(resolve => releaseLayout = resolve)
+    await page.route(/\/_nuxt\/.*\.js(?:\?.*)?$/, async (route) => {
+      const response = await route.fetch()
+      if ((await response.text()).includes('Install PWA')) {
+        await layoutReady
+      }
+      await route.fulfill({ response })
+    })
+    await page.goto('/', { waitUntil: 'commit' })
+    await page.waitForFunction(() => !!(document.querySelector('#__nuxt') as any)?.__vue_app__?.config.globalProperties.$pwa)
+    const state = await page.evaluate((clear) => {
+      const { $nuxt, $pwa: pwa } = (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties
+      const event = new Event('beforeinstallprompt', { cancelable: true })
+      window.dispatchEvent(event)
+      const visible = pwa.showInstallPrompt
+      if (clear === 'appinstalled') {
+        window.dispatchEvent(new Event('appinstalled'))
+      }
+      else if (clear === 'cancel') {
+        pwa.cancelInstall()
+      }
+      return { prevented: event.defaultPrevented, visible, hydrating: $nuxt.isHydrating }
+    }, clear)
+    expect(state).toEqual({ prevented: true, visible: false, hydrating: true })
+    releaseLayout()
+    await page.waitForLoadState('load')
+    await expect.poll(() => page.evaluate(() => (document.querySelector('#__nuxt') as any).__vue_app__.$nuxt.isHydrating)).toBe(false)
+    await expect.poll(() => page.evaluate(() => (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties.$pwa.showInstallPrompt)).toBe(clear === 'none')
+  })
+}
 
 test('The install prompt opt-out is respected before and after the client loads', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('vite-pwa:hide-install', 'true'))
