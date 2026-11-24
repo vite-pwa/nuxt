@@ -1,7 +1,7 @@
 import type { RegisterSWOptions } from '@unplugin-pwa/core/types'
 import type { ShallowRef, UnwrapNestedRefs } from 'vue'
 import type { NuxtApp } from '#app'
-import type { BeforeInstallPromptEvent, PwaInjection, UserChoice } from './plugins/types'
+import type { BeforeInstallPromptEvent, PwaInjection, UserChoice } from '../plugins/types'
 import {
   activateSWSwitcherDev,
   callBeforeRegisterHook,
