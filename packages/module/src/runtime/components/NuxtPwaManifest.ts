@@ -1,13 +1,12 @@
 import type { MetaObject } from '@nuxt/schema'
 import { pwaInfo } from 'virtual:pwa-info'
-import { defineComponent, ref } from 'vue'
+import { defineComponent, shallowRef } from 'vue'
 import { useHead } from '#imports'
 
 export default defineComponent({
   setup() {
     if (pwaInfo) {
-      const meta = ref<MetaObject>({ link: [] })
-      useHead(meta)
+      const meta = shallowRef<MetaObject>({ link: [] })
 
       const { webManifest } = pwaInfo
       if (webManifest) {
@@ -26,6 +25,7 @@ export default defineComponent({
           })
         }
       }
+      useHead(meta)
     }
 
     return () => null

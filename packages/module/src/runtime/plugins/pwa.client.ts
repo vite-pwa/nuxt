@@ -1,5 +1,5 @@
 import type { RegisterSWOptions } from '@unplugin-pwa/core/types'
-import type { Ref, UnwrapNestedRefs } from 'vue'
+import type { ShallowRef, UnwrapNestedRefs } from 'vue'
 import type { Plugin } from '#app'
 import type { PwaInjection } from './types'
 import {
@@ -9,7 +9,7 @@ import {
   periodicSyncForUpdates,
 } from 'virtual:nuxt-pwa-configuration'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
-import { computed, defineNuxtPlugin, reactive, ref } from '#imports'
+import { computed, defineNuxtPlugin, reactive, shallowRef } from '#imports'
 
 const plugin: Plugin<{
   pwa?: UnwrapNestedRefs<PwaInjection>
@@ -21,16 +21,16 @@ const plugin: Plugin<{
     if (import.meta.dev) {
       initializeDev()
     }
-    const registrationError = ref(false)
-    const swActivated = ref(false)
-    const hydrated = ref(!nuxtApp.isHydrating)
+    const registrationError = shallowRef(false)
+    const swActivated = shallowRef(false)
+    const hydrated = shallowRef(!nuxtApp.isHydrating)
     if (nuxtApp.isHydrating) {
       nuxtApp.hooks.hookOnce('app:suspense:resolve', () => {
         hydrated.value = true
       })
     }
 
-    function afterHydration(value: Ref<boolean>) {
+    function afterHydration(value: ShallowRef<boolean>) {
       return computed({
         get: () => hydrated.value && value.value,
         set: (newValue: boolean) => { value.value = newValue },

@@ -1,4 +1,4 @@
-import type { Ref } from 'vue'
+import type { ShallowRef } from 'vue'
 
 /**
  * Result of the native PWA installation prompt.
@@ -41,13 +41,13 @@ export interface PwaInstallPromptInjection {
    * This value updates as installation state changes (e.g. display-mode changes).
    * Undefined until client hydration completes.
    */
-  isPWAInstalled: Ref<boolean | undefined>
+  isPWAInstalled: ShallowRef<boolean | undefined>
   /**
    * When `true`, your UI should show a custom installation prompt. This flag is set
    * after the `beforeinstallprompt` event is captured and cleared when the user
    * proceeds or cancels.
    */
-  showInstallPrompt: Ref<boolean>
+  showInstallPrompt: ShallowRef<boolean>
   /**
    * Cancels the custom install flow and hides future prompts by setting an
    * opt-out flag (stored in `localStorage` when configured via `installPrompt`).
@@ -67,21 +67,21 @@ export interface PwaInjection extends PwaInstallPromptInjection {
   /**
    * Whether the service worker has reached the `activated` state.
    */
-  swActivated: Ref<boolean>
+  swActivated: ShallowRef<boolean>
   /**
    * Indicates that registering the service worker failed.
    */
-  registrationError: Ref<boolean>
+  registrationError: ShallowRef<boolean>
   /**
    * Becomes `true` when the app is ready to work offline (precache completed).
    * This flag is activated only once, when the service worker is registered and activated for first time.
    */
-  offlineReady: Ref<boolean>
+  offlineReady: ShallowRef<boolean>
   /**
    * Becomes `true` when a new service worker is waiting to activate and a
    * refresh is recommended to apply updates.
    */
-  needRefresh: Ref<boolean>
+  needRefresh: ShallowRef<boolean>
   /**
    * Applies the waiting service worker. When `reloadPage` is `true`, reloads
    * the page after activating the new service worker.

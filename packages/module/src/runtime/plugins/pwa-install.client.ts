@@ -4,7 +4,7 @@ import {
   display,
   installPrompt,
 } from 'virtual:nuxt-pwa-configuration'
-import { defineNuxtPlugin, nextTick, ref } from '#imports'
+import { defineNuxtPlugin, nextTick, shallowRef } from '#imports'
 
 const plugin: Plugin<{
   pwaInstallPrompt: PwaInstallPromptInjection
@@ -25,8 +25,8 @@ const plugin: Plugin<{
       window.removeEventListener('appinstalled', earlyPrompt.appInstalled)
       delete promptWindow.__vitePwaInstallPrompt
     }
-    const showInstallPrompt = ref(false)
-    const hideInstall = ref(
+    const showInstallPrompt = shallowRef(false)
+    const hideInstall = shallowRef(
       !installPrompt
         ? true
         : localStorage.getItem(installPrompt) === 'true',
@@ -40,7 +40,7 @@ const plugin: Plugin<{
       : 'standalone'
     const standalone = window.matchMedia(`(display-mode: ${useDisplay})`).matches
     let isInstalled = !!(standalone || (ios && !ua.match(/Safari/)))
-    const isPWAInstalled = ref<boolean | undefined>(nuxtApp.isHydrating ? undefined : isInstalled)
+    const isPWAInstalled = shallowRef<boolean | undefined>(nuxtApp.isHydrating ? undefined : isInstalled)
 
     if (nuxtApp.isHydrating) {
       nuxtApp.hooks.hookOnce('app:suspense:resolve', () => {

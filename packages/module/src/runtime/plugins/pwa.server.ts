@@ -1,7 +1,7 @@
 import type { UnwrapNestedRefs } from 'vue'
 import type { Plugin } from '#app'
 import type { PwaInjection } from './types'
-import { defineNuxtPlugin, reactive, ref } from '#imports'
+import { defineNuxtPlugin, reactive, shallowRef } from '#imports'
 
 const plugin: Plugin<{
   pwa: UnwrapNestedRefs<PwaInjection>
@@ -11,14 +11,14 @@ const plugin: Plugin<{
     return {
       provide: {
         pwa: reactive({
-          isPWAInstalled: ref<boolean | undefined>(undefined),
-          showInstallPrompt: ref(false),
+          isPWAInstalled: shallowRef<boolean | undefined>(undefined),
+          showInstallPrompt: shallowRef(false),
           cancelInstall: () => {},
           install: async () => undefined,
-          swActivated: ref(false),
-          registrationError: ref(false),
-          offlineReady: ref(false),
-          needRefresh: ref(false),
+          swActivated: shallowRef(false),
+          registrationError: shallowRef(false),
+          offlineReady: shallowRef(false),
+          needRefresh: shallowRef(false),
           updateServiceWorker: async () => {},
           cancelPrompt: async () => {},
         }) satisfies UnwrapNestedRefs<PwaInjection>,
