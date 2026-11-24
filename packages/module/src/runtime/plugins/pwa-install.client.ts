@@ -83,9 +83,9 @@ const plugin: Plugin<{
         }
 
         showInstallPrompt.value = false
-        await nextTick()
         const prompt = deferredPrompt
         deferredPrompt = undefined
+        await nextTick()
         prompt.prompt()
         return await prompt.userChoice
       }
