@@ -93,6 +93,10 @@ export async function prepareModule<
       mode: 'client',
     })
     addPlugin({
+      src: resolver.resolve(runtimeDir, 'plugins/pwa.server'),
+      mode: 'server',
+    })
+    addPlugin({
       src: resolver.resolve(runtimeDir, 'plugins/pwa-install.client'),
       mode: 'client',
     })

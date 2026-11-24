@@ -77,6 +77,11 @@ export default defineNuxtConfig({
 
 Read the [documentation](https://unplugin-pwa.netlify.app/frameworks/nuxt) and the [repository README](https://github.com/vite-pwa/nuxt#readme) for more details.
 
+When the client plugin is enabled, `$pwa` is also available during server rendering.
+Its service-worker and install-prompt flags are `false` on the server and until
+hydration completes; `isPWAInstalled` is `undefined` until then. Browser-only
+actions are no-ops on the server.
+
 ## License
 
 [MIT](https://github.com/vite-pwa/nuxt/blob/main/LICENSE) License &copy; 2023-PRESENT [Anthony Fu](https://github.com/antfu)
