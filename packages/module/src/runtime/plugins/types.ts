@@ -39,8 +39,9 @@ export interface PwaInstallPromptInjection {
   /**
    * Whether the app is currently installed as a PWA.
    * This value updates as installation state changes (e.g. display-mode changes).
+   * Undefined until client hydration completes.
    */
-  isPWAInstalled: Ref<boolean>
+  isPWAInstalled: Ref<boolean | undefined>
   /**
    * When `true`, your UI should show a custom installation prompt. This flag is set
    * after the `beforeinstallprompt` event is captured and cleared when the user

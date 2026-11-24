@@ -143,6 +143,62 @@ for (const clear of ['none', 'appinstalled', 'cancel'] as const) {
   })
 }
 
+for (const state of ['installed', 'not-installed', 'change-during-hydration'] as const) {
+  test(`Installed state is SSR safe: ${state}`, async ({ page }) => {
+    const hydrationErrors: string[] = []
+    page.on('console', (message) => {
+      if (/hydration/i.test(message.text())) {
+        hydrationErrors.push(message.text())
+      }
+    })
+    await page.addInitScript((initiallyInstalled) => {
+      const originalMatchMedia = window.matchMedia.bind(window)
+      const displayMode = new EventTarget()
+      Object.assign(displayMode, { matches: initiallyInstalled, media: '(display-mode: standalone)' })
+      ;(window as any).testDisplayMode = displayMode
+      window.matchMedia = query => query === '(display-mode: standalone)'
+        ? displayMode as MediaQueryList
+        : originalMatchMedia(query)
+    }, state === 'installed')
+
+    let releaseLayout!: () => void
+    const layoutReady = new Promise<void>(resolve => releaseLayout = resolve)
+    await page.route(/\/_nuxt\/.*\.js(?:\?.*)?$/, async (route) => {
+      const response = await route.fetch()
+      if ((await response.text()).includes('Install PWA')) {
+        await layoutReady
+      }
+      await route.fulfill({ response })
+    })
+    await page.goto('/', { waitUntil: 'commit' })
+    await expect(page.getByTestId('pwa-installed')).toHaveText('PWA Installed:')
+    await page.waitForFunction(() => !!(document.querySelector('#__nuxt') as any)?.__vue_app__?.config.globalProperties.$pwa)
+    const beforeHydration = await page.evaluate((change) => {
+      const { $nuxt, $pwa } = (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties
+      if (change) {
+        const event = Object.assign(new Event('change'), { matches: true })
+        ;(window as any).testDisplayMode.dispatchEvent(event)
+      }
+      return { hydrating: $nuxt.isHydrating, installed: $pwa.isPWAInstalled }
+    }, state === 'change-during-hydration')
+    expect(beforeHydration).toEqual({ hydrating: true, installed: undefined })
+
+    releaseLayout()
+    await page.waitForLoadState('load')
+    await expect(page.getByTestId('pwa-installed')).toHaveText(`PWA Installed: ${state !== 'not-installed'}`)
+    await expect(page.getByTestId('pwa-installed-message')).toHaveCount(state === 'not-installed'
+      ? 0
+      : 1)
+    expect(hydrationErrors).toEqual([])
+
+    await page.evaluate(() => {
+      const event = Object.assign(new Event('change'), { matches: true })
+      ;(window as any).testDisplayMode.dispatchEvent(event)
+    })
+    await expect(page.getByTestId('pwa-installed')).toHaveText('PWA Installed: true')
+  })
+}
+
 test('The install prompt opt-out is respected before and after the client loads', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('vite-pwa:hide-install', 'true'))
   let releaseScripts!: () => void
