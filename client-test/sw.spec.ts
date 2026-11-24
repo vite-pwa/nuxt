@@ -1,6 +1,14 @@
 import process from 'node:process'
 import { expect, test } from '@playwright/test'
 
+test('The manifest link is rendered on the server and after hydration', async ({ page, request }) => {
+  const response = await request.get('/')
+  expect(await response.text()).toMatch(/<link[^>]+rel="manifest"[^>]+href="[^"]*manifest\.webmanifest"/)
+
+  await page.goto('/')
+  await expect(page.locator('link[rel="manifest"]')).toHaveAttribute('href', /manifest\.webmanifest$/)
+})
+
 test('The service worker is registered and cache storage is present', async ({ page }) => {
   await page.goto('/')
 
