@@ -12,6 +12,19 @@ const plugin: Plugin<{
   name: 'vite-pwa:nuxt:client:install-prompt-plugin',
   enforce: 'pre',
   setup() {
+    const promptWindow = window as Window & {
+      __vitePwaInstallPrompt?: {
+        event?: BeforeInstallPromptEvent
+        beforeInstallPrompt: EventListener
+        appInstalled: EventListener
+      }
+    }
+    const earlyPrompt = promptWindow.__vitePwaInstallPrompt
+    if (earlyPrompt) {
+      window.removeEventListener('beforeinstallprompt', earlyPrompt.beforeInstallPrompt)
+      window.removeEventListener('appinstalled', earlyPrompt.appInstalled)
+      delete promptWindow.__vitePwaInstallPrompt
+    }
     const showInstallPrompt = ref(false)
     const hideInstall = ref(
       !installPrompt
@@ -41,7 +54,8 @@ const plugin: Plugin<{
     }
 
     if (!hideInstall.value) {
-      let deferredPrompt: BeforeInstallPromptEvent | undefined
+      let deferredPrompt = earlyPrompt?.event
+      showInstallPrompt.value = !!deferredPrompt
 
       const beforeInstallPrompt = (e: Event) => {
         e.preventDefault()
@@ -70,8 +84,10 @@ const plugin: Plugin<{
 
         showInstallPrompt.value = false
         await nextTick()
-        deferredPrompt.prompt()
-        return await deferredPrompt.userChoice
+        const prompt = deferredPrompt
+        deferredPrompt = undefined
+        prompt.prompt()
+        return await prompt.userChoice
       }
     }
 

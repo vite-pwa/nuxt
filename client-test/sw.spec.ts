@@ -56,6 +56,73 @@ test('The install prompt is handled using the client options from pwa.config.ts'
     return event.defaultPrevented
   })
   expect(prevented).toBe(true)
+  await page.evaluate(() => (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties.$pwa.cancelInstall())
+  expect(await page.evaluate(() => localStorage.getItem('vite-pwa:hide-install'))).toBe('true')
+  expect(await page.evaluate(() => {
+    const event = new Event('beforeinstallprompt', { cancelable: true })
+    window.dispatchEvent(event)
+    return event.defaultPrevented
+  })).toBe(false)
+})
+
+test('An install prompt captured before the client loads remains available', async ({ page }) => {
+  let releaseScripts!: () => void
+  const scriptsReady = new Promise<void>(resolve => releaseScripts = resolve)
+  await page.route(/\/_nuxt\/.*\.js(?:\?.*)?$/, async (route) => {
+    await scriptsReady
+    await route.continue()
+  })
+  await page.goto('/', { waitUntil: 'commit' })
+  await page.waitForFunction(() => '__vitePwaInstallPrompt' in window)
+
+  expect(await page.evaluate(() => {
+    window.dispatchEvent(new Event('beforeinstallprompt', { cancelable: true }))
+    window.dispatchEvent(new Event('appinstalled'))
+    return (window as any).__vitePwaInstallPrompt.event
+  })).toBeUndefined()
+  const prevented = await page.evaluate(() => {
+    const event = Object.assign(new Event('beforeinstallprompt', { cancelable: true }), {
+      prompt: () => { (window as any).installPromptCalled = true },
+      userChoice: Promise.resolve({ outcome: 'accepted', platform: 'web' }),
+    })
+    window.dispatchEvent(event)
+    return event.defaultPrevented
+  })
+  expect(prevented).toBe(true)
+  releaseScripts()
+  await page.waitForLoadState('load')
+  await expect.poll(() => page.evaluate(() => (document.querySelector('#__nuxt') as any)?.__vue_app__?.config.globalProperties.$pwa?.showInstallPrompt)).toBe(true)
+
+  const choice = await page.evaluate(() => (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties.$pwa.install())
+  expect(choice).toEqual({ outcome: 'accepted', platform: 'web' })
+  expect(await page.evaluate(() => (window as any).installPromptCalled)).toBe(true)
+  expect(await page.evaluate(() => (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties.$pwa.showInstallPrompt)).toBe(false)
+})
+
+test('The install prompt opt-out is respected before and after the client loads', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('vite-pwa:hide-install', 'true'))
+  let releaseScripts!: () => void
+  const scriptsReady = new Promise<void>(resolve => releaseScripts = resolve)
+  await page.route(/\/_nuxt\/.*\.js(?:\?.*)?$/, async (route) => {
+    await scriptsReady
+    await route.continue()
+  })
+  await page.goto('/', { waitUntil: 'commit' })
+  await page.waitForFunction(() => !!document.querySelector('script[data-hid="vite-pwa-install-prompt"]'))
+  expect(await page.evaluate(() => {
+    const event = new Event('beforeinstallprompt', { cancelable: true })
+    window.dispatchEvent(event)
+    return event.defaultPrevented
+  })).toBe(false)
+  releaseScripts()
+  await page.waitForLoadState('load')
+  const prevented = await page.evaluate(() => {
+    const event = new Event('beforeinstallprompt', { cancelable: true })
+    window.dispatchEvent(event)
+    return event.defaultPrevented
+  })
+  expect(prevented).toBe(false)
+  expect(await page.evaluate(() => (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties.$pwa.showInstallPrompt)).toBe(false)
 })
 
 test('The service worker route rules are applied', async ({ request }) => {
