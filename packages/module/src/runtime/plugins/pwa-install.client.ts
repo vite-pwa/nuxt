@@ -11,7 +11,20 @@ const plugin: Plugin<{
 }> = defineNuxtPlugin({
   name: 'vite-pwa:nuxt:client:install-prompt-plugin',
   enforce: 'pre',
-  setup() {
+  setup(nuxtApp) {
+    const promptWindow = window as Window & {
+      __vitePwaInstallPrompt?: {
+        event?: BeforeInstallPromptEvent
+        beforeInstallPrompt: EventListener
+        appInstalled: EventListener
+      }
+    }
+    const earlyPrompt = promptWindow.__vitePwaInstallPrompt
+    if (earlyPrompt) {
+      window.removeEventListener('beforeinstallprompt', earlyPrompt.beforeInstallPrompt)
+      window.removeEventListener('appinstalled', earlyPrompt.appInstalled)
+      delete promptWindow.__vitePwaInstallPrompt
+    }
     const showInstallPrompt = ref(false)
     const hideInstall = ref(
       !installPrompt
@@ -26,13 +39,22 @@ const plugin: Plugin<{
       ? `${display}`
       : 'standalone'
     const standalone = window.matchMedia(`(display-mode: ${useDisplay})`).matches
-    const isInstalled = ref(!!(standalone || (ios && !ua.match(/Safari/))))
-    const isPWAInstalled = ref(isInstalled.value)
+    let isInstalled = !!(standalone || (ios && !ua.match(/Safari/)))
+    const isPWAInstalled = ref<boolean | undefined>(nuxtApp.isHydrating ? undefined : isInstalled)
+
+    if (nuxtApp.isHydrating) {
+      nuxtApp.hooks.hookOnce('app:suspense:resolve', () => {
+        isPWAInstalled.value = isInstalled
+      })
+    }
 
     window.matchMedia(`(display-mode: ${useDisplay})`).addEventListener('change', (e) => {
       // PWA on fullscreen mode will not match standalone nor minimal-ui
-      if (!isPWAInstalled.value && e.matches) {
-        isPWAInstalled.value = true
+      if (!isInstalled && e.matches) {
+        isInstalled = true
+        if (!nuxtApp.isHydrating) {
+          isPWAInstalled.value = true
+        }
       }
     })
 
@@ -41,12 +63,22 @@ const plugin: Plugin<{
     }
 
     if (!hideInstall.value) {
-      let deferredPrompt: BeforeInstallPromptEvent | undefined
+      let deferredPrompt = earlyPrompt?.event
+      if (nuxtApp.isHydrating) {
+        nuxtApp.hooks.hookOnce('app:suspense:resolve', () => {
+          showInstallPrompt.value = !!deferredPrompt
+        })
+      }
+      else {
+        showInstallPrompt.value = !!deferredPrompt
+      }
 
       const beforeInstallPrompt = (e: Event) => {
         e.preventDefault()
         deferredPrompt = e as BeforeInstallPromptEvent
-        showInstallPrompt.value = true
+        if (!nuxtApp.isHydrating) {
+          showInstallPrompt.value = true
+        }
       }
       window.addEventListener('beforeinstallprompt', beforeInstallPrompt)
       window.addEventListener('appinstalled', () => {
@@ -69,9 +101,11 @@ const plugin: Plugin<{
         }
 
         showInstallPrompt.value = false
+        const prompt = deferredPrompt
+        deferredPrompt = undefined
         await nextTick()
-        deferredPrompt.prompt()
-        return await deferredPrompt.userChoice
+        prompt.prompt()
+        return await prompt.userChoice
       }
     }
 

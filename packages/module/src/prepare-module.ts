@@ -75,6 +75,19 @@ export async function prepareModule<
   nuxt.options.alias['#pwa'] = resolver.resolve(runtimeDir, 'composables')
 
   if (ctx.nuxt.client.registerPlugin) {
+    const installPrompt = ctx.nuxt.client.installPrompt
+    if (installPrompt !== false && installPrompt !== undefined) {
+      const key = typeof installPrompt === 'string' && installPrompt.trim()
+        ? installPrompt.trim()
+        : 'vite-pwa:hide-install'
+      const storageKey = JSON.stringify(key).replace(/</g, '\\u003C')
+      nuxt.options.app.head.script ||= []
+      nuxt.options.app.head.script.push({
+        key: 'vite-pwa-install-prompt',
+        tagPriority: 'critical',
+        innerHTML: `if(localStorage.getItem(${storageKey})!=="true"){const s=window.__vitePwaInstallPrompt={};s.beforeInstallPrompt=e=>{e.preventDefault();s.event=e};s.appInstalled=()=>{s.event=undefined};window.addEventListener("beforeinstallprompt",s.beforeInstallPrompt);window.addEventListener("appinstalled",s.appInstalled)}`,
+      })
+    }
     addPlugin({
       src: resolver.resolve(runtimeDir, 'plugins/pwa.client'),
       mode: 'client',
