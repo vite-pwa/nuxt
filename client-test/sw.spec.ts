@@ -6,8 +6,7 @@ test('PWA state is available during SSR and after hydration', async ({ page, req
   const html = await response.text()
   expect(html).toContain('PWA Installed:')
   expect(html).toContain('SW: false false false false false')
-  if (!process.env.TEST_DEV)
-    expect(html).not.toContain('__vitePwaInstallPrompt')
+  expect(html).toContain('__vitePwaInstallPrompt')
 
   const hydrationErrors: string[] = []
   page.on('console', (message) => {
@@ -84,35 +83,7 @@ for (const clear of ['none', 'appinstalled', 'cancel'] as const) {
   })
 }
 
-test('Production captures an install prompt while the client helper loads', async ({ page }) => {
-  test.skip(!!process.env.TEST_DEV, 'requires production chunks')
-  let releaseClient!: () => void
-  const clientReady = new Promise<void>(resolve => releaseClient = resolve)
-  await page.route(/\/_nuxt\/.*\.js(?:\?.*)?$/, async (route) => {
-    const response = await route.fetch()
-    if ((await response.text()).includes('service-worker:periodic-sync-update-failed'))
-      await clientReady
-    await route.fulfill({ response })
-  })
-  await page.goto('/', { waitUntil: 'commit' })
-  await page.waitForFunction(() => {
-    const event = Object.assign(new Event('beforeinstallprompt', { cancelable: true }), {
-      prompt: () => {},
-      userChoice: Promise.resolve({ outcome: 'accepted', platform: 'web' }),
-    })
-    window.dispatchEvent(event)
-    return event.defaultPrevented
-  })
-  releaseClient()
-  await page.waitForLoadState('load')
-  await expect.poll(() => page.evaluate(() => (document.querySelector('#__nuxt') as any)?.__vue_app__?.config.globalProperties.$pwa.showInstallPrompt)).toBe(true)
-  const choice = await page.evaluate(() => (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties.$pwa.install())
-  expect(choice).toEqual({ outcome: 'accepted', platform: 'web' })
-  await page.unrouteAll({ behavior: 'wait' })
-})
-
-test('Development captures early install prompts', async ({ page }) => {
-  test.skip(!process.env.TEST_DEV, 'development-only head listener')
+test('The head captures early install prompts', async ({ page }) => {
   let releaseScripts!: () => void
   const scriptsReady = new Promise<void>(resolve => releaseScripts = resolve)
   await page.route(/\/_nuxt\/.*\.(?:js|ts)(?:\?.*)?$/, async (route) => {
@@ -142,8 +113,7 @@ test('Development captures early install prompts', async ({ page }) => {
   expect(await page.evaluate(() => '__vitePwaInstallPrompt' in window)).toBe(false)
 })
 
-test('Development respects the install prompt opt-out before and after hydration', async ({ page }) => {
-  test.skip(!process.env.TEST_DEV, 'development-only head listener')
+test('The head respects the install prompt opt-out before and after hydration', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('vite-pwa:hide-install', 'true'))
   let releaseScripts!: () => void
   const scriptsReady = new Promise<void>(resolve => releaseScripts = resolve)

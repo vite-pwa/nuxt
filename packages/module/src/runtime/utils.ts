@@ -1,7 +1,7 @@
 import type { RegisterSWOptions } from '@unplugin-pwa/core/types'
 import type { ShallowRef, UnwrapNestedRefs } from 'vue'
 import type { NuxtApp } from '#app'
-import type { BeforeInstallPromptEvent, PwaInjection, UserChoice } from './types'
+import type { BeforeInstallPromptEvent, PwaInjection, UserChoice } from './plugins/types'
 import {
   activateSWSwitcherDev,
   callBeforeRegisterHook,
@@ -13,7 +13,7 @@ import {
 import { useRegisterSW } from 'virtual:pwa-register/vue'
 import { computed, nextTick, reactive, shallowRef } from '#imports'
 
-export async function createClientPwa(nuxtApp: NuxtApp, earlyEvent?: BeforeInstallPromptEvent): Promise<UnwrapNestedRefs<PwaInjection>> {
+export async function createClientPwa(nuxtApp: NuxtApp): Promise<UnwrapNestedRefs<PwaInjection>> {
   if (import.meta.dev) {
     initializeDev()
   }
@@ -33,21 +33,18 @@ export async function createClientPwa(nuxtApp: NuxtApp, earlyEvent?: BeforeInsta
     })
   }
 
-  if (import.meta.dev) {
-    const promptWindow = window as Window & {
-      __vitePwaInstallPrompt?: {
-        event?: BeforeInstallPromptEvent
-        beforeInstallPrompt: EventListener
-        appInstalled: EventListener
-      }
+  const promptWindow = window as Window & {
+    __vitePwaInstallPrompt?: {
+      event?: BeforeInstallPromptEvent
+      beforeInstallPrompt: EventListener
+      appInstalled: EventListener
     }
-    const earlyPrompt = promptWindow.__vitePwaInstallPrompt
-    if (earlyPrompt) {
-      earlyEvent = earlyPrompt.event
-      window.removeEventListener('beforeinstallprompt', earlyPrompt.beforeInstallPrompt)
-      window.removeEventListener('appinstalled', earlyPrompt.appInstalled)
-      delete promptWindow.__vitePwaInstallPrompt
-    }
+  }
+  const earlyPrompt = promptWindow.__vitePwaInstallPrompt
+  if (earlyPrompt) {
+    window.removeEventListener('beforeinstallprompt', earlyPrompt.beforeInstallPrompt)
+    window.removeEventListener('appinstalled', earlyPrompt.appInstalled)
+    delete promptWindow.__vitePwaInstallPrompt
   }
 
   const showInstallPrompt = shallowRef(false)
@@ -67,7 +64,7 @@ export async function createClientPwa(nuxtApp: NuxtApp, earlyEvent?: BeforeInsta
   let cancelInstall: () => void = () => {}
   const installPromptKey = installPrompt
   if (installPromptKey && localStorage.getItem(installPromptKey) !== 'true') {
-    let deferredPrompt = earlyEvent
+    let deferredPrompt = earlyPrompt?.event
     showInstallPrompt.value = !!deferredPrompt
 
     const beforeInstallPrompt = (e: Event) => {
