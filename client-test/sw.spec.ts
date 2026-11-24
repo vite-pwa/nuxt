@@ -44,6 +44,9 @@ for (const clear of ['none', 'appinstalled', 'cancel'] as const) {
       $pwa.registrationError = true
       $pwa.offlineReady = true
       $pwa.needRefresh = true
+      $pwa.isPWAInstalled = true
+      $pwa.showInstallPrompt = true
+      const visibleBeforeEvent = $pwa.showInstallPrompt
       const event = new Event('beforeinstallprompt', { cancelable: true })
       window.dispatchEvent(event)
       if (clear === 'appinstalled')
@@ -53,6 +56,7 @@ for (const clear of ['none', 'appinstalled', 'cancel'] as const) {
       return {
         hydrating: $nuxt.isHydrating,
         installed: $pwa.isPWAInstalled,
+        visibleBeforeEvent,
         flags: [
           $pwa.swActivated,
           $pwa.registrationError,
@@ -66,16 +70,46 @@ for (const clear of ['none', 'appinstalled', 'cancel'] as const) {
     expect(state).toEqual({
       hydrating: true,
       installed: undefined,
+      visibleBeforeEvent: false,
       flags: [false, false, false, false, false],
       prevented: true,
     })
     releaseLayout()
     await page.waitForLoadState('load')
+    await expect(page.getByTestId('pwa-installed')).toHaveText('PWA Installed: true')
     await expect(page.getByTestId('pwa-state')).toHaveText(`SW: true true true true ${clear === 'none'}`)
     await page.evaluate(() => (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties.$pwa.cancelPrompt())
     await expect(page.getByTestId('pwa-state')).toHaveText(`SW: true true false false ${clear === 'none'}`)
+    await page.unrouteAll({ behavior: 'wait' })
   })
 }
+
+test('Production captures an install prompt while the client helper loads', async ({ page }) => {
+  test.skip(!!process.env.TEST_DEV, 'requires production chunks')
+  let releaseClient!: () => void
+  const clientReady = new Promise<void>(resolve => releaseClient = resolve)
+  await page.route(/\/_nuxt\/.*\.js(?:\?.*)?$/, async (route) => {
+    const response = await route.fetch()
+    if ((await response.text()).includes('service-worker:periodic-sync-update-failed'))
+      await clientReady
+    await route.fulfill({ response })
+  })
+  await page.goto('/', { waitUntil: 'commit' })
+  await page.waitForFunction(() => {
+    const event = Object.assign(new Event('beforeinstallprompt', { cancelable: true }), {
+      prompt: () => {},
+      userChoice: Promise.resolve({ outcome: 'accepted', platform: 'web' }),
+    })
+    window.dispatchEvent(event)
+    return event.defaultPrevented
+  })
+  releaseClient()
+  await page.waitForLoadState('load')
+  await expect.poll(() => page.evaluate(() => (document.querySelector('#__nuxt') as any)?.__vue_app__?.config.globalProperties.$pwa.showInstallPrompt)).toBe(true)
+  const choice = await page.evaluate(() => (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties.$pwa.install())
+  expect(choice).toEqual({ outcome: 'accepted', platform: 'web' })
+  await page.unrouteAll({ behavior: 'wait' })
+})
 
 test('Development captures early install prompts', async ({ page }) => {
   test.skip(!process.env.TEST_DEV, 'development-only head listener')

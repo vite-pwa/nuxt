@@ -13,7 +13,7 @@ import {
 import { useRegisterSW } from 'virtual:pwa-register/vue'
 import { computed, nextTick, reactive, shallowRef } from '#imports'
 
-export async function createClientPwa(nuxtApp: NuxtApp): Promise<UnwrapNestedRefs<PwaInjection>> {
+export async function createClientPwa(nuxtApp: NuxtApp, earlyEvent?: BeforeInstallPromptEvent): Promise<UnwrapNestedRefs<PwaInjection>> {
   if (import.meta.dev) {
     initializeDev()
   }
@@ -26,14 +26,13 @@ export async function createClientPwa(nuxtApp: NuxtApp): Promise<UnwrapNestedRef
     })
   }
 
-  function afterHydration(value: ShallowRef<boolean>) {
+  function afterHydration<T>(value: ShallowRef<T>, fallback: T) {
     return computed({
-      get: () => hydrated.value && value.value,
-      set: (newValue: boolean) => { value.value = newValue },
+      get: () => hydrated.value ? value.value : fallback,
+      set: (newValue: T) => { value.value = newValue },
     })
   }
 
-  let earlyEvent: BeforeInstallPromptEvent | undefined
   if (import.meta.dev) {
     const promptWindow = window as Window & {
       __vitePwaInstallPrompt?: {
@@ -58,19 +57,10 @@ export async function createClientPwa(nuxtApp: NuxtApp): Promise<UnwrapNestedRef
     ? display
     : 'standalone'
   const displayMode = window.matchMedia(`(display-mode: ${useDisplay})`)
-  let isInstalled = !!(displayMode.matches || (ios && !ua.match(/Safari/)))
-  const isPWAInstalled = shallowRef<boolean | undefined>(nuxtApp.isHydrating ? undefined : isInstalled)
-  if (nuxtApp.isHydrating) {
-    nuxtApp.hooks.hookOnce('app:suspense:resolve', () => {
-      isPWAInstalled.value = isInstalled
-    })
-  }
+  const isPWAInstalled = shallowRef<boolean | undefined>(!!(displayMode.matches || (ios && !ua.match(/Safari/))))
   displayMode.addEventListener('change', (e) => {
-    if (!isInstalled && e.matches) {
-      isInstalled = true
-      if (!nuxtApp.isHydrating)
-        isPWAInstalled.value = true
-    }
+    if (!isPWAInstalled.value && e.matches)
+      isPWAInstalled.value = true
   })
 
   let install: () => Promise<UserChoice | undefined> = async () => undefined
@@ -78,20 +68,12 @@ export async function createClientPwa(nuxtApp: NuxtApp): Promise<UnwrapNestedRef
   const installPromptKey = installPrompt
   if (installPromptKey && localStorage.getItem(installPromptKey) !== 'true') {
     let deferredPrompt = earlyEvent
-    if (nuxtApp.isHydrating) {
-      nuxtApp.hooks.hookOnce('app:suspense:resolve', () => {
-        showInstallPrompt.value = !!deferredPrompt
-      })
-    }
-    else {
-      showInstallPrompt.value = !!deferredPrompt
-    }
+    showInstallPrompt.value = !!deferredPrompt
 
     const beforeInstallPrompt = (e: Event) => {
       e.preventDefault()
       deferredPrompt = e as BeforeInstallPromptEvent
-      if (!nuxtApp.isHydrating)
-        showInstallPrompt.value = true
+      showInstallPrompt.value = true
     }
     window.addEventListener('beforeinstallprompt', beforeInstallPrompt)
     window.addEventListener('appinstalled', () => {
@@ -236,14 +218,14 @@ export async function createClientPwa(nuxtApp: NuxtApp): Promise<UnwrapNestedRef
   }
 
   return reactive({
-    isPWAInstalled,
-    showInstallPrompt,
+    isPWAInstalled: afterHydration(isPWAInstalled, undefined),
+    showInstallPrompt: afterHydration(showInstallPrompt, false),
     cancelInstall,
     install,
-    swActivated: afterHydration(swActivated),
-    registrationError: afterHydration(registrationError),
-    offlineReady: afterHydration(offlineReady),
-    needRefresh: afterHydration(needRefresh),
+    swActivated: afterHydration(swActivated, false),
+    registrationError: afterHydration(registrationError, false),
+    offlineReady: afterHydration(offlineReady, false),
+    needRefresh: afterHydration(needRefresh, false),
     updateServiceWorker,
     cancelPrompt,
   }) satisfies UnwrapNestedRefs<PwaInjection>

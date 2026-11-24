@@ -74,25 +74,26 @@ export async function prepareModule<
   nuxt.options.build.transpile.push(runtimeDir)
   nuxt.options.alias['#pwa'] = resolver.resolve(runtimeDir, 'composables')
 
-  nuxt.options.appConfig.nuxtPwa = { registerPlugin: ctx.nuxt.client.registerPlugin }
+  const installPrompt = ctx.nuxt.client.installPrompt
+  const installPromptKey = installPrompt === false || installPrompt === undefined
+    ? undefined
+    : typeof installPrompt === 'string' && installPrompt.trim()
+      ? installPrompt.trim()
+      : 'vite-pwa:hide-install'
+  const pwaAppConfig = { registerPlugin: ctx.nuxt.client.registerPlugin, installPrompt: installPromptKey }
+  nuxt.options.appConfig.nuxtPwa = pwaAppConfig
   addPlugin({
     src: resolver.resolve(runtimeDir, 'plugins/pwa'),
   })
 
-  if (nuxt.options.dev && ctx.nuxt.client.registerPlugin) {
-    const installPrompt = ctx.nuxt.client.installPrompt
-    if (installPrompt !== false && installPrompt !== undefined) {
-      const key = typeof installPrompt === 'string' && installPrompt.trim()
-        ? installPrompt.trim()
-        : 'vite-pwa:hide-install'
-      const storageKey = JSON.stringify(key).replace(/</g, '\\u003C')
-      nuxt.options.app.head.script ||= []
-      nuxt.options.app.head.script.push({
-        key: 'vite-pwa-install-prompt',
-        tagPriority: 'critical',
-        innerHTML: `if(localStorage.getItem(${storageKey})!=="true"){const s=window.__vitePwaInstallPrompt={};s.beforeInstallPrompt=e=>{e.preventDefault();s.event=e};s.appInstalled=()=>{s.event=undefined};window.addEventListener("beforeinstallprompt",s.beforeInstallPrompt);window.addEventListener("appinstalled",s.appInstalled)}`,
-      })
-    }
+  if (nuxt.options.dev && ctx.nuxt.client.registerPlugin && installPromptKey) {
+    const storageKey = JSON.stringify(installPromptKey).replace(/</g, '\\u003C')
+    nuxt.options.app.head.script ||= []
+    nuxt.options.app.head.script.push({
+      key: 'vite-pwa-install-prompt',
+      tagPriority: 'critical',
+      innerHTML: `if(localStorage.getItem(${storageKey})!=="true"){const s=window.__vitePwaInstallPrompt={};s.beforeInstallPrompt=e=>{e.preventDefault();s.event=e};s.appInstalled=()=>{s.event=undefined};window.addEventListener("beforeinstallprompt",s.beforeInstallPrompt);window.addEventListener("appinstalled",s.appInstalled)}`,
+    })
   }
 
   nuxt.hook('nitro:config', nitroConfigHook<B, UserStrategy, T, NPC>(ctx, nuxt))
