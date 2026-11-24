@@ -74,14 +74,30 @@ export async function prepareModule<
   nuxt.options.build.transpile.push(runtimeDir)
   nuxt.options.alias['#pwa'] = resolver.resolve(runtimeDir, 'composables')
 
+  const installPrompt = ctx.nuxt.client.installPrompt
+  const installPromptKey = installPrompt === false || installPrompt === undefined
+    ? undefined
+    : typeof installPrompt === 'string' && installPrompt.trim()
+      ? installPrompt.trim()
+      : 'vite-pwa:hide-install'
+  addPlugin({
+    src: resolver.resolve(runtimeDir, 'plugins/disabled-pwa'),
+    mode: ctx.nuxt.client.registerPlugin ? 'server' : 'all',
+  })
   if (ctx.nuxt.client.registerPlugin) {
     addPlugin({
-      src: resolver.resolve(runtimeDir, 'plugins/pwa.client'),
+      src: resolver.resolve(runtimeDir, 'plugins/pwa'),
       mode: 'client',
     })
-    addPlugin({
-      src: resolver.resolve(runtimeDir, 'plugins/pwa-install.client'),
-      mode: 'client',
+  }
+
+  if (ctx.nuxt.client.registerPlugin && installPromptKey) {
+    const storageKey = JSON.stringify(installPromptKey).replace(/</g, '\\u003C')
+    nuxt.options.app.head.script ||= []
+    nuxt.options.app.head.script.push({
+      key: 'vite-pwa-install-prompt',
+      tagPriority: 'critical',
+      innerHTML: `if(localStorage.getItem(${storageKey})!=="true"){const s=window.__vitePwaInstallPrompt={};s.beforeInstallPrompt=e=>{e.preventDefault();s.event=e};s.appInstalled=()=>{s.event=undefined};window.addEventListener("beforeinstallprompt",s.beforeInstallPrompt);window.addEventListener("appinstalled",s.appInstalled)}`,
     })
   }
 
