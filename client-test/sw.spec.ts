@@ -1,6 +1,15 @@
 import process from 'node:process'
 import { expect, test } from '@playwright/test'
 
+test('Server PWA defaults cannot be changed', async ({ request }) => {
+  test.skip(process.env.TEST_BUILD !== 'true', 'requires the Nitro server')
+  for (let i = 0; i < 2; i++) {
+    const response = await request.get('/pwa-server-test')
+    expect(response.ok()).toBe(true)
+    expect(await response.text()).toContain('PWA:  false false false false false')
+  }
+})
+
 test('PWA state is available during SSR and after hydration', async ({ page, request }) => {
   const response = await request.get('/')
   const html = await response.text()
@@ -147,6 +156,15 @@ test('Disabled registration still provides inert PWA state', async ({ page, requ
   await page.waitForFunction(() => !!(document.querySelector('#__nuxt') as any)?.__vue_app__?.config.globalProperties.$pwa)
   const state = await page.evaluate(async () => {
     const pwa = (document.querySelector('#__nuxt') as any).__vue_app__.config.globalProperties.$pwa
+    pwa.isPWAInstalled = true
+    pwa.showInstallPrompt = true
+    pwa.swActivated = true
+    pwa.registrationError = true
+    pwa.offlineReady = true
+    pwa.needRefresh = true
+    await pwa.cancelPrompt()
+    await pwa.updateServiceWorker()
+    pwa.cancelInstall()
     const event = new Event('beforeinstallprompt', { cancelable: true })
     window.dispatchEvent(event)
     return {

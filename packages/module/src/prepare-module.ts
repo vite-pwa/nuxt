@@ -81,15 +81,9 @@ export async function prepareModule<
       ? installPrompt.trim()
       : 'vite-pwa:hide-install'
   addPlugin({
-    src: resolver.resolve(runtimeDir, 'plugins/pwa'),
-    mode: ctx.nuxt.client.registerPlugin ? 'server' : 'all',
+    src: resolver.resolve(runtimeDir, ctx.nuxt.client.registerPlugin ? 'plugins/pwa' : 'plugins/disabled-pwa'),
+    mode: 'all',
   })
-  if (ctx.nuxt.client.registerPlugin) {
-    addPlugin({
-      src: resolver.resolve(runtimeDir, 'plugins/pwa.client'),
-      mode: 'client',
-    })
-  }
 
   if (ctx.nuxt.client.registerPlugin && installPromptKey) {
     const storageKey = JSON.stringify(installPromptKey).replace(/</g, '\\u003C')

@@ -78,8 +78,8 @@ export default defineNuxtConfig({
 Read the [documentation](https://unplugin-pwa.netlify.app/frameworks/nuxt) and the [repository README](https://github.com/vite-pwa/nuxt#readme) for more details.
 
 `$pwa` and `usePWA()` are available on both server and client, including when
-`client.registerPlugin` is disabled. Browser actions are no-ops on the server
-or when registration is disabled. During server rendering and until hydration
+`client.registerPlugin` is disabled. Browser actions and writes to PWA state
+are no-ops on the server or when registration is disabled. During server rendering and until hydration
 completes, `isPWAInstalled` is `undefined` and the prompt and service worker
 flags are `false`.
 

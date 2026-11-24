@@ -1,27 +1,24 @@
 import type { UnwrapNestedRefs } from 'vue'
 import type { Plugin } from '#app'
 import type { PwaInjection } from './types'
-import { defineNuxtPlugin, reactive, shallowRef } from '#imports'
+import { defineNuxtPlugin } from '#imports'
+import { createDisabledPwa } from './disabled-pwa'
 
 const plugin: Plugin<{ pwa: UnwrapNestedRefs<PwaInjection> }> = defineNuxtPlugin({
   name: 'vite-pwa:nuxt:client:plugin',
   enforce: 'post',
   parallel: true,
-  setup() {
+  async setup(nuxtApp) {
+    if (import.meta.client) {
+      const { createClientPwa } = await import('../utils/pwa-client')
+      return {
+        provide: { pwa: await createClientPwa(nuxtApp) },
+      }
+    }
+
     return {
       provide: {
-        pwa: reactive({
-          isPWAInstalled: shallowRef<boolean | undefined>(undefined),
-          showInstallPrompt: shallowRef(false),
-          cancelInstall: () => {},
-          install: async () => undefined,
-          swActivated: shallowRef(false),
-          registrationError: shallowRef(false),
-          offlineReady: shallowRef(false),
-          needRefresh: shallowRef(false),
-          updateServiceWorker: async () => {},
-          cancelPrompt: async () => {},
-        }) satisfies UnwrapNestedRefs<PwaInjection>,
+        pwa: createDisabledPwa(),
       },
     }
   },
