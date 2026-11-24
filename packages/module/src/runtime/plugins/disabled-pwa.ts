@@ -3,7 +3,7 @@ import type { Plugin } from '#app'
 import type { PwaInjection } from './types'
 import { computed, defineNuxtPlugin, reactive, shallowRef } from '#imports'
 
-export function createDisabledPwa(): UnwrapNestedRefs<PwaInjection> {
+function createDisabledPwa(): UnwrapNestedRefs<PwaInjection> {
   function protectedRef<T>(value: T) {
     const state = shallowRef(value)
     return computed({
